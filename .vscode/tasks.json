@@ -9,9 +9,9 @@
 				"-g",
 				"${file}",
 				"-o",
-				"${fileDirname}/${fileBasenameNoExtension}",
+				"${workspaceFolder}/${fileBasenameNoExtension}",
 				"&&",
-				"./${fileBasenameNoExtension}"
+				"${workspaceFolder}/${fileBasenameNoExtension}"
 			],
 			"options": {
 				"cwd": "${fileDirname}"
