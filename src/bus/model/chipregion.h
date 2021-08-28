@@ -1,17 +1,17 @@
-#include "base/memoryChip.h"
+#include "busdevice.h"
 
 #ifndef __CHIPREGION_H__
 #define __CHIPREGION_H__
 
 class ChipRegion {
 private:
-  MemoryChip chip;
+  BusDevice chip;
   int startAddress;
   int endAddress;
 
 public:
   ChipRegion(int startAddress, int endAddress);
-  MemoryChip getChip();
+  BusDevice getChip();
   int getStartAddress();
   int endStartAddress();
 };

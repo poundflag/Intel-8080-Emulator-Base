@@ -30,3 +30,6 @@
 *.exe
 *.out
 *.app
+build/
+external_libaries/
+**/.DS_Store

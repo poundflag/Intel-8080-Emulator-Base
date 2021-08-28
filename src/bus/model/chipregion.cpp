@@ -5,7 +5,7 @@ ChipRegion::ChipRegion(int startAddress, int endAddress) {
     this -> endAddress = endAddress;
 }
 
-MemoryChip ChipRegion::getChip() {
+BusDevice ChipRegion::getChip() {
     return chip;
 }
 
