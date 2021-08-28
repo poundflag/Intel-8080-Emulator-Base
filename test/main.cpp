@@ -1,7 +1,6 @@
-#include "myfunctions.h"
+#include "bus/device/ramtest.cpp"
+#include "bus/buscontollertest.cpp"
 #include <gtest/gtest.h>
-
-TEST(myfunctions, add) { GTEST_ASSERT_EQ(add(10, 22), 32); }
 
 int main(int argc, char *argv[]) {
   ::testing::InitGoogleTest(&argc, argv);

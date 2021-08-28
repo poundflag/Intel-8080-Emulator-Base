@@ -5,7 +5,7 @@
 
 class BusDevice {
     public:
-        void write(int address, uint8_t value);
-        uint8_t read(int address);
+        virtual void write(uint16_t address, uint8_t value);
+        virtual uint8_t read(uint16_t address);
 };
 #endif // __BUSDEVICE_H__

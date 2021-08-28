@@ -4,4 +4,4 @@ project(Intel-8080-Emulator) #name of your project
 
 add_executable(main main.cpp) # add this executable
 
-add_subdirectory(test)
+add_subdirectory(../test tests)

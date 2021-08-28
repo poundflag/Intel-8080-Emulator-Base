@@ -1,18 +1,14 @@
 #include "chipregion.h"
 
-ChipRegion::ChipRegion(int startAddress, int endAddress) {
-    this -> startAddress = startAddress;
-    this -> endAddress = endAddress;
+ChipRegion::ChipRegion(int startAddress, int endAddress, BusDevice *chip) {
+  this->startAddress = startAddress;
+  this->endAddress = endAddress;
+  this->chip = chip;
 }
 
-BusDevice ChipRegion::getChip() {
-    return chip;
-}
+BusDevice *ChipRegion::getChip() { return chip; }
 
-int ChipRegion::getStartAddress() {
-    return startAddress;
-}
+int ChipRegion::getStartAddress() { return startAddress; }
 
-int ChipRegion::endStartAddress() {
-    return endAddress;
-}
+int ChipRegion::getEndAddress() { return endAddress; }
+

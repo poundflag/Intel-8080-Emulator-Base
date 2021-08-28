@@ -10,8 +10,8 @@ private:
 
 public:
   Ram(int ramSize);
-  void write(int address, uint8_t value);
-  uint8_t read(int address);
+  virtual void write(uint16_t address, uint8_t value) override;
+  virtual uint8_t read(uint16_t address) override;
   ~Ram();
 };
 
