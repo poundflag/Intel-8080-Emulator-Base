@@ -1,7 +1,7 @@
 #include "ram.h"
 #include <iostream>
 
-Ram::Ram(int ramSize) {
+Ram::Ram(uint16_t ramSize) {
     ram = new uint8_t[ramSize](); 
 }
 

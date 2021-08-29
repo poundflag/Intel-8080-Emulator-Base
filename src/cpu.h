@@ -6,6 +6,6 @@ class Cpu {
     public:
     Cpu();
     void cycle();
-}
+};
 
 #endif // __CPU_H__
