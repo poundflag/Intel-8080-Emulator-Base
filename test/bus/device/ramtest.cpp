@@ -1,5 +1,5 @@
 #include "../../../src/bus/device/ram.h"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 class RamTest : public ::testing::Test {
 

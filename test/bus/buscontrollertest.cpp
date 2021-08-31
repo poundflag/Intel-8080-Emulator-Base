@@ -1,6 +1,6 @@
 #include "../../src/bus/buscontroller.h"
 #include "../../src/bus/device/ram.h"
-#include "../../lib/googletest/googletest/include/gtest/gtest.h"
+#include <gtest/gtest.h>
 
 class BusControllerTest : public ::testing::Test {
 protected:
@@ -12,7 +12,11 @@ protected:
     busController->addChipRegion(aa);
   }
 
-  void TearDown() { delete busController; }
+  void TearDown() {
+    if (busController == NULL) {
+      delete busController;
+    }
+  }
 };
 
 TEST_F(BusControllerTest, writeAndReadByte) {

@@ -1,23 +1,44 @@
-cmake_minimum_required(VERSION 3.12) # version can be different
+cmake_minimum_required(VERSION 3.14)
 
 project(Intel-8080-Emulator) #name of your project
 
-set (CMAKE_CXX_STANDARD 11)
+# GoogleTest requires at least C++11
+set(CMAKE_CXX_STANDARD 11)
 
-add_subdirectory(../lib/googletest googletest)
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  # Specify the commit you depend on and update it regularly.
+  URL https://github.com/google/googletest/archive/609281088cfefc76f9d0ce82e1ff6c30cc3591e5.zip
+)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
 
-include_directories(../lib/googletest/googletest/include) # this is so we can #include <gtest/gtest.h>
+enable_testing()
 
-include_directories(../src)
+add_executable(
+  tests
+  main.cpp
+)
 
 add_library(ram ../src/bus/device/ram.cpp)
-
-add_library(buscontroller ../src/bus/buscontroller.cpp)
-
 add_library(busdevice ../src/bus/model/busdevice.cpp)
-
+add_library(buscontroller ../src/bus/buscontroller.cpp)
 add_library(chipregion ../src/bus/model/chipregion.cpp)
+add_library(register ../src/registers/model/register.cpp)
+add_library(flagregister ../src/registers/model/flagregister.cpp)
 
-add_executable(tests main.cpp) # add this add_executable
+target_link_libraries(
+  tests
+  gtest_main
+  ram
+  busdevice
+  buscontroller
+  chipregion
+  register
+  flagregister
+)
 
-target_link_libraries(tests PUBLIC ram buscontroller chipregion busdevice PRIVATE gtest) # link google test to this executable
+include(GoogleTest)
+gtest_discover_tests(tests)

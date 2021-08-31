@@ -1,5 +1,7 @@
 #include "bus/device/ramtest.cpp"
-#include "bus/buscontollertest.cpp"
+#include "bus/buscontrollertest.cpp"
+#include "registers/model/flagregistertest.cpp"
+#include "../src/registers/model/flagregister.h"
 #include <gtest/gtest.h>
 
 int main(int argc, char *argv[]) {
