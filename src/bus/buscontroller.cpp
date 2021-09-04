@@ -43,6 +43,5 @@ void BusController::writeByte(uint16_t address, uint8_t value) {
 BusController::~BusController() {
   for (auto &chip : chipRegions) {
     delete chip.getChip();
-    delete &chip;
   }
 }

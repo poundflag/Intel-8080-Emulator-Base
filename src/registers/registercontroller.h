@@ -1,30 +1,18 @@
-
 #include "../bus/buscontroller.h"
 #include "model/register.h"
+#include "registers.h"
 
 #ifndef __REGISTERCONTROLLER_H__
 #define __REGISTERCONTROLLER_H__
 
 class RegisterController {
 private:
-  Register *registers[10];
-  BusController &busController;
+  Register *registers = new Register[10];
+  std::shared_ptr<BusController> busController;
 
 public:
-  RegisterController(BusController &busController);
+  RegisterController(std::shared_ptr<BusController> busController);
+  Register &get(Registers::Register reg);
   ~RegisterController();
 };
 #endif // __REGISTERCONTROLLER_H__
-
-enum Registers {
-  A = 0,
-  B,
-  C,
-  D,
-  E,
-  H,
-  L,
-  M,
-  PSW,
-  SP
-}; // TODO Rename the class to RegisterService??

@@ -18,15 +18,6 @@ void FlagRegister::determineAuxiliaryCarry(uint8_t value1, uint8_t value2) {
   // TODO Get operator
   uint8_t temp = (value1 & 0x0F) + (value2 & 0x0F);
   setFlag(Flag::AuxiliaryCarry, temp > 0x0F);
-
-  /*
-      let a = value_1 & 0x0F; // lower nibble
-      let b = value_2 & 0x0F; // lower nibble
-      let c = if operator == "+" { a + b } else { a.wrapping_sub(b) };
-      // (a & 0x0f) + (n & 0x0f) > 0x0f
-      self.auxiliary_carry_bit = c > 0x0f; // there must be borrow if minuend is
-     less than subtrahend
-  */
 }
 
 void FlagRegister::determineZero(uint8_t value) {
@@ -56,6 +47,7 @@ void FlagRegister::processFlags(FlagRule flagRule, uint8_t value1,
     determineZero(result);
     determineSigned(result);
     determineParity(result);
+    determineAuxiliaryCarry(value1, value2);
 
 
   default:

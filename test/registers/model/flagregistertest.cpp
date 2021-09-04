@@ -1,5 +1,4 @@
 #include "../../../src/registers/model/flagregister.h"
-#include "../../../src/registers/model/flagenum.h"
 #include <gtest/gtest.h>
 
 class FlagRegisterTest : public ::testing::Test {
@@ -16,33 +15,46 @@ TEST_F(FlagRegisterTest, getInitialValue) {
 }
 
 TEST_F(FlagRegisterTest, determineCarryPlus) {
-  flagRegister.processFlags(FlagRule::CarryOnly, 0xFF, 0x1, "+");
-  GTEST_ASSERT_EQ(1, flagRegister.getFlag(Flag::Carry));
+  flagRegister.processFlags(FlagRegister::FlagRule::CarryOnly, 0xFF, 0x1, "+");
+  GTEST_ASSERT_EQ(1, flagRegister.getFlag(FlagRegister::Carry));
 }
 
 TEST_F(FlagRegisterTest, determineCarryMinus) {
-  flagRegister.processFlags(FlagRule::CarryOnly, 0x1, 0xFF, "-");
-  GTEST_ASSERT_EQ(1, flagRegister.getFlag(Flag::Carry));
+  flagRegister.processFlags(FlagRegister::FlagRule::CarryOnly, 0x1, 0xFF, "-");
+  GTEST_ASSERT_EQ(1, flagRegister.getFlag(FlagRegister::Carry));
 }
 
 TEST_F(FlagRegisterTest, determineCarryOff) {
-  flagRegister.processFlags(FlagRule::CarryOnly, 0x2, 0x1, "-");
-  GTEST_ASSERT_EQ(0, flagRegister.getFlag(Flag::Carry));
+  flagRegister.processFlags(FlagRegister::FlagRule::CarryOnly, 0x2, 0x1, "-");
+  GTEST_ASSERT_EQ(0, flagRegister.getFlag(FlagRegister::Carry));
 }
 
 TEST_F(FlagRegisterTest, determineParity) {
-  flagRegister.processFlags(FlagRule::All, 0b11110000, 0x0, "+");
-  GTEST_ASSERT_EQ(1, flagRegister.getFlag(Flag::Parity));
+  flagRegister.processFlags(FlagRegister::FlagRule::All, 0b11110000, 0x0, "+");
+  GTEST_ASSERT_EQ(1, flagRegister.getFlag(FlagRegister::Parity));
 }
 
-TEST_F(FlagRegisterTest, determineAuxiliaryCarry) { GTEST_ASSERT_EQ(1, 1); }
+TEST_F(FlagRegisterTest, determineNoParity) {
+  flagRegister.processFlags(FlagRegister::FlagRule::All, 0b11110010, 0x0, "+");
+  GTEST_ASSERT_EQ(0, flagRegister.getFlag(FlagRegister::Parity));
+}
+
+TEST_F(FlagRegisterTest, determineAuxiliaryCarry) {
+  flagRegister.processFlags(FlagRegister::FlagRule::All, 0xF, 1, "+");
+  GTEST_ASSERT_EQ(1, flagRegister.getFlag(FlagRegister::AuxiliaryCarry));
+}
+
+TEST_F(FlagRegisterTest, determineNoAuxiliaryCarry) {
+  flagRegister.processFlags(FlagRegister::FlagRule::All, 0x7, 1, "+");
+  GTEST_ASSERT_EQ(0, flagRegister.getFlag(FlagRegister::AuxiliaryCarry));
+}
 
 TEST_F(FlagRegisterTest, determineZero) {
-  flagRegister.processFlags(FlagRule::All, 1, 1, "-");
-  GTEST_ASSERT_EQ(1, flagRegister.getFlag(Flag::Zero));
+  flagRegister.processFlags(FlagRegister::FlagRule::All, 1, 1, "-");
+  GTEST_ASSERT_EQ(1, flagRegister.getFlag(FlagRegister::Zero));
 }
 
 TEST_F(FlagRegisterTest, determineSigned) {
-  flagRegister.processFlags(FlagRule::All, 0b10000000, 0, "+");
-  GTEST_ASSERT_EQ(1, flagRegister.getFlag(Flag::Signed));
+  flagRegister.processFlags(FlagRegister::FlagRule::All, 0b10000000, 0, "+");
+  GTEST_ASSERT_EQ(1, flagRegister.getFlag(FlagRegister::Signed));
 }

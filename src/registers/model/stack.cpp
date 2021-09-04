@@ -1,6 +1,7 @@
 #include "stack.h"
 
-Stack::Stack(BusController &busController) : busController(busController) {
+Stack::Stack(std::shared_ptr<BusController> busController)
+    : busController(move(busController)) {
   stackPointer = 0;
 }
 
@@ -10,12 +11,12 @@ void Stack::decrementStackPointer() { stackPointer--; }
 
 void Stack::pushByte(uint8_t value) {
   decrementStackPointer();
-  busController.writeByte(stackPointer, value);
+  busController->writeByte(stackPointer, value);
 }
 
 uint8_t Stack::popByte() {
-  uint16_t result = busController.readByte(stackPointer);
-  busController.writeByte(stackPointer, 0);
+  uint16_t result = busController->readByte(stackPointer);
+  busController->writeByte(stackPointer, 0);
   incrementStackPointer();
   return result;
 }
@@ -23,12 +24,12 @@ uint8_t Stack::popByte() {
 void Stack::pushWord(uint16_t value) {
   decrementStackPointer();
   decrementStackPointer();
-  busController.writeWord(stackPointer, value);
+  busController->writeWord(stackPointer, value);
 }
 
 uint16_t Stack::popWord() {
-  uint16_t result = busController.readWord(stackPointer);
-  busController.writeWord(stackPointer, 0);
+  uint16_t result = busController->readWord(stackPointer);
+  busController->writeWord(stackPointer, 0);
   incrementStackPointer();
   incrementStackPointer();
   return result;

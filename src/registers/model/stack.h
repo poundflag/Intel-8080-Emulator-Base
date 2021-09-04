@@ -7,12 +7,12 @@
 class Stack : public Register {
 private:
   uint16_t stackPointer;
-  BusController &busController;
+  std::shared_ptr<BusController> busController;
   void incrementStackPointer();
   void decrementStackPointer();
 
 public:
-  Stack(BusController &busController); // TODO Implement derived methods
+  Stack(std::shared_ptr<BusController> busController); // TODO Implement derived methods
   void pushByte(uint8_t value);
   uint8_t popByte();
   void pushWord(uint16_t value);

@@ -1,6 +1,5 @@
-#include <iostream>
 #include "register.h"
-#include "flagenum.h"
+#include <iostream>
 
 #ifndef __FLAGREGISTER_H__
 #define __FLAGREGISTER_H__
@@ -14,8 +13,14 @@ private:
   void determineSigned(uint8_t value);
 
 public:
+
+  enum class FlagRule { All, Partial, CarryOnly };
+
+  enum Flag { Carry = 0, AuxiliaryCarry = 4, Parity = 2, Zero = 6, Signed = 7 };
+  
   FlagRegister();
-  void processFlags(FlagRule flagRule, uint8_t value1, uint16_t value2, std::string operation);
+  void processFlags(FlagRule flagRule, uint8_t value1, uint16_t value2,
+                    std::string operation);
   bool getFlag(Flag flag);
   void setFlag(uint8_t position, bool bit);
   void setFlag(Flag flag, bool bit);

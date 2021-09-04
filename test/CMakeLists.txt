@@ -28,6 +28,8 @@ add_library(buscontroller ../src/bus/buscontroller.cpp)
 add_library(chipregion ../src/bus/model/chipregion.cpp)
 add_library(register ../src/registers/model/register.cpp)
 add_library(flagregister ../src/registers/model/flagregister.cpp)
+add_library(stack ../src/registers/model/stack.cpp)
+add_library(registercontroller ../src/registers/registercontroller.cpp)
 
 target_link_libraries(
   tests
@@ -38,6 +40,8 @@ target_link_libraries(
   chipregion
   register
   flagregister
+  stack
+  registercontroller
 )
 
 include(GoogleTest)
