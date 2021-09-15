@@ -30,6 +30,7 @@ add_library(register ../src/registers/model/register.cpp)
 add_library(flagregister ../src/registers/model/flagregister.cpp)
 add_library(stack ../src/registers/model/stack.cpp)
 add_library(registercontroller ../src/registers/registercontroller.cpp)
+add_library(instructions1 ../src/instructions.cpp)
 
 target_link_libraries(
   tests
@@ -42,6 +43,7 @@ target_link_libraries(
   flagregister
   stack
   registercontroller
+  instructions1
 )
 
 include(GoogleTest)

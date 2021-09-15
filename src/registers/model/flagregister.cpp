@@ -14,9 +14,15 @@ void FlagRegister::determineParity(uint8_t value) {
   setFlag(Flag::Parity, value == 0);
 }
 
-void FlagRegister::determineAuxiliaryCarry(uint8_t value1, uint8_t value2) {
+void FlagRegister::determineAuxiliaryCarry(uint8_t value1, uint8_t value2,
+                                           std::string operation) {
   // TODO Get operator
-  uint8_t temp = (value1 & 0x0F) + (value2 & 0x0F);
+  uint8_t temp = 0;
+  if (operation == "+") {
+    temp = (value1 & 0x0F) + (value2 & 0x0F);
+  } else {
+    temp = (value1 & 0x0F) - (value2 & 0x0F);
+  }
   setFlag(Flag::AuxiliaryCarry, temp > 0x0F);
 }
 
@@ -36,9 +42,9 @@ void FlagRegister::processFlags(FlagRule flagRule, uint8_t value1,
   if (operation == "+") {
     result = value1 + value2;
   } else {
-    result = value1 - value2;
+      result = (value1 - value2);
   }
-  switch (flagRule) {
+  switch (flagRule) { // TODO Finish the case statements
   case FlagRule::CarryOnly:
     determineCarry(result);
     break;
@@ -47,8 +53,14 @@ void FlagRegister::processFlags(FlagRule flagRule, uint8_t value1,
     determineZero(result);
     determineSigned(result);
     determineParity(result);
-    determineAuxiliaryCarry(value1, value2);
-
+    determineAuxiliaryCarry(value1, value2, operation);
+    break;
+  case FlagRule::Partial:
+    determineZero(result);
+    determineSigned(result);
+    determineParity(result);
+    determineAuxiliaryCarry(value1, value2, operation);
+    break;
 
   default:
     break;
@@ -66,3 +78,5 @@ void FlagRegister::setFlag(Flag flag, bool bit) {
   uint8_t flagValue = bit ? 1 : 0;
   value = value | (bit << flag);
 }
+
+uint8_t FlagRegister::getRegister() { return value; }

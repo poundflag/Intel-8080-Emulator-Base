@@ -24,6 +24,11 @@ TEST_F(FlagRegisterTest, determineCarryMinus) {
   GTEST_ASSERT_EQ(1, flagRegister.getFlag(FlagRegister::Carry));
 }
 
+TEST_F(FlagRegisterTest, determineCarryMinus2) {
+  flagRegister.processFlags(FlagRegister::FlagRule::CarryOnly, 0x1, 0x5, "-");
+  GTEST_ASSERT_EQ(1, flagRegister.getFlag(FlagRegister::Carry));
+}
+
 TEST_F(FlagRegisterTest, determineCarryOff) {
   flagRegister.processFlags(FlagRegister::FlagRule::CarryOnly, 0x2, 0x1, "-");
   GTEST_ASSERT_EQ(0, flagRegister.getFlag(FlagRegister::Carry));

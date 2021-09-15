@@ -3,6 +3,7 @@
 #include "registers/model/flagregistertest.cpp"
 #include "registers/model/stacktest.cpp"
 #include "registers/registercontroller.cpp"
+#include "instructions.cpp"
 #include <gtest/gtest.h>
 
 int main(int argc, char *argv[]) {
