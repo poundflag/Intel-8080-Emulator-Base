@@ -34,17 +34,24 @@ void FlagRegister::determineSigned(uint8_t value) {
   setFlag(Flag::Signed, (value & 0b10000000) == 0b10000000);
 }
 
+void FlagRegister::determineCarry16Bit(uint32_t value) {
+  setFlag(Flag::Carry, (value & 0b10000000000000000) == 0b10000000000000000);
+}
+
 FlagRegister::FlagRegister() { value = 0b00000010; }
 
-void FlagRegister::processFlags(FlagRule flagRule, uint8_t value1,
+void FlagRegister::processFlags(FlagRule flagRule, uint16_t value1,
                                 uint16_t value2, std::string operation) {
   uint16_t result = 0;
   if (operation == "+") {
     result = value1 + value2;
   } else {
-      result = (value1 - value2);
+    result = (value1 - value2);
   }
   switch (flagRule) { // TODO Finish the case statements
+  case FlagRule::DAD:
+    determineCarry16Bit(value1 + value2);
+    break;
   case FlagRule::CarryOnly:
     determineCarry(result);
     break;
@@ -69,14 +76,12 @@ void FlagRegister::processFlags(FlagRule flagRule, uint8_t value1,
 
 bool FlagRegister::getFlag(Flag flag) { return ((value >> flag) & 1) == 1; }
 
-void FlagRegister::setFlag(uint8_t position, bool bit) {
-  uint8_t flagValue = bit ? 1 : 0;
-  value = value | (bit << position);
-}
-
 void FlagRegister::setFlag(Flag flag, bool bit) {
-  uint8_t flagValue = bit ? 1 : 0;
-  value = value | (bit << flag);
+  if (bit) {
+    value |= (1 << flag);
+  } else {
+    value &= ~(1 << flag);
+  }
 }
 
 uint8_t FlagRegister::getRegister() { return value; }

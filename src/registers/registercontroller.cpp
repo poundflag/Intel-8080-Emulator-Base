@@ -27,27 +27,48 @@ Stack &RegisterController::getStack() { return stackRegister; }
 
 uint16_t RegisterController::getRegisterPair(RegisterPair registerPair) {
   switch (registerPair) {
-  B:
+  case B:
     return (registers[Registers::B].getRegister() << 8) |
            registers[Registers::C].getRegister();
     break;
-  D:
+  case D:
     return (registers[Registers::D].getRegister() << 8) |
            registers[Registers::E].getRegister();
     break;
-  H:
+  case H:
     return (registers[Registers::H].getRegister() << 8) |
            registers[Registers::L].getRegister();
     break;
-  PSW:
+  case PSW:
     return (registers[Registers::A].getRegister() << 8) |
-           registers[Registers::F].getRegister();
+           getFlagRegister().getRegister();
     break;
   };
   return 0;
 }
 
 void RegisterController::setRegisterPair(RegisterPair registerPair,
-                                         uint16_t immediate) {}
+                                         uint16_t immediate) {
+  uint8_t higherByte = immediate & 0xFF;
+  uint8_t lowerByte = immediate >> 8;
+  switch (registerPair) {
+  case B:
+    registers[Registers::B].setRegister(lowerByte);
+    registers[Registers::C].setRegister(higherByte);
+    break;
+  case D:
+    registers[Registers::D].setRegister(lowerByte);
+    registers[Registers::E].setRegister(higherByte);
+    break;
+  case H:
+    registers[Registers::H].setRegister(lowerByte);
+    registers[Registers::L].setRegister(higherByte);
+    break;
+  case PSW:
+    registers[Registers::A].setRegister(lowerByte);
+    getFlagRegister().setRegister(higherByte);
+    break;
+  };
+}
 
 RegisterController::~RegisterController() { delete[] registers; }

@@ -10,19 +10,21 @@ class Instructions {
 private:
   std::shared_ptr<BusController> busController;
   std::shared_ptr<RegisterController> registerController;
+  bool conditionSuccessful(FlagRegister::Condition condition);
 
 public:
   Instructions(std::shared_ptr<BusController> busController,
                std::shared_ptr<RegisterController> registerController);
-  void MOV(Register &destination, Register &source);
+  void MOV(Register &destination,
+           Register &source); // TODO Fix the paramenter to enum
   void MVI(Register &destination, uint8_t immediate);
   void LXI(RegisterPair registerPair, uint16_t immediate);
   void LDA(uint16_t address);
   void STA(uint16_t address);
-  void LHLD();
-  void SHLD();
-  void LDAX();
-  void STAX();
+  void LHLD(uint16_t address);
+  void SHLD(uint16_t address);
+  void LDAX(RegisterPair indirectAddress);
+  void STAX(RegisterPair indirectAddress);
   void XCHG();
   void ADD(Register source);
   void ADI(uint8_t immediate);
@@ -34,9 +36,9 @@ public:
   void SBI(uint8_t immediate);
   void INR(Register &destination);
   void DCR(Register &destination);
-  void INX();
-  void DCX();
-  void DAD();
+  void INX(RegisterPair destination);
+  void DCX(RegisterPair destination);
+  void DAD(RegisterPair source);
   void DAA();
   void ANA(Register source);
   void ANI(uint8_t immediate);
@@ -54,10 +56,11 @@ public:
   void CMC();
   void STC();
   void JMP(uint16_t &source, uint16_t address);
-  void conditionSuccessful();
-  void JMPCondition();
+  void JMPCondition(uint16_t &source, uint16_t address,
+                    FlagRegister::Condition condition);
   void CALL(uint16_t &source, uint16_t address);
-  void CALLCondition();
+  void CALLCondition(uint16_t &source, uint16_t address,
+                     FlagRegister::Condition condition);
   void RET();
   void RETCondition();
   void RST();

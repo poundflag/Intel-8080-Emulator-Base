@@ -250,3 +250,143 @@ TEST_F(InstructionsTest, CPI) {
   GTEST_ASSERT_EQ(registerController->getFlagRegister().getRegister(),
                   0b01000110);
 }
+
+TEST_F(InstructionsTest, LHLD) {
+  busController->writeWord(0x2, 0x1234);
+  instructions.LHLD(0x2);
+  GTEST_ASSERT_EQ(0x1234, registerController->getRegisterPair(RegisterPair::H));
+}
+
+TEST_F(InstructionsTest, SHLD) {
+  registerController->setRegisterPair(RegisterPair::H, 0x1234);
+  instructions.SHLD(0x2);
+  GTEST_ASSERT_EQ(0x1234, busController->readWord(0x2));
+}
+
+TEST_F(InstructionsTest, LDAX) {
+  registerController->setRegisterPair(RegisterPair::B, 0x0002);
+  busController->writeByte(0x2, 0x60);
+  instructions.LDAX(RegisterPair::B);
+  GTEST_ASSERT_EQ(0x60, registerController->get(Registers::A).getRegister());
+}
+
+TEST_F(InstructionsTest, STAX) {
+  registerController->setRegisterPair(RegisterPair::B, 0x0002);
+  registerController->get(Registers::A).setRegister(0x33);
+  instructions.STAX(RegisterPair::B);
+  GTEST_ASSERT_EQ(0x33, busController->readByte(2));
+}
+
+TEST_F(InstructionsTest, XCHG) {
+  registerController->setRegisterPair(RegisterPair::D, 0x1234);
+  registerController->setRegisterPair(RegisterPair::H, 0x5678);
+  instructions.XCHG();
+  GTEST_ASSERT_EQ(0x1234, registerController->getRegisterPair(RegisterPair::H));
+  GTEST_ASSERT_EQ(0x5678, registerController->getRegisterPair(RegisterPair::D));
+}
+
+TEST_F(InstructionsTest, INX) {
+  registerController->setRegisterPair(RegisterPair::B, 0x0002);
+  instructions.INX(RegisterPair::B);
+  GTEST_ASSERT_EQ(0x3, registerController->getRegisterPair(RegisterPair::B));
+}
+
+TEST_F(InstructionsTest, DCX) {
+  registerController->setRegisterPair(RegisterPair::B, 0x0002);
+  instructions.DCX(RegisterPair::B);
+  GTEST_ASSERT_EQ(0x1, registerController->getRegisterPair(RegisterPair::B));
+}
+
+TEST_F(InstructionsTest, DAD) {
+  registerController->setRegisterPair(RegisterPair::B, 0x1111);
+  registerController->setRegisterPair(RegisterPair::H, 0x2222);
+  instructions.DAD(RegisterPair::B);
+  GTEST_ASSERT_EQ(0x3333, registerController->getRegisterPair(RegisterPair::H));
+}
+
+TEST_F(InstructionsTest, DAD_OVERFLOW) {
+  registerController->setRegisterPair(RegisterPair::B, 0x1111);
+  registerController->setRegisterPair(RegisterPair::H, 0xFFFF);
+  instructions.DAD(RegisterPair::B);
+  GTEST_ASSERT_EQ(0x1110, registerController->getRegisterPair(RegisterPair::H));
+  GTEST_ASSERT_EQ(
+      registerController->getFlagRegister().getFlag(FlagRegister::Flag::Carry),
+      true);
+}
+
+TEST_F(InstructionsTest, DAA_1) {
+  registerController->get(Registers::A).setRegister(0x61);
+  registerController->getFlagRegister().setFlag(FlagRegister::Flag::Carry, 1);
+  instructions.DAA();
+  GTEST_ASSERT_EQ(0xC1, registerController->get(Registers::A).getRegister());
+  GTEST_ASSERT_EQ(registerController->getFlagRegister().getRegister(),
+                  0b10000010);
+}
+
+TEST_F(InstructionsTest, DAA_2) {
+  registerController->get(Registers::A).setRegister(0x2);
+  instructions.DAA();
+  GTEST_ASSERT_EQ(0x2, registerController->get(Registers::A).getRegister());
+  GTEST_ASSERT_EQ(registerController->getFlagRegister().getRegister(),
+                  0b00000010);
+}
+
+TEST_F(InstructionsTest, DAA_3) {
+  registerController->get(Registers::A).setRegister(0xFF);
+  instructions.DAA();
+  GTEST_ASSERT_EQ(0x65, registerController->get(Registers::A).getRegister());
+  GTEST_ASSERT_EQ(registerController->getFlagRegister().getRegister(),
+                  0b00010111);
+}
+
+TEST_F(InstructionsTest, RLC) {
+  registerController->get(Registers::A).setRegister(0xC7);
+  instructions.RLC();
+  GTEST_ASSERT_EQ(0x8F, registerController->get(Registers::A).getRegister());
+  GTEST_ASSERT_EQ(registerController->getFlagRegister().getRegister(),
+                  0b00000011);
+}
+
+TEST_F(InstructionsTest, RRC) {
+  registerController->get(Registers::A).setRegister(0xC7);
+  instructions.RRC();
+  GTEST_ASSERT_EQ(0xE3, registerController->get(Registers::A).getRegister());
+  GTEST_ASSERT_EQ(registerController->getFlagRegister().getRegister(),
+                  0b00000011);
+}
+
+TEST_F(InstructionsTest, RAL) {
+  registerController->get(Registers::A).setRegister(0xC7);
+  instructions.RAL();
+  GTEST_ASSERT_EQ(0x8E, registerController->get(Registers::A).getRegister());
+  GTEST_ASSERT_EQ(registerController->getFlagRegister().getRegister(),
+                  0b00000011);
+}
+
+TEST_F(InstructionsTest, RAR) {
+  registerController->get(Registers::A).setRegister(0xC7);
+  instructions.RAR();
+  GTEST_ASSERT_EQ(0x63, registerController->get(Registers::A).getRegister());
+  GTEST_ASSERT_EQ(registerController->getFlagRegister().getRegister(),
+                  0b00000011);
+}
+
+TEST_F(InstructionsTest, CMA) {
+  registerController->get(Registers::A).setRegister(0xF0);
+  instructions.CMA();
+  GTEST_ASSERT_EQ(0x0F, registerController->get(Registers::A).getRegister());
+}
+
+TEST_F(InstructionsTest, CMC) {
+  registerController->getFlagRegister().setFlag(FlagRegister::Flag::Carry, 1);
+  instructions.CMC();
+  GTEST_ASSERT_EQ(false, registerController->getFlagRegister().getFlag(
+                             FlagRegister::Flag::Carry));
+}
+
+TEST_F(InstructionsTest, STC) {
+  registerController->getFlagRegister().setFlag(FlagRegister::Flag::Carry, 0);
+  instructions.STC();
+  GTEST_ASSERT_EQ(true, registerController->getFlagRegister().getFlag(
+                             FlagRegister::Flag::Carry));
+}
