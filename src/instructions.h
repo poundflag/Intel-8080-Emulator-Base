@@ -61,12 +61,12 @@ public:
   void CALL(uint16_t &source, uint16_t address);
   void CALLCondition(uint16_t &source, uint16_t address,
                      FlagRegister::Condition condition);
-  void RET();
-  void RETCondition();
+  void RET(uint16_t &source);
+  void RETCondition(uint16_t &source, FlagRegister::Condition condition);
   void RST();
-  void PCHL();
-  void PUSH();
-  void POP();
+  void PCHL(uint16_t &source);
+  void PUSH(RegisterPair registerPair);
+  void POP(RegisterPair registerPair);
   void XTHL();
   void SPHL();
   void IN();

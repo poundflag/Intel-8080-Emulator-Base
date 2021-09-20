@@ -16,7 +16,7 @@ TEST_F(StackTest, pushAndPopByte) {
 }
 
 TEST_F(StackTest, pushAndCheckByteMemoryAddress) {
-  stack.setRegister(0x10);
+  stack.setStackPointer(0x10);
   stack.pushByte(0x15);
   GTEST_ASSERT_EQ(0x15, busController->readByte(0x0F));
   stack.popByte();
@@ -29,7 +29,7 @@ TEST_F(StackTest, pushAndPopWord) {
 }
 
 TEST_F(StackTest, pushAndCheckWordMemoryAddress) {
-  stack.setRegister(0x10);
+  stack.setStackPointer(0x10);
   stack.pushWord(0x1234);
   GTEST_ASSERT_EQ(0x1234, busController->readWord(0x0E));
   stack.popWord();

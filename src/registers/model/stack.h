@@ -12,13 +12,16 @@ private:
   void decrementStackPointer();
 
 public:
-  Stack(std::shared_ptr<BusController> busController); // TODO Implement derived methods
+  Stack(std::shared_ptr<BusController>
+            busController); // TODO Implement derived methods
   void pushByte(uint8_t value);
   uint8_t popByte();
   void pushWord(uint16_t value);
   uint16_t popWord();
-  void setRegister(uint8_t value) override;
-  uint8_t getRegister() override;
+  void
+  setStackPointer(uint16_t value); // Sadly the base method cannot be overriden,
+                                   // because the datatypes are no covariants
+  uint16_t getStackPointer();
 };
 
 #endif // __STACK_H__

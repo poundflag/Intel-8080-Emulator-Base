@@ -35,6 +35,6 @@ uint16_t Stack::popWord() {
   return result;
 }
 
-void Stack::setRegister(uint8_t value) { stackPointer = value; }
+void Stack::setStackPointer(uint16_t value) { stackPointer = value; }
 
-uint8_t Stack::getRegister() { return stackPointer; }
+uint16_t Stack::getStackPointer() { return stackPointer; }

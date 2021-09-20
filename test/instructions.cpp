@@ -388,5 +388,31 @@ TEST_F(InstructionsTest, STC) {
   registerController->getFlagRegister().setFlag(FlagRegister::Flag::Carry, 0);
   instructions.STC();
   GTEST_ASSERT_EQ(true, registerController->getFlagRegister().getFlag(
-                             FlagRegister::Flag::Carry));
+                            FlagRegister::Flag::Carry));
+}
+
+TEST_F(InstructionsTest, PUSH) {
+  registerController->setRegisterPair(RegisterPair::H, 0x1234);
+  instructions.PUSH(RegisterPair::H);
+  GTEST_ASSERT_EQ(0x1234, registerController->getStack().popWord());
+}
+
+TEST_F(InstructionsTest, POP) {
+  registerController->getStack().pushWord(0x1234);
+  instructions.POP(RegisterPair::H);
+  GTEST_ASSERT_EQ(0x1234, registerController->getRegisterPair(RegisterPair::H));
+}
+
+TEST_F(InstructionsTest, XTHL) {
+  registerController->getStack().pushWord(0x1234);
+  registerController->setRegisterPair(RegisterPair::H, 0x5678);
+  instructions.XTHL();
+  GTEST_ASSERT_EQ(0x1234, registerController->getRegisterPair(RegisterPair::H));
+  GTEST_ASSERT_EQ(0x5678, registerController->getStack().popWord());
+}
+
+TEST_F(InstructionsTest, SPHL) {
+  registerController->setRegisterPair(RegisterPair::H, 0x1234);
+  instructions.SPHL();
+  GTEST_ASSERT_EQ(0x1234, registerController->getStack().getStackPointer());
 }

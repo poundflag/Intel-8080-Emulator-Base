@@ -230,33 +230,32 @@ void Instructions::DAD(RegisterPair source) {
 
 void Instructions::DAA() {
   // DAA       00100111          ZSPCA   Decimal Adjust accumulator
+  // Stolen from https://github.com/Milkdrop/Intel-8080-Emulator/blob/master/CPU.cpp Line: 434
   int value = registerController->get(Registers::A).getRegister();
 
-  bool skipProcess = false;
+  uint8_t tempValue = 0;
+
   // If the least significant four bits of the accumulator represents a number
   // greater than 9, or if the Auxiliary Carry bit is equal to one, the
   // accumulator is incremented by six. Otherwise, no incrementing occurs.
-  if ((value & 0x0F) > 9 || registerController->getFlagRegister().getFlag(
-                                FlagRegister::Flag::AuxiliaryCarry)) {
-    value += 6;
+  if ((value & 0xF) > 9 || registerController->getFlagRegister().getFlag(
+                               FlagRegister::Flag::AuxiliaryCarry)) {
+    tempValue += 0x06;
   }
 
   // If the most significant four bits of the accumulator now represent a number
   // greater than 9, or if the normal carry bit is equal to one, the most
   // significant four bits of the accumulator are incremented by six.
-  if ((value >> 4) > 9 || registerController->getFlagRegister().getFlag(
-                              FlagRegister::Flag::Carry)) {
-    registerController->getFlagRegister().processFlags(
-        FlagRegister::FlagRule::All, value, 0x60, "+");
-    value += 0x60;
-    skipProcess = true; // TODO FIX
+  if (((value >> 4) >= 9 && (value & 0xF) > 9) || (value >> 4) > 9 ||
+      registerController->getFlagRegister().getFlag(
+          FlagRegister::Flag::Carry)) {
+    tempValue += 0x60;
   }
 
-  if (!skipProcess) {
-    registerController->getFlagRegister().processFlags(
-        FlagRegister::FlagRule::All, value, 0, "+");
-  }
-  registerController->get(Registers::A).setRegister(value);
+  registerController->getFlagRegister().processFlags(
+      FlagRegister::FlagRule::All, value, tempValue, "+");
+
+  registerController->get(Registers::A).setRegister(value + tempValue);
 }
 
 void Instructions::ANA(Register source) {
@@ -457,4 +456,45 @@ void Instructions::CALLCondition(uint16_t &source, uint16_t address,
   if (conditionSuccessful(condition)) {
     CALL(source, address);
   }
+}
+
+void Instructions::RET(uint16_t &source) {
+  // RET       11001001          -       Unconditional return from subroutine
+  source = registerController->getStack().popWord();
+}
+
+void Instructions::RETCondition(uint16_t &source,
+                                FlagRegister::Condition condition) {
+  // Rccc      11CCC000          -       Conditional return from subroutine
+}
+
+void Instructions::PCHL(uint16_t &source) {
+  // PCHL      11101001          -       Jump to address in H:L
+  source = registerController->getRegisterPair(RegisterPair::H);
+}
+
+void Instructions::PUSH(RegisterPair registerPair) {
+  // PUSH RP   11RP0101 *2       -       Push register pair on the stack
+  registerController->getStack().pushWord(
+      registerController->getRegisterPair(registerPair));
+}
+
+void Instructions::POP(RegisterPair registerPair) {
+  // POP RP    11RP0001 *2       *2      Pop  register pair from the stack
+  registerController->setRegisterPair(registerPair,
+                                      registerController->getStack().popWord());
+}
+
+void Instructions::XTHL() {
+  // XTHL      11100011          -       Swap H:L with top word on stack
+  uint16_t stackTemp = registerController->getStack().popWord();
+  registerController->getStack().pushWord(
+      registerController->getRegisterPair(RegisterPair::H));
+  registerController->setRegisterPair(RegisterPair::H, stackTemp);
+}
+
+void Instructions::SPHL() {
+  // SPHL      11111001          -       Set SP to content of H:L
+  registerController->getStack().setStackPointer(
+      registerController->getRegisterPair(RegisterPair::H));
 }
