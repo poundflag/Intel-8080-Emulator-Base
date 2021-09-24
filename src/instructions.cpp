@@ -410,7 +410,7 @@ bool Instructions::conditionSuccessful(FlagRegister::Condition condition) {
   FlagRegister flagRegister = registerController->getFlagRegister();
   switch (condition) {
   case FlagRegister::Condition::Carry:
-    return flagRegister.getFlag(FlagRegister::Flag::Carry) ? 1 : 0;
+    return flagRegister.getFlag(FlagRegister::Flag::Carry) ? 1 : 0; // TODO == 1 works as well
     break;
   case FlagRegister::Condition::NotCarry:
     return !flagRegister.getFlag(FlagRegister::Flag::Carry) ? 1 : 0;
