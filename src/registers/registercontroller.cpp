@@ -4,10 +4,8 @@
 #include "model/stack.h"
 #include "registers.h"
 
-RegisterController::RegisterController(
-    std::shared_ptr<BusController> busController)
-    : busController(move(busController)) {
-
+RegisterController::RegisterController(BusController &busController)
+    : busController(busController) {
   for (int i = 0; i < Registers::L; i++) { // TODO Necessary??
     registers[i] = Register();
   }

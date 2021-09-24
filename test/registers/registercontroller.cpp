@@ -5,10 +5,9 @@
 class RegisterControllerTest : public ::testing::Test {
 
 protected:
-  std::shared_ptr<BusController> busController =
-      std::make_shared<BusController>();
+  BusController busController = BusController();
   RegisterController registerController = RegisterController(busController);
-  void SetUp() { busController->addChipRegion(ChipRegion(0, 10, new Ram(10))); }
+  void SetUp() { busController.addChipRegion(ChipRegion(0, 10, new Ram(10))); }
 };
 
 TEST_F(RegisterControllerTest, getRegister) {
@@ -22,7 +21,6 @@ TEST_F(RegisterControllerTest, getRegisterPairWithPairSet) {
 
   GTEST_ASSERT_EQ(0x1234, registerController.getRegisterPair(RegisterPair::B));
 }
-
 
 TEST_F(RegisterControllerTest, getRegisterPairWithSingleSet) {
   registerController.get(Registers::B).setRegister(0x12);

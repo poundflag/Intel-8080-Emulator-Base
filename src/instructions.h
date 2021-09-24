@@ -8,13 +8,13 @@
 
 class Instructions {
 private:
-  std::shared_ptr<BusController> busController;
-  std::shared_ptr<RegisterController> registerController;
+  BusController &busController;
+  RegisterController &registerController;
   bool conditionSuccessful(FlagRegister::Condition condition);
 
 public:
-  Instructions(std::shared_ptr<BusController> busController,
-               std::shared_ptr<RegisterController> registerController);
+  Instructions(BusController &busController,
+               RegisterController &registerController);
   void MOV(Register &destination,
            Register &source); // TODO Fix the paramenter to enum
   void MVI(Register &destination, uint8_t immediate);

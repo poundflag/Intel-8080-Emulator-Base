@@ -11,6 +11,7 @@ class Cpu {
     BusController busController;
     public:
     Cpu();
+    ~Cpu();
     void cycle();
 };
 

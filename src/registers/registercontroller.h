@@ -1,6 +1,6 @@
 #include "../bus/buscontroller.h"
-#include "model/register.h"
 #include "model/flagregister.h"
+#include "model/register.h"
 #include "model/stack.h"
 #include "registers.h"
 
@@ -10,12 +10,12 @@
 class RegisterController {
 private:
   Register *registers = new Register[10];
-  std::shared_ptr<BusController> busController;
+  BusController &busController;
   FlagRegister flagRegister;
   Stack stackRegister = Stack(busController);
 
 public:
-  RegisterController(std::shared_ptr<BusController> busController);
+  RegisterController(BusController &busController);
   Register &get(Registers::Register reg); // TODO Add getter and setter for this
   FlagRegister &getFlagRegister();
   Stack &getStack();
