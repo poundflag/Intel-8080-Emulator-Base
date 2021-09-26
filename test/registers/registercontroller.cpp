@@ -27,12 +27,6 @@ TEST_F(RegisterControllerTest, getMemoryReference) {
                       registerController.getRegisterPair(RegisterPair::H)));
 }
 
-TEST_F(RegisterControllerTest, getFlagRegister) {
-  registerController.get(Registers::F).setFlag(FlagRegister::Flag::Carry, true);
-
-  GTEST_ASSERT_EQ(0x15, registerController.get(Registers::F).getRegister());
-}
-
 TEST_F(RegisterControllerTest, getRegisterPairWithPairSet) {
   registerController.setRegisterPair(RegisterPair::B, 0x1234);
 
