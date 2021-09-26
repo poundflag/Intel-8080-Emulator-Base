@@ -44,6 +44,7 @@ target_link_libraries(
   stack
   registercontroller
   instructions1
+  memoryreference
 )
 
 include(GoogleTest)

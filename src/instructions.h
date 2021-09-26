@@ -15,9 +15,9 @@ private:
 public:
   Instructions(BusController &busController,
                RegisterController &registerController);
-  void MOV(Register &destination,
-           Register &source); // TODO Fix the paramenter to enum
-  void MVI(Register &destination, uint8_t immediate);
+  void MOV(Registers::Register destination,
+           Registers::Register source); // TODO Fix the paramenter to enum
+  void MVI(Registers::Register destination, uint8_t immediate);
   void LXI(RegisterPair registerPair, uint16_t immediate);
   void LDA(uint16_t address);
   void STA(uint16_t address);
@@ -26,27 +26,27 @@ public:
   void LDAX(RegisterPair indirectAddress);
   void STAX(RegisterPair indirectAddress);
   void XCHG();
-  void ADD(Register source);
+  void ADD(Registers::Register source);
   void ADI(uint8_t immediate);
-  void ADC(Register source);
+  void ADC(Registers::Register source);
   void ACI(uint8_t immediate);
-  void SUB(Register source);
+  void SUB(Registers::Register source);
   void SUI(uint8_t immediate);
-  void SBB(Register source);
+  void SBB(Registers::Register source);
   void SBI(uint8_t immediate);
-  void INR(Register &destination);
-  void DCR(Register &destination);
+  void INR(Registers::Register destination);
+  void DCR(Registers::Register destination);
   void INX(RegisterPair destination);
   void DCX(RegisterPair destination);
   void DAD(RegisterPair source);
   void DAA();
-  void ANA(Register source);
+  void ANA(Registers::Register source);
   void ANI(uint8_t immediate);
-  void ORA(Register source);
+  void ORA(Registers::Register source);
   void ORI(uint8_t immediate);
-  void XRA(Register source);
+  void XRA(Registers::Register source);
   void XRI(uint8_t immediate);
-  void CMP(Register source);
+  void CMP(Registers::Register source);
   void CPI(uint8_t immediate);
   void RLC();
   void RRC();

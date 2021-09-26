@@ -16,6 +16,23 @@ TEST_F(RegisterControllerTest, getRegister) {
   GTEST_ASSERT_EQ(0x15, registerController.get(Registers::A).getRegister());
 }
 
+TEST_F(RegisterControllerTest, getMemoryReference) {
+  registerController.setRegisterPair(RegisterPair::H, 0x0005);
+  // busController.writeByte(0x0005, 0x12);
+  registerController.get(Registers::M).setRegister(0x15);
+
+  GTEST_ASSERT_EQ(0x15, registerController.get(Registers::M).getRegister());
+  GTEST_ASSERT_EQ(0x15,
+                  busController.readByte(
+                      registerController.getRegisterPair(RegisterPair::H)));
+}
+
+TEST_F(RegisterControllerTest, getFlagRegister) {
+  registerController.get(Registers::F).setFlag(FlagRegister::Flag::Carry, true);
+
+  GTEST_ASSERT_EQ(0x15, registerController.get(Registers::F).getRegister());
+}
+
 TEST_F(RegisterControllerTest, getRegisterPairWithPairSet) {
   registerController.setRegisterPair(RegisterPair::B, 0x1234);
 

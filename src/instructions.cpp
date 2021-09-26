@@ -5,14 +5,16 @@ Instructions::Instructions(BusController &busController,
                            RegisterController &registerController)
     : busController(busController), registerController(registerController) {}
 
-void Instructions::MOV(Register &destination, Register &source) {
+void Instructions::MOV(Registers::Register destination,
+                       Registers::Register source) {
   // MOV D,S   01DDDSSS - Move register to register
-  destination.setRegister(source.getRegister());
+  registerController.get(destination)
+      .setRegister(registerController.get(source).getRegister());
 }
 
-void Instructions::MVI(Register &destination, uint8_t immediate) {
+void Instructions::MVI(Registers::Register destination, uint8_t immediate) {
   // MVI D,#   00DDD110 db - Move immediate to register
-  destination.setRegister(immediate);
+  registerController.get(destination).setRegister(immediate);
 }
 
 void Instructions::LXI(RegisterPair registerPair, uint16_t immediate) {
@@ -28,19 +30,19 @@ void Instructions::LDA(uint16_t address) {
 void Instructions::STA(uint16_t address) {
   // STA a     00110010 lb hb - Store A to memory
   busController.writeByte(address,
-                           registerController.get(Registers::A).getRegister());
+                          registerController.get(Registers::A).getRegister());
 }
 
 void Instructions::LHLD(uint16_t address) {
   // LHLD a    00101010 lb hb    -       Load H:L from memory
   registerController.setRegisterPair(RegisterPair::H,
-                                      busController.readWord(address));
+                                     busController.readWord(address));
 }
 
 void Instructions::SHLD(uint16_t address) {
   // SHLD a    00100010 lb hb    -       Store H:L to memory
-  busController.writeWord(
-      address, registerController.getRegisterPair(RegisterPair::H));
+  busController.writeWord(address,
+                          registerController.getRegisterPair(RegisterPair::H));
 }
 
 void Instructions::LDAX(RegisterPair indirectAddress) {
@@ -55,7 +57,7 @@ void Instructions::STAX(RegisterPair indirectAddress) {
   // STAX RP   00RP0010 *1       -       Store indirect through BC or DE
   uint16_t address = registerController.getRegisterPair(indirectAddress);
   busController.writeByte(address,
-                           registerController.get(Registers::A).getRegister());
+                          registerController.get(Registers::A).getRegister());
 }
 
 void Instructions::XCHG() {
@@ -66,16 +68,16 @@ void Instructions::XCHG() {
   registerController.setRegisterPair(RegisterPair::H, temp);
 }
 
-void Instructions::ADD(Register source) {
+void Instructions::ADD(Registers::Register source) {
   // ADD S     10000SSS          ZSPCA   Add register to A
   uint8_t aValue = registerController.get(Registers::A).getRegister();
-  uint8_t sourceValue = source.getRegister();
+  uint8_t sourceValue = registerController.get(source).getRegister();
 
   // Add it in a 16 bit type to avoid an overflow, and therefore the wrong value
   uint16_t result = aValue + sourceValue;
   registerController.get(Registers::A).setRegister((uint8_t)result);
-  registerController.getFlagRegister().processFlags(
-      FlagRegister::FlagRule::All, aValue, sourceValue, "+");
+  registerController.getFlagRegister().processFlags(FlagRegister::FlagRule::All,
+                                                    aValue, sourceValue, "+");
 }
 
 void Instructions::ADI(uint8_t immediate) {
@@ -85,28 +87,27 @@ void Instructions::ADI(uint8_t immediate) {
   // Add it in a 16 bit type to avoid an overflow, and therefore the wrong value
   uint16_t result = aValue + immediate;
   registerController.get(Registers::A).setRegister((uint8_t)result);
-  registerController.getFlagRegister().processFlags(
-      FlagRegister::FlagRule::All, aValue, immediate, "+");
+  registerController.getFlagRegister().processFlags(FlagRegister::FlagRule::All,
+                                                    aValue, immediate, "+");
 }
 
-void Instructions::ADC(Register source) {
+void Instructions::ADC(Registers::Register source) {
   // ADC S     10001SSS          ZSCPA   Add register to A with carry
   uint8_t aValue = registerController.get(Registers::A).getRegister();
-  uint8_t sourceValue = source.getRegister();
+  uint8_t sourceValue = registerController.get(source).getRegister();
 
   // Add it in a 16 bit type to avoid an overflow, and therefore the wrong value
   uint16_t result = aValue + sourceValue;
 
   // If the carry flag is on
-  if (registerController.getFlagRegister().getFlag(
-          FlagRegister::Flag::Carry)) {
+  if (registerController.getFlagRegister().getFlag(FlagRegister::Flag::Carry)) {
     sourceValue += 1; // TODO Potentially can lead to a wrong value
     result += 1;
   }
 
   registerController.get(Registers::A).setRegister((uint8_t)result);
-  registerController.getFlagRegister().processFlags(
-      FlagRegister::FlagRule::All, aValue, sourceValue, "+");
+  registerController.getFlagRegister().processFlags(FlagRegister::FlagRule::All,
+                                                    aValue, sourceValue, "+");
 }
 
 void Instructions::ACI(uint8_t immediate) {
@@ -118,26 +119,25 @@ void Instructions::ACI(uint8_t immediate) {
   uint16_t result = aValue + immediate;
 
   // If the carry flag is on
-  if (registerController.getFlagRegister().getFlag(
-          FlagRegister::Flag::Carry)) {
+  if (registerController.getFlagRegister().getFlag(FlagRegister::Flag::Carry)) {
     immediate += 1; // TODO Potentially can lead to a wrong value
     result += 1;
   }
 
   registerController.get(Registers::A).setRegister((uint8_t)result);
-  registerController.getFlagRegister().processFlags(
-      FlagRegister::FlagRule::All, aValue, immediate, "+");
+  registerController.getFlagRegister().processFlags(FlagRegister::FlagRule::All,
+                                                    aValue, immediate, "+");
 }
 
-void Instructions::SUB(Register source) {
+void Instructions::SUB(Registers::Register source) {
   // SUB S     10010SSS          ZSCPA   Subtract register from A
   uint8_t aValue = registerController.get(Registers::A).getRegister();
-  uint8_t sourceValue = source.getRegister();
+  uint8_t sourceValue = registerController.get(source).getRegister();
 
   uint8_t result = aValue - sourceValue;
   registerController.get(Registers::A).setRegister(result);
-  registerController.getFlagRegister().processFlags(
-      FlagRegister::FlagRule::All, aValue, sourceValue, "-");
+  registerController.getFlagRegister().processFlags(FlagRegister::FlagRule::All,
+                                                    aValue, sourceValue, "-");
 }
 
 void Instructions::SUI(uint8_t immediate) {
@@ -146,28 +146,27 @@ void Instructions::SUI(uint8_t immediate) {
 
   uint8_t result = aValue - immediate;
   registerController.get(Registers::A).setRegister(result);
-  registerController.getFlagRegister().processFlags(
-      FlagRegister::FlagRule::All, aValue, immediate, "-");
+  registerController.getFlagRegister().processFlags(FlagRegister::FlagRule::All,
+                                                    aValue, immediate, "-");
 }
 
-void Instructions::SBB(Register source) {
+void Instructions::SBB(Registers::Register source) {
   // SBB S     10011SSS          ZSCPA   Subtract register from A with borrow
   uint8_t aValue = registerController.get(Registers::A).getRegister();
-  uint8_t sourceValue = source.getRegister();
+  uint8_t sourceValue = registerController.get(source).getRegister();
 
   // Add it in a 16 bit type to avoid an overflow, and therefore the wrong value
   uint16_t result = aValue - sourceValue;
 
   // If the carry flag is on
-  if (registerController.getFlagRegister().getFlag(
-          FlagRegister::Flag::Carry)) {
+  if (registerController.getFlagRegister().getFlag(FlagRegister::Flag::Carry)) {
     sourceValue -= 1; // TODO Potentially can lead to a wrong value
     result -= 1;
   }
 
   registerController.get(Registers::A).setRegister((uint8_t)result);
-  registerController.getFlagRegister().processFlags(
-      FlagRegister::FlagRule::All, aValue, sourceValue, "-");
+  registerController.getFlagRegister().processFlags(FlagRegister::FlagRule::All,
+                                                    aValue, sourceValue, "-");
 }
 
 void Instructions::SBI(uint8_t immediate) {
@@ -178,29 +177,28 @@ void Instructions::SBI(uint8_t immediate) {
   uint16_t result = aValue - immediate;
 
   // If the carry flag is on
-  if (registerController.getFlagRegister().getFlag(
-          FlagRegister::Flag::Carry)) {
+  if (registerController.getFlagRegister().getFlag(FlagRegister::Flag::Carry)) {
     immediate -= 1; // TODO Potentially can lead to a wrong value
     result -= 1;
   }
 
   registerController.get(Registers::A).setRegister((uint8_t)result);
-  registerController.getFlagRegister().processFlags(
-      FlagRegister::FlagRule::All, aValue, immediate, "-");
+  registerController.getFlagRegister().processFlags(FlagRegister::FlagRule::All,
+                                                    aValue, immediate, "-");
 }
 
-void Instructions::INR(Register &destination) {
+void Instructions::INR(Registers::Register destination) {
   // INR D     00DDD100          ZSPA    Increment register
-  uint8_t temp = destination.getRegister();
-  destination.setRegister(temp + 1);
+  uint8_t temp = registerController.get(destination).getRegister();
+  registerController.get(destination).setRegister(temp + 1);
   registerController.getFlagRegister().processFlags(
       FlagRegister::FlagRule::Partial, temp, 1, "+");
 }
 
-void Instructions::DCR(Register &destination) {
+void Instructions::DCR(Registers::Register destination) {
   // DCR D     00DDD101          ZSPA    Decrement register
-  uint8_t temp = destination.getRegister();
-  destination.setRegister(temp - 1);
+  uint8_t temp = registerController.get(destination).getRegister();
+  registerController.get(destination).setRegister(temp - 1);
   registerController.getFlagRegister().processFlags(
       FlagRegister::FlagRule::Partial, temp, 1, "-");
 }
@@ -222,8 +220,8 @@ void Instructions::DAD(RegisterPair source) {
   uint16_t sourceValue = registerController.getRegisterPair(source);
   uint16_t hValue = registerController.getRegisterPair(RegisterPair::H);
   registerController.setRegisterPair(RegisterPair::H, hValue + sourceValue);
-  registerController.getFlagRegister().processFlags(
-      FlagRegister::FlagRule::DAD, sourceValue, hValue, "+");
+  registerController.getFlagRegister().processFlags(FlagRegister::FlagRule::DAD,
+                                                    sourceValue, hValue, "+");
 }
 
 void Instructions::DAA() {
@@ -247,20 +245,19 @@ void Instructions::DAA() {
   // greater than 9, or if the normal carry bit is equal to one, the most
   // significant four bits of the accumulator are incremented by six.
   if (((value >> 4) >= 9 && (value & 0xF) > 9) || (value >> 4) > 9 ||
-      registerController.getFlagRegister().getFlag(
-          FlagRegister::Flag::Carry)) {
+      registerController.getFlagRegister().getFlag(FlagRegister::Flag::Carry)) {
     tempValue += 0x60;
   }
 
-  registerController.getFlagRegister().processFlags(
-      FlagRegister::FlagRule::All, value, tempValue, "+");
+  registerController.getFlagRegister().processFlags(FlagRegister::FlagRule::All,
+                                                    value, tempValue, "+");
 
   registerController.get(Registers::A).setRegister(value + tempValue);
 }
 
-void Instructions::ANA(Register source) {
+void Instructions::ANA(Registers::Register source) {
   // ANA S     10100SSS          ZSCPA   AND register with A
-  uint8_t sourceValue = source.getRegister();
+  uint8_t sourceValue = registerController.get(source).getRegister();
   uint8_t aValue = registerController.get(Registers::A).getRegister();
   registerController.get(Registers::A).setRegister(aValue & sourceValue);
   registerController.getFlagRegister().processFlags(
@@ -271,13 +268,13 @@ void Instructions::ANI(uint8_t immediate) {
   // ANI #     11100110 db       ZSPCA   AND immediate with A
   uint8_t aValue = registerController.get(Registers::A).getRegister();
   registerController.get(Registers::A).setRegister(aValue & immediate);
-  registerController.getFlagRegister().processFlags(
-      FlagRegister::FlagRule::All, aValue & immediate, 0, "+");
+  registerController.getFlagRegister().processFlags(FlagRegister::FlagRule::All,
+                                                    aValue & immediate, 0, "+");
 }
 
-void Instructions::ORA(Register source) {
+void Instructions::ORA(Registers::Register source) {
   // ORA S     10110SSS          ZSPCA   OR  register with A
-  uint8_t sourceValue = source.getRegister();
+  uint8_t sourceValue = registerController.get(source).getRegister();
   uint8_t aValue = registerController.get(Registers::A).getRegister();
   registerController.get(Registers::A).setRegister(aValue | sourceValue);
   registerController.getFlagRegister().processFlags(
@@ -288,13 +285,13 @@ void Instructions::ORI(uint8_t immediate) {
   // ORI #     11110110          ZSPCA   OR  immediate with A
   uint8_t aValue = registerController.get(Registers::A).getRegister();
   registerController.get(Registers::A).setRegister(aValue | immediate);
-  registerController.getFlagRegister().processFlags(
-      FlagRegister::FlagRule::All, aValue | immediate, 0, "+");
+  registerController.getFlagRegister().processFlags(FlagRegister::FlagRule::All,
+                                                    aValue | immediate, 0, "+");
 }
 
-void Instructions::XRA(Register source) {
+void Instructions::XRA(Registers::Register source) {
   // XRA S     10101SSS          ZSPCA   ExclusiveOR register with A
-  uint8_t sourceValue = source.getRegister();
+  uint8_t sourceValue = registerController.get(source).getRegister();
   uint8_t aValue = registerController.get(Registers::A).getRegister();
   registerController.get(Registers::A).setRegister(aValue ^ sourceValue);
   registerController.getFlagRegister().processFlags(
@@ -305,14 +302,14 @@ void Instructions::XRI(uint8_t immediate) {
   // XRI #     11101110 db       ZSPCA   ExclusiveOR immediate with A
   uint8_t aValue = registerController.get(Registers::A).getRegister();
   registerController.get(Registers::A).setRegister(aValue ^ immediate);
-  registerController.getFlagRegister().processFlags(
-      FlagRegister::FlagRule::All, aValue ^ immediate, 0, "+");
+  registerController.getFlagRegister().processFlags(FlagRegister::FlagRule::All,
+                                                    aValue ^ immediate, 0, "+");
 }
 
-void Instructions::CMP(Register source) {
+void Instructions::CMP(Registers::Register source) {
   // CMP S     10111SSS          ZSPCA   Compare register with A
   uint8_t intermediate = registerController.get(Registers::A).getRegister();
-  SUB(source);
+  SUB(source); // TODO FIX
   registerController.get(Registers::A).setRegister(intermediate);
 }
 
@@ -328,7 +325,7 @@ void Instructions::RLC() {
   uint16_t value = registerController.get(Registers::A).getRegister();
   value = value << 1 | ((value & 0x80) >> 7);
   registerController.getFlagRegister().setFlag(FlagRegister::Flag::Carry,
-                                                (value & 0x100) == 0x100);
+                                               (value & 0x100) == 0x100);
 
   registerController.get(Registers::A).setRegister(value);
 }
@@ -344,7 +341,7 @@ void Instructions::RRC() {
     value = value >> 1;
   }
   registerController.getFlagRegister().setFlag(FlagRegister::Flag::Carry,
-                                                carry);
+                                               carry);
   registerController.get(Registers::A).setRegister(value);
 }
 
@@ -353,14 +350,13 @@ void Instructions::RAL() {
 
   uint16_t value = registerController.get(Registers::A).getRegister();
   bool carry = (value & 0x80) == 0x80;
-  if (registerController.getFlagRegister().getFlag(
-          FlagRegister::Flag::Carry)) {
+  if (registerController.getFlagRegister().getFlag(FlagRegister::Flag::Carry)) {
     value = value << 1 | 1;
   } else {
     value = value << 1 | 0;
   }
   registerController.getFlagRegister().setFlag(FlagRegister::Flag::Carry,
-                                                carry);
+                                               carry);
   registerController.get(Registers::A).setRegister(value);
 }
 
@@ -369,14 +365,13 @@ void Instructions::RAR() {
 
   uint16_t value = registerController.get(Registers::A).getRegister();
   bool carry = (value & 0x1) == 0x1;
-  if (registerController.getFlagRegister().getFlag(
-          FlagRegister::Flag::Carry)) {
+  if (registerController.getFlagRegister().getFlag(FlagRegister::Flag::Carry)) {
     value = 0x80 | value >> 1;
   } else {
     value = value >> 1;
   }
   registerController.getFlagRegister().setFlag(FlagRegister::Flag::Carry,
-                                                carry);
+                                               carry);
   registerController.get(Registers::A).setRegister(value);
 }
 
@@ -391,13 +386,12 @@ void Instructions::CMC() {
   bool carry =
       registerController.getFlagRegister().getFlag(FlagRegister::Flag::Carry);
   registerController.getFlagRegister().setFlag(FlagRegister::Flag::Carry,
-                                                false);
+                                               false);
 }
 
 void Instructions::STC() {
   // STC       00110111          C       Set Carry flag
-  registerController.getFlagRegister().setFlag(FlagRegister::Flag::Carry,
-                                                true);
+  registerController.getFlagRegister().setFlag(FlagRegister::Flag::Carry, true);
 }
 
 void Instructions::JMP(uint16_t &source, uint16_t address) {
@@ -468,6 +462,9 @@ void Instructions::RET(uint16_t &source) {
 void Instructions::RETCondition(uint16_t &source,
                                 FlagRegister::Condition condition) {
   // Rccc      11CCC000          -       Conditional return from subroutine
+  if (conditionSuccessful(condition)) {
+    RET(source);
+  }
 }
 
 void Instructions::PCHL(uint16_t &source) {
@@ -484,7 +481,7 @@ void Instructions::PUSH(RegisterPair registerPair) {
 void Instructions::POP(RegisterPair registerPair) {
   // POP RP    11RP0001 *2       *2      Pop  register pair from the stack
   registerController.setRegisterPair(registerPair,
-                                      registerController.getStack().popWord());
+                                     registerController.getStack().popWord());
 }
 
 void Instructions::XTHL() {

@@ -5,13 +5,13 @@
 
 class ChipRegion {
 private:
-  BusDevice* chip;
+  BusDevice *chip;
   int startAddress;
   int endAddress;
 
 public:
-  ChipRegion(int startAddress, int endAddress, BusDevice* chip);
-  BusDevice* getChip();
+  ChipRegion(int startAddress, int endAddress, BusDevice *chip);
+  BusDevice *getChip();
   int getStartAddress();
   int getEndAddress();
 };

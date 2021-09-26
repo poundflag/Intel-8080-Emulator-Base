@@ -1,5 +1,6 @@
 #include "../bus/buscontroller.h"
 #include "model/flagregister.h"
+#include "model/memoryreference.h"
 #include "model/register.h"
 #include "model/stack.h"
 #include "registers.h"
@@ -9,7 +10,7 @@
 
 class RegisterController {
 private:
-  Register *registers = new Register[10];
+  Register *registers[8];
   BusController &busController;
   FlagRegister flagRegister;
   Stack stackRegister = Stack(busController);

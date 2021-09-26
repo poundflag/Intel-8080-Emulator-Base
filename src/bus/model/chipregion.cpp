@@ -11,4 +11,3 @@ BusDevice *ChipRegion::getChip() { return chip; }
 int ChipRegion::getStartAddress() { return startAddress; }
 
 int ChipRegion::getEndAddress() { return endAddress; }
-
