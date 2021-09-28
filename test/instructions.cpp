@@ -393,6 +393,7 @@ TEST_F(InstructionsTest, PUSH) {
 }
 
 TEST_F(InstructionsTest, POP) {
+  // registerController.getStack().setStackPointer(0x5); // TODO Support wrapping
   registerController.getStack().pushWord(0x1234);
   instructions.POP(RegisterPair::H);
   GTEST_ASSERT_EQ(0x1234, registerController.getRegisterPair(RegisterPair::H));

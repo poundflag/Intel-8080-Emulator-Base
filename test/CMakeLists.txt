@@ -45,6 +45,7 @@ target_link_libraries(
   registercontroller
   instructions1
   memoryreference
+  ramdebug
 )
 
 include(GoogleTest)

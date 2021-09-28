@@ -6,7 +6,23 @@ Cpu::Cpu() {
   instructions = new Instructions(*busController, *registerController);
 }
 
-void Cpu::cycle() {}
+void Cpu::step() {
+  // while (true) { // Later replace with attribute "halted"
+  // }
+}
+
+void Cpu::step(int steps) { // Ignore halted for now
+  for (int i = 0; i < steps; i++) {
+    cycle();
+  }
+}
+
+void Cpu::cycle() {
+  uint8_t opcode = busController->readByte(programCounter);
+  instructionDecoder(opcode);
+}
+
+BusController &Cpu::getBusController() { return *busController; }
 
 // TODO Optimize it, when it passes all tests
 void Cpu::instructionDecoder(uint8_t opcode) {
@@ -725,7 +741,7 @@ void Cpu::instructionDecoder(uint8_t opcode) {
 
   // DI Opcode
   case 0xF3:
-    instructions->DI();
+    // instructions->DI();
     break;
 
   // Cccc Opcodes
@@ -798,7 +814,7 @@ void Cpu::instructionDecoder(uint8_t opcode) {
 
   // RST Opcodes
   case 0xC7:
-    instructions->RST(); // TODO Finish
+    // instructions->RST(); // TODO Finish
     break;
 
     // RET Opcodes
@@ -829,7 +845,7 @@ void Cpu::instructionDecoder(uint8_t opcode) {
 
   // EI Opcode
   case 0xFB:
-    instructions->EI();
+    // instructions->EI();
     break;
 
   // CALL Opcodes
@@ -864,14 +880,20 @@ void Cpu::instructionDecoder(uint8_t opcode) {
     std::cout << "Unknown Opcode " << std::hex << opcode << std::endl;
     break;
   }
+
+  programCounter++;
 }
 
 uint16_t Cpu::getNextWord() {
-  return busController->readWord(programCounter + 1);
+  int result = busController->readWord(programCounter + 1);
+  programCounter += 2;
+  return result;
 }
 
 uint8_t Cpu::getNextByte() {
-  return busController->readByte(programCounter + 1);
+  int result = busController->readByte(programCounter + 1);
+  programCounter++;
+  return result;
 }
 
 // Will be used to increment the PC // MAYBE Later?

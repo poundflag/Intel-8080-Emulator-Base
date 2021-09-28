@@ -6,12 +6,18 @@ ChipRegion &BusController::findChipRegion(uint16_t address) {
       return chip;
     }
   }
-
+throw std::runtime_error(
+      "Intel 8080 Error: Trying to access a memory address out of reach");
   return chipRegions.at(0); // TODO Change later to a real exception
 }
 
 void BusController::addChipRegion(ChipRegion chipRegion) {
   chipRegions.push_back(chipRegion); // TODO Add a overlapping option later
+}
+
+void BusController::addChipRegion(int startAddress, int endAddress, BusDevice *chip) 
+{
+  addChipRegion(ChipRegion(0, 10, chip));
 }
 
 uint16_t BusController::readWord(uint16_t address) {

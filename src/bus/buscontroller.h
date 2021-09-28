@@ -14,6 +14,7 @@ private:
 
 public:
   void addChipRegion(ChipRegion chipRegion);
+  void addChipRegion(int startAddress, int endAddress, BusDevice *chip);
 
   uint16_t readWord(uint16_t address);
   void writeWord(uint16_t address, uint16_t value);

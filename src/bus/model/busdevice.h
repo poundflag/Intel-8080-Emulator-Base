@@ -4,8 +4,10 @@
 #define __BUSDEVICE_H__
 
 class BusDevice {
-    public:
-        virtual void write(uint16_t address, uint8_t value);
-        virtual uint8_t read(uint16_t address);
+public:
+  virtual void write(uint16_t address, uint8_t value);
+  virtual uint8_t read(uint16_t address);
+  virtual ~BusDevice();
 };
+
 #endif // __BUSDEVICE_H__
