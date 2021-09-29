@@ -9,7 +9,7 @@ protected:
   Instructions instructions = Instructions(busController, registerController);
   Register lA;
   void SetUp() {
-    busController.addChipRegion(ChipRegion(0, 10, new Ram(10)));
+    busController.addChipRegion(ChipRegion(0, 0xFFFF, new Ram(0xFFFF)));
     lA = Register();
   }
 };

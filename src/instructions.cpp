@@ -19,6 +19,7 @@ void Instructions::MVI(Registers::Register destination, uint8_t immediate) {
 
 void Instructions::LXI(RegisterPair registerPair, uint16_t immediate) {
   // LXI RP,#  00RP0001 lb hb - Load register pair immediate
+  registerController.setRegisterPair(registerPair, immediate);
 }
 
 void Instructions::LDA(uint16_t address) {
@@ -432,12 +433,14 @@ bool Instructions::conditionSuccessful(FlagRegister::Condition condition) {
   }
 }
 
-void Instructions::JMPCondition(uint16_t &source, uint16_t address,
+bool Instructions::JMPCondition(uint16_t &source, uint16_t address,
                                 FlagRegister::Condition condition) {
   // Jccc a    11CCC010 lb hb    -       Conditional jump
-  if (conditionSuccessful(condition)) {
+  bool success = conditionSuccessful(condition);
+  if (success) {
     JMP(source, address);
   }
+  return success;
 }
 
 void Instructions::CALL(uint16_t &source, uint16_t address) {
@@ -446,12 +449,14 @@ void Instructions::CALL(uint16_t &source, uint16_t address) {
   source = address;
 }
 
-void Instructions::CALLCondition(uint16_t &source, uint16_t address,
+bool Instructions::CALLCondition(uint16_t &source, uint16_t address,
                                  FlagRegister::Condition condition) {
   // Cccc a    11CCC100 lb hb    -       Conditional subroutine call
-  if (conditionSuccessful(condition)) {
+  bool success = conditionSuccessful(condition);
+  if (success) {
     CALL(source, address);
   }
+  return success;
 }
 
 void Instructions::RET(uint16_t &source) {
@@ -459,12 +464,14 @@ void Instructions::RET(uint16_t &source) {
   source = registerController.getStack().popWord();
 }
 
-void Instructions::RETCondition(uint16_t &source,
+bool Instructions::RETCondition(uint16_t &source,
                                 FlagRegister::Condition condition) {
   // Rccc      11CCC000          -       Conditional return from subroutine
-  if (conditionSuccessful(condition)) {
+  bool success = conditionSuccessful(condition);
+  if (success) {
     RET(source);
   }
+  return success;
 }
 
 void Instructions::PCHL(uint16_t &source) {
@@ -496,4 +503,14 @@ void Instructions::SPHL() {
   // SPHL      11111001          -       Set SP to content of H:L
   registerController.getStack().setStackPointer(
       registerController.getRegisterPair(RegisterPair::H));
+}
+
+void Instructions::OUT(int portNumber) {
+  // TODO Temporary fix
+  std::cout << char(registerController.get(Registers::A).getRegister());
+}
+
+bool Instructions::HLT() {
+  // HLT       01110110          -       Halt processor
+  return true;
 }

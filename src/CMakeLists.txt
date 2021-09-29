@@ -25,6 +25,7 @@ target_link_libraries(
     cpu
     ramdebug
     busdevice
+    ram
 )
 
 add_subdirectory(../test tests)

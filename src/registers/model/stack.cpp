@@ -28,7 +28,7 @@ void Stack::pushWord(uint16_t value) {
 
 uint16_t Stack::popWord() {
   uint16_t result = busController.readWord(stackPointer);
-  busController.writeWord(stackPointer, 0);
+  // busController.writeWord(stackPointer, 0);
   incrementStackPointer();
   incrementStackPointer();
   return result;

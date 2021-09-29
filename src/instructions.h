@@ -56,13 +56,13 @@ public:
   void CMC();
   void STC();
   void JMP(uint16_t &source, uint16_t address);
-  void JMPCondition(uint16_t &source, uint16_t address,
+  bool JMPCondition(uint16_t &source, uint16_t address,
                     FlagRegister::Condition condition);
   void CALL(uint16_t &source, uint16_t address);
-  void CALLCondition(uint16_t &source, uint16_t address,
+  bool CALLCondition(uint16_t &source, uint16_t address,
                      FlagRegister::Condition condition);
   void RET(uint16_t &source);
-  void RETCondition(uint16_t &source, FlagRegister::Condition condition);
+  bool RETCondition(uint16_t &source, FlagRegister::Condition condition);
   void RST();
   void PCHL(uint16_t &source);
   void PUSH(RegisterPair registerPair);
@@ -70,7 +70,7 @@ public:
   void XTHL();
   void SPHL();
   void IN();
-  void OUT();
+  void OUT(int portNumber);
   void EI();
   void DI();
   bool HLT();

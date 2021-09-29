@@ -13,19 +13,28 @@ void Cpu::step() {
 
 void Cpu::step(int steps) { // Ignore halted for now
   for (int i = 0; i < steps; i++) {
-    cycle();
+    bool haltState = cycle();
+    if (haltState) {
+      break;
+    }
   }
 }
 
-void Cpu::cycle() {
+bool Cpu::cycle() {
   uint8_t opcode = busController->readByte(programCounter);
-  instructionDecoder(opcode);
+  return instructionDecoder(opcode); // Look into changing it TODO
 }
 
 BusController &Cpu::getBusController() { return *busController; }
 
+RegisterController &Cpu::getRegisterController() { return *registerController; }
+
 // TODO Optimize it, when it passes all tests
-void Cpu::instructionDecoder(uint8_t opcode) {
+bool Cpu::instructionDecoder(uint8_t opcode) {
+  if (programCounter >= 0x588) { // 55F
+    int a = 0;
+  }
+  bool skipIncrement = false;
   switch (opcode) {
     // NOP Opcodes
   case 0:
@@ -49,7 +58,7 @@ void Cpu::instructionDecoder(uint8_t opcode) {
     instructions->LXI(RegisterPair::H, getNextWord());
     break;
   case 0x31:
-    instructions->LXI(RegisterPair::PSW, getNextWord());
+    instructions->LXI(RegisterPair::SP, getNextWord());
     break;
 
   // STAX Opcodes
@@ -691,47 +700,49 @@ void Cpu::instructionDecoder(uint8_t opcode) {
 
   // Jccc Opcodes
   case 0xC2:
-    instructions->JMPCondition(programCounter, getNextWord(),
-                               FlagRegister::Condition::NotZero);
+    skipIncrement = instructions->JMPCondition(
+        programCounter, getNextWord(), FlagRegister::Condition::NotZero);
+    // skipIncrement = true;
     break;
   case 0xD2:
-    instructions->JMPCondition(programCounter, getNextWord(),
-                               FlagRegister::Condition::NotCarry);
+    skipIncrement = instructions->JMPCondition(
+        programCounter, getNextWord(), FlagRegister::Condition::NotCarry);
     break;
   case 0xE2:
-    instructions->JMPCondition(programCounter, getNextWord(),
-                               FlagRegister::Condition::ParityOdd);
+    skipIncrement = instructions->JMPCondition(
+        programCounter, getNextWord(), FlagRegister::Condition::ParityOdd);
     break;
   case 0xF2:
-    instructions->JMPCondition(programCounter, getNextWord(),
-                               FlagRegister::Condition::Positive);
+    skipIncrement = instructions->JMPCondition(
+        programCounter, getNextWord(), FlagRegister::Condition::Positive);
     break;
   case 0xCA:
-    instructions->JMPCondition(programCounter, getNextWord(),
-                               FlagRegister::Condition::Zero);
+    skipIncrement = instructions->JMPCondition(programCounter, getNextWord(),
+                                               FlagRegister::Condition::Zero);
     break;
   case 0xDA:
-    instructions->JMPCondition(programCounter, getNextWord(),
-                               FlagRegister::Condition::Carry);
+    skipIncrement = instructions->JMPCondition(programCounter, getNextWord(),
+                                               FlagRegister::Condition::Carry);
     break;
   case 0xEA:
-    instructions->JMPCondition(programCounter, getNextWord(),
-                               FlagRegister::Condition::ParityEven);
+    skipIncrement = instructions->JMPCondition(
+        programCounter, getNextWord(), FlagRegister::Condition::ParityEven);
     break;
   case 0xFA:
-    instructions->JMPCondition(programCounter, getNextWord(),
-                               FlagRegister::Condition::Minus);
+    skipIncrement = instructions->JMPCondition(programCounter, getNextWord(),
+                                               FlagRegister::Condition::Minus);
     break;
 
   // JMP Opcodes
   case 0xC3:
   case 0xCB:
     instructions->JMP(programCounter, getNextWord());
+    skipIncrement = true;
     break;
 
   // OUT Opcode
   case 0xD3:
-    // instructions->OUT(); // TODO Finish
+    instructions->OUT(getNextByte()); // TODO Temporary
     break;
 
   // XTHL Opcode
@@ -746,36 +757,36 @@ void Cpu::instructionDecoder(uint8_t opcode) {
 
   // Cccc Opcodes
   case 0xC4:
-    instructions->CALLCondition(programCounter, getNextWord(),
-                                FlagRegister::Condition::NotZero);
+    skipIncrement = instructions->CALLCondition(
+        programCounter, getNextWord(), FlagRegister::Condition::NotZero);
     break;
   case 0xD4:
-    instructions->CALLCondition(programCounter, getNextWord(),
-                                FlagRegister::Condition::NotCarry);
+    skipIncrement = instructions->CALLCondition(
+        programCounter, getNextWord(), FlagRegister::Condition::NotCarry);
     break;
   case 0xE4:
-    instructions->CALLCondition(programCounter, getNextWord(),
-                                FlagRegister::Condition::ParityOdd);
+    skipIncrement = instructions->CALLCondition(
+        programCounter, getNextWord(), FlagRegister::Condition::ParityOdd);
     break;
   case 0xF4:
-    instructions->CALLCondition(programCounter, getNextWord(),
-                                FlagRegister::Condition::Positive);
+    skipIncrement = instructions->CALLCondition(
+        programCounter, getNextWord(), FlagRegister::Condition::Positive);
     break;
   case 0xCC:
-    instructions->CALLCondition(programCounter, getNextWord(),
-                                FlagRegister::Condition::Zero);
+    skipIncrement = instructions->CALLCondition(programCounter, getNextWord(),
+                                                FlagRegister::Condition::Zero);
     break;
   case 0xDC:
-    instructions->CALLCondition(programCounter, getNextWord(),
-                                FlagRegister::Condition::Carry);
+    skipIncrement = instructions->CALLCondition(programCounter, getNextWord(),
+                                                FlagRegister::Condition::Carry);
     break;
   case 0xEC:
-    instructions->CALLCondition(programCounter, getNextWord(),
-                                FlagRegister::Condition::ParityEven);
+    skipIncrement = instructions->CALLCondition(
+        programCounter, getNextWord(), FlagRegister::Condition::ParityEven);
     break;
   case 0xFC:
-    instructions->CALLCondition(programCounter, getNextWord(),
-                                FlagRegister::Condition::Minus);
+    skipIncrement = instructions->CALLCondition(programCounter, getNextWord(),
+                                                FlagRegister::Condition::Minus);
     break;
 
   // PUSH Opcodes
@@ -821,16 +832,18 @@ void Cpu::instructionDecoder(uint8_t opcode) {
   case 0xC9:
   case 0xD9:
     instructions->RET(programCounter);
+    // skipIncrement = true;
     break;
 
   // PCHL Opcode
   case 0xE9:
     instructions->PCHL(programCounter);
+    skipIncrement = true;
     break;
 
   // SPHL Opcode
   case 0xF9:
-    instructions->PCHL(programCounter);
+    instructions->SPHL();
     break;
 
   // IN Opcode
@@ -853,7 +866,10 @@ void Cpu::instructionDecoder(uint8_t opcode) {
   case 0xDD:
   case 0xED:
   case 0xFD:
-    instructions->CALL(programCounter, getNextWord());
+    instructions->CALL(programCounter,
+                       getNextWord()); // Fix the getter for program counter
+    // Fix the MMU logic TODO
+    skipIncrement = true;
     break;
 
   // ACI Opcode
@@ -876,12 +892,21 @@ void Cpu::instructionDecoder(uint8_t opcode) {
     instructions->CPI(getNextByte());
     break;
 
+  case 0x76:
+    return instructions->HLT();
+    break;
+
   default:
-    std::cout << "Unknown Opcode " << std::hex << opcode << std::endl;
+    std::cout << std::endl
+              << "Unknown Opcode " << std::hex << int(opcode) << std::endl;
+    std::cout << "At line " << std::hex << int(programCounter) << std::endl;
     break;
   }
 
-  programCounter++;
+  if (!skipIncrement) {
+    programCounter++;
+  }
+  return false;
 }
 
 uint16_t Cpu::getNextWord() {

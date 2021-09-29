@@ -39,6 +39,11 @@ TEST_F(FlagRegisterTest, determineParity) {
   GTEST_ASSERT_EQ(1, flagRegister.getFlag(FlagRegister::Parity));
 }
 
+TEST_F(FlagRegisterTest, determineParity_1) {
+  flagRegister.processFlags(FlagRegister::FlagRule::All, 0x99, 0x0, "+");
+  GTEST_ASSERT_EQ(0, flagRegister.getFlag(FlagRegister::Parity));
+}
+
 TEST_F(FlagRegisterTest, determineNoParity) {
   flagRegister.processFlags(FlagRegister::FlagRule::All, 0b11110010, 0x0, "+");
   GTEST_ASSERT_EQ(0, flagRegister.getFlag(FlagRegister::Parity));

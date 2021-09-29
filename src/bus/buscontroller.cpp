@@ -6,7 +6,7 @@ ChipRegion &BusController::findChipRegion(uint16_t address) {
       return chip;
     }
   }
-throw std::runtime_error(
+  throw std::runtime_error(
       "Intel 8080 Error: Trying to access a memory address out of reach");
   return chipRegions.at(0); // TODO Change later to a real exception
 }
@@ -15,15 +15,15 @@ void BusController::addChipRegion(ChipRegion chipRegion) {
   chipRegions.push_back(chipRegion); // TODO Add a overlapping option later
 }
 
-void BusController::addChipRegion(int startAddress, int endAddress, BusDevice *chip) 
-{
-  addChipRegion(ChipRegion(0, 10, chip));
+void BusController::addChipRegion(int startAddress, int endAddress,
+                                  BusDevice *chip) {
+  addChipRegion(ChipRegion(startAddress, endAddress, chip));
 }
 
 uint16_t BusController::readWord(uint16_t address) {
-  ChipRegion chip = findChipRegion(address);
-  uint8_t msb = chip.getChip()->read(address);
-  uint8_t lsb = chip.getChip()->read(address + 1);
+  // ChipRegion chip = findChipRegion(address);
+  uint8_t msb = readByte(address);
+  uint8_t lsb = readByte(address + 1);
   uint16_t value = (lsb << 8) + msb;
   return value;
 }
@@ -32,8 +32,8 @@ void BusController::writeWord(uint16_t address, uint16_t value) {
   ChipRegion &chip = findChipRegion(address);
   uint8_t msb = value & 0x00FF;
   uint8_t lsb = value >> 8;
-  chip.getChip()->write(address, msb);
-  chip.getChip()->write(address + 1, lsb);
+  writeByte(address, msb);
+  writeByte(address + 1, lsb);
 }
 
 uint8_t BusController::readByte(uint16_t address) {

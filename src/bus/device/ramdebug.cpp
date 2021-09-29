@@ -25,10 +25,6 @@ void RamDebug::loadRomFile(std::string fullFilePath) {
   else {
     std::cout << "Unable to open file";
   }
-
-  for (int a = 0; a < 9; a++) {
-    std::cout << std::hex << int(ram[a]) << " ";
-  }
 }
 
 int RamDebug::determineSize(std::ifstream &file) {
@@ -47,4 +43,4 @@ void RamDebug::write(uint16_t address, uint8_t value) { ram[address] = value; }
 
 uint8_t RamDebug::read(uint16_t address) { return ram[address]; }
 
-RamDebug::~RamDebug() { delete ram; }
+RamDebug::~RamDebug() { delete[] ram; }

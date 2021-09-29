@@ -11,7 +11,7 @@ private:
   BusController *busController;
   Instructions *instructions;
   uint16_t programCounter = 0;
-  void instructionDecoder(uint8_t opcode);
+  bool instructionDecoder(uint8_t opcode);
   uint16_t getNextWord();
   uint8_t getNextByte();
 
@@ -19,8 +19,9 @@ public:
   Cpu();
   void step();
   void step(int steps);
-  void cycle();
+  bool cycle();
   BusController &getBusController();
+  RegisterController &getRegisterController();
   ~Cpu();
 };
 
