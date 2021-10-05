@@ -22,30 +22,13 @@ add_executable(
   main.cpp
 )
 
-add_library(ram ../src/bus/device/ram.cpp)
-add_library(busdevice ../src/bus/model/busdevice.cpp)
-add_library(buscontroller ../src/bus/buscontroller.cpp)
-add_library(chipregion ../src/bus/model/chipregion.cpp)
-add_library(register ../src/registers/model/register.cpp)
-add_library(flagregister ../src/registers/model/flagregister.cpp)
-add_library(stack ../src/registers/model/stack.cpp)
-add_library(registercontroller ../src/registers/registercontroller.cpp)
-add_library(instructions1 ../src/instructions.cpp)
-
 target_link_libraries(
   tests
-  gtest_main
-  ram
-  busdevice
-  buscontroller
-  chipregion
-  register
-  flagregister
-  stack
-  registercontroller
-  instructions1
-  memoryreference
-  ramdebug
+  PUBLIC gtest_main
+  PUBLIC buscontroller
+  PUBLIC registercontroller
+  PUBLIC cpu
+  PUBLIC instructions
 )
 
 include(GoogleTest)

@@ -9,7 +9,7 @@
 // https://github.com/LowLevelJavaScript/16-Bit-Virtual-Machine/blob/master/episode-5/memory-mapper.js
 class BusController {
 private:
-  std::vector<ChipRegion> chipRegions;
+  std::vector<ChipRegion> chipRegions; // Change into something more versaitile TODO
   ChipRegion& findChipRegion(uint16_t address); // Return a reference??
 
 public:

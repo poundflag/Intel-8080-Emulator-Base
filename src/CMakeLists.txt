@@ -6,26 +6,33 @@ set(CMAKE_CXX_STANDARD 11)
 
 add_executable(main main.cpp) # add this executable
 
-add_library(flagRegister registers/model/flagregister.cpp)
-add_library(instructions instructions.cpp)
-add_library(memoryreference registers/model/memoryreference.cpp)
-add_library(cpu cpu.cpp)
-add_library(ramdebug bus/device/ramdebug.cpp)
+add_subdirectory(bus)
+add_subdirectory(registers)
+add_subdirectory(../test tests)
+
+add_library(
+    cpu
+    cpu.cpp
+    cpu.h
+)
+
+add_library(
+    instructions
+    instructions.cpp
+    instructions.h
+)
 
 target_link_libraries(
     main
-    registercontroller
-    flagRegister
-    instructions
-    stack
-    buscontroller
-    chipregion
-    register
-    memoryreference
-    cpu
-    ramdebug
-    busdevice
-    ram
+    PUBLIC buscontroller
+    PUBLIC registercontroller
+    PUBLIC cpu
+    PUBLIC instructions
 )
 
-add_subdirectory(../test tests)
+target_include_directories(
+    main
+    PUBLIC "{PROJECT_SOURCE_DIR}/src/"
+    PUBLIC "{PROJECT_SOURCE_DIR}/src/bus"
+    PUBLIC "{PROJECT_SOURCE_DIR}/src/registers"
+)

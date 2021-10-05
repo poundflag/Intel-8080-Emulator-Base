@@ -17,7 +17,7 @@ private:
 public:
   enum class FlagRule { All, Partial, CarryOnly, DAD };
 
-  enum class Condition {
+  enum class Condition { // Move to designated class TODO
     Carry,
     NotCarry,
     Zero,

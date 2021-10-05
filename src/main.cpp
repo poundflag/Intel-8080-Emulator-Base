@@ -1,6 +1,6 @@
-#include "bus/device/ram.h"
-#include "bus/device/ramdebug.h"
 #include "cpu.h"
+#include "bus/device/ramdebug.h"
+#include "bus/device/ram.h"
 #include <fstream>
 #include <iostream>
 #include <string>

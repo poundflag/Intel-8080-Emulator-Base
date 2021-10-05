@@ -7,15 +7,15 @@
 
 class MemoryReference : public Register {
 private:
-  uint16_t getAddress();
   BusController &busController;
   Register &hRegister;
   Register &lRegister;
+  uint16_t getAddress();
 
 public:
   MemoryReference(BusController &busController, Register &hRegister,
                   Register &lRegister);
-  void setRegister(uint8_t value);
+  void setRegister(uint8_t value); // OVerride the method later TODO 
   uint8_t getRegister();
 };
 
