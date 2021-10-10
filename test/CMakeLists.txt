@@ -27,6 +27,7 @@ target_link_libraries(
   PUBLIC gtest_main
   PUBLIC buscontroller
   PUBLIC registercontroller
+  PUBLIC iocontroller
   PUBLIC cpu
   PUBLIC instructions
 )

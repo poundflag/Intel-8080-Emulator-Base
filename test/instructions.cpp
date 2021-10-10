@@ -6,7 +6,8 @@ class InstructionsTest : public ::testing::Test {
 protected:
   BusController busController = BusController();
   RegisterController registerController = RegisterController(busController);
-  Instructions instructions = Instructions(busController, registerController);
+  IOController ioController = IOController();
+  Instructions instructions = Instructions(busController, registerController, ioController);
   Register lA;
   void SetUp() {
     busController.addChipRegion(ChipRegion(0, 0xFFFF, new Ram(0xFFFF)));

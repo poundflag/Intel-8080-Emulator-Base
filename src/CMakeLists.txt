@@ -9,6 +9,7 @@ add_executable(main main.cpp) # add this executable
 add_subdirectory(bus)
 add_subdirectory(registers)
 add_subdirectory(../test tests)
+add_subdirectory(io)
 
 add_library(
     cpu
@@ -26,6 +27,7 @@ target_link_libraries(
     main
     PUBLIC buscontroller
     PUBLIC registercontroller
+    PUBLIC iocontroller
     PUBLIC cpu
     PUBLIC instructions
 )
@@ -35,4 +37,5 @@ target_include_directories(
     PUBLIC "{PROJECT_SOURCE_DIR}/src/"
     PUBLIC "{PROJECT_SOURCE_DIR}/src/bus"
     PUBLIC "{PROJECT_SOURCE_DIR}/src/registers"
+    PUBLIC "{PROJECT_SOURCE_DIR}/src/io"
 )

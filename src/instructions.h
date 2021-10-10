@@ -2,6 +2,7 @@
 #include "registers/model/register.h"
 #include "registers/registercontroller.h"
 #include "registers/registers.h"
+#include "io/iocontroller.h"
 
 #ifndef __INSTRUCTIONS_H__
 #define __INSTRUCTIONS_H__
@@ -10,11 +11,13 @@ class Instructions {
 private:
   BusController &busController;
   RegisterController &registerController;
+  IOController &ioController;
+
   bool conditionSuccessful(FlagRegister::Condition condition);
 
 public:
   Instructions(BusController &busController,
-               RegisterController &registerController);
+               RegisterController &registerController, IOController &ioController);
   void MOV(Registers::Register destination,
            Registers::Register source); // TODO Fix the paramenter to enum
   void MVI(Registers::Register destination, uint8_t immediate);

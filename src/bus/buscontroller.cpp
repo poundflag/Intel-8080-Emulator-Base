@@ -6,9 +6,8 @@ ChipRegion &BusController::findChipRegion(uint16_t address) {
       return chip;
     }
   }
-  throw std::runtime_error(
-      "Intel 8080 Error: Trying to access a memory address out of reach");
-  return chipRegions.at(0); // TODO Change later to a real exception
+  
+  return nullChip; // TODO Change later to a 0
 }
 
 void BusController::addChipRegion(ChipRegion chipRegion) {
@@ -37,13 +36,18 @@ void BusController::writeWord(uint16_t address, uint16_t value) {
 }
 
 uint8_t BusController::readByte(uint16_t address) {
-  ChipRegion chip = findChipRegion(address);
-  return chip.getChip()->read(address);
+  ChipRegion chip = findChipRegion(address); // Check if it is zero TODO WRITE TEST 
+  if (chip.getChip() != NULL) {
+    return chip.getChip()->read(address);
+  }
+  return 0;
 }
 
 void BusController::writeByte(uint16_t address, uint8_t value) {
   ChipRegion &chip = findChipRegion(address);
-  chip.getChip()->write(address, value);
+  if (chip.getChip() != NULL) {
+    chip.getChip()->write(address, value);
+  }
 }
 
 BusController::~BusController() {

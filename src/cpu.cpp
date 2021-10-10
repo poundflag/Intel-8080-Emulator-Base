@@ -2,8 +2,11 @@
 
 Cpu::Cpu() {
   busController = new BusController();
+  ioController =
+      new IOController(); // Do i really need a pointer for this??? TODO
   registerController = new RegisterController(*busController);
-  instructions = new Instructions(*busController, *registerController);
+  instructions =
+      new Instructions(*busController, *registerController, *ioController);
 }
 
 void Cpu::step() {
@@ -29,11 +32,16 @@ BusController &Cpu::getBusController() { return *busController; }
 
 RegisterController &Cpu::getRegisterController() { return *registerController; }
 
+IOController &Cpu::getIOController() { return *ioController; }
+
+uint16_t Cpu::getProgramCounter() { return programCounter; }
+
+void Cpu::setProgramCounter(uint16_t programCounter) {
+  this->programCounter = programCounter;
+}
+
 // TODO Optimize it, when it passes all tests
 bool Cpu::instructionDecoder(uint8_t opcode) {
-  if (programCounter >= 0x588) { // 55F
-    int a = 0;
-  }
   bool skipIncrement = false;
   switch (opcode) {
     // NOP Opcodes
@@ -931,4 +939,5 @@ Cpu::~Cpu() {
   delete instructions;
   delete registerController;
   delete busController;
+  delete ioController;
 }

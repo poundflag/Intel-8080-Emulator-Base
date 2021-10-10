@@ -2,8 +2,10 @@
 #include "registers/model/flagregister.h"
 
 Instructions::Instructions(BusController &busController,
-                           RegisterController &registerController)
-    : busController(busController), registerController(registerController) {}
+                           RegisterController &registerController,
+                           IOController &ioController)
+    : busController(busController), registerController(registerController),
+      ioController(ioController) {}
 
 void Instructions::MOV(Registers::Register destination,
                        Registers::Register source) {
@@ -507,7 +509,8 @@ void Instructions::SPHL() {
 
 void Instructions::OUT(int portNumber) {
   // TODO Temporary fix
-  std::cout << char(registerController.get(Registers::A).getRegister());
+  ioController.setDeviceValue(
+      portNumber, registerController.get(Registers::A).getRegister());
 }
 
 bool Instructions::HLT() {

@@ -72,7 +72,7 @@ void RegisterController::setRegisterPair(RegisterPair registerPair,
 }
 
 RegisterController::~RegisterController() {
-  for (int i = 0; i < Registers::M; i++) {
+  for (int i = 0; i <= Registers::M; i++) {
     delete registers[i];
   }
 }

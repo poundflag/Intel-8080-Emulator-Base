@@ -1,6 +1,7 @@
-#include "cpu.h"
-#include "bus/device/ramdebug.h"
 #include "bus/device/ram.h"
+#include "bus/device/ramdebug.h"
+#include "cpu.h"
+#include "io/device/serialout.h"
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -16,8 +17,10 @@ int main() {
 
   cpu.getBusController().addChipRegion(0x05AF, 0xFFFF, new Ram(0xFA60));
 
+  cpu.getIOController().addIODevice(new SerialOut(0));
+
   cpu.step(1500); // 0x12D was the stop
   // The seoncd juimp branch has error
 
-  return 0; 
+  return 0;
 }

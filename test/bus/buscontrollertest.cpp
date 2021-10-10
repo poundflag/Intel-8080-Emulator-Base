@@ -24,6 +24,11 @@ TEST_F(BusControllerTest, writeAndReadByte) {
   GTEST_ASSERT_EQ(0x25, busController->readByte(1));
 }
 
+TEST_F(BusControllerTest, writeAndReadOutOfSpace) {
+  busController->writeByte(0x1FF, 0x25);
+  GTEST_ASSERT_EQ(0x0, busController->readByte(0));
+}
+
 TEST_F(BusControllerTest, writeAndReadWord) {
   busController->writeWord(0x5, 0x1234);
   GTEST_ASSERT_EQ(0x1234, busController->readWord(0x5));
