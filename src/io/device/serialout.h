@@ -5,8 +5,8 @@
 
 class SerialOut : public IODevice {
 public:
-  SerialOut(uint8_t portNumber);
-  void setValue(uint8_t value) override;
+  SerialOut(uint8_t portAddress[], int size);
+  void setValue(uint8_t value, uint8_t portAddress) override;
 };
 
 #endif // __SERIALOUT_H__

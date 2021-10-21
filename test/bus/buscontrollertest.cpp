@@ -8,7 +8,7 @@ protected:
   void SetUp() {
     busController = new BusController();
 
-    ChipRegion aa = ChipRegion(0, 10, new Ram(10));
+    ChipRegion aa = ChipRegion(0, 0x10, new Ram(0x10));
     busController->addChipRegion(aa);
   }
 
@@ -26,7 +26,12 @@ TEST_F(BusControllerTest, writeAndReadByte) {
 
 TEST_F(BusControllerTest, writeAndReadOutOfSpace) {
   busController->writeByte(0x1FF, 0x25);
-  GTEST_ASSERT_EQ(0x0, busController->readByte(0));
+  GTEST_ASSERT_EQ(0x0, busController->readByte(0x25));
+}
+
+TEST_F(BusControllerTest, writeAndReadNearlyOutOfSpace) {
+  busController->writeByte(0x10, 0x25); // TODO Check this bad boy
+  GTEST_ASSERT_EQ(0x25, busController->readByte(0x10));
 }
 
 TEST_F(BusControllerTest, writeAndReadWord) {

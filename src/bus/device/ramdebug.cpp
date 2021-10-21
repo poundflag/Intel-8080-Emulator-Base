@@ -8,6 +8,7 @@ RamDebug::RamDebug(std::string fullFilePath) { loadRomFile(fullFilePath); }
 void RamDebug::loadRomFile(std::string fullFilePath) {
 
   std::ifstream myfile(fullFilePath, std::ios::binary | std::ios::ate);
+  // fstream file("sample.bin",  ios::out | ios::binary);
   // Initialize new array with the size of file
   ram = new int[determineSize(myfile)];
   int i = 0;
@@ -17,6 +18,12 @@ void RamDebug::loadRomFile(std::string fullFilePath) {
     while (myfile.good()) {
       // Add the byte to the ram array
       ram[i] = myfile.get();
+      if (ram[i] == -1) {
+        ram[i] = 0;
+        break;
+      }
+      // std::cout << "PC " << (int)i << " " << (int)ram[i] << std::endl;
+
       i++;
     }
     myfile.close();
@@ -33,7 +40,7 @@ int RamDebug::determineSize(std::ifstream &file) {
     // Get the size of file
     int fileSize = file.tellg();
     // Reset its cursor position
-    file.seekg(0);
+    file.seekg(std::ios_base::beg);
     return fileSize;
   }
   return -1;

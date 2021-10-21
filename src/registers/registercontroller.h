@@ -8,6 +8,7 @@
 #ifndef __REGISTERCONTROLLER_H__
 #define __REGISTERCONTROLLER_H__
 
+// Manage the registers of the i8080
 class RegisterController {
 private:
   Register *registers[8];
@@ -17,7 +18,7 @@ private:
 
 public:
   RegisterController(BusController &busController);
-  Register &get(Registers::Register reg); // TODO Add getter and setter for this
+  Register &get(Registers::Register reg);
   FlagRegister &getFlagRegister();
   Stack &getStack();
   uint16_t getRegisterPair(RegisterPair registerPair);

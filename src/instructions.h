@@ -1,12 +1,13 @@
 #include "bus/buscontroller.h"
+#include "io/iocontroller.h"
 #include "registers/model/register.h"
 #include "registers/registercontroller.h"
 #include "registers/registers.h"
-#include "io/iocontroller.h"
 
 #ifndef __INSTRUCTIONS_H__
 #define __INSTRUCTIONS_H__
 
+// Contains all instructions for the i8080
 class Instructions {
 private:
   BusController &busController;
@@ -17,9 +18,9 @@ private:
 
 public:
   Instructions(BusController &busController,
-               RegisterController &registerController, IOController &ioController);
-  void MOV(Registers::Register destination,
-           Registers::Register source); // TODO Fix the paramenter to enum
+               RegisterController &registerController,
+               IOController &ioController);
+  void MOV(Registers::Register destination, Registers::Register source);
   void MVI(Registers::Register destination, uint8_t immediate);
   void LXI(RegisterPair registerPair, uint16_t immediate);
   void LDA(uint16_t address);
@@ -66,13 +67,13 @@ public:
                      FlagRegister::Condition condition);
   void RET(uint16_t &source);
   bool RETCondition(uint16_t &source, FlagRegister::Condition condition);
-  void RST();
+  void RST(uint16_t &source, uint8_t n);
   void PCHL(uint16_t &source);
   void PUSH(RegisterPair registerPair);
   void POP(RegisterPair registerPair);
   void XTHL();
   void SPHL();
-  void IN();
+  void IN(int portNumber);
   void OUT(int portNumber);
   void EI();
   void DI();

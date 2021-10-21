@@ -34,5 +34,5 @@ TEST_F(StackTest, pushAndCheckWordMemoryAddress) {
   stack.pushWord(0x1234);
   GTEST_ASSERT_EQ(0x1234, busController.readWord(0x03));
   stack.popWord();
-  GTEST_ASSERT_EQ(0x0, busController.readWord(0x03));
+  GTEST_ASSERT_EQ(0x1234, busController.readWord(0x03));
 }

@@ -7,6 +7,7 @@
 class IOController {
 private:
   IODevice **ioDevices = new IODevice *[256];
+  int deviceIndex = 0;
   IODevice *findDevice(uint8_t portAddress);
 
 public:

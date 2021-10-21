@@ -6,6 +6,7 @@
 #ifndef __CPU_H__
 #define __CPU_H__
 
+// The core class of the i8080
 class Cpu {
 private:
   RegisterController *registerController;
@@ -16,11 +17,10 @@ private:
   bool instructionDecoder(uint8_t opcode);
   uint16_t getNextWord();
   uint8_t getNextByte();
-  bool firstMachineCycle;
 
 public:
   Cpu();
-  void step();
+  void run();
   void step(int steps);
   bool cycle();
   BusController &getBusController();

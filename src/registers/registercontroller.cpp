@@ -11,6 +11,7 @@ RegisterController::RegisterController(BusController &busController)
       busController, *registers[Registers::H], *registers[Registers::L]);
 }
 
+// Get a register
 Register &RegisterController::get(Registers::Register reg) {
   return *registers[reg];
 }
@@ -66,7 +67,7 @@ void RegisterController::setRegisterPair(RegisterPair registerPair,
     getFlagRegister().setRegister(higherByte);
     break;
   case SP:
-    return stackRegister.setStackPointer(immediate);
+    stackRegister.setStackPointer(immediate);
     break;
   };
 }

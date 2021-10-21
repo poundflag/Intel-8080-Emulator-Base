@@ -12,10 +12,24 @@ add_library(
     device/serialout.h
 )
 
+add_library(
+    altairswitches
+    device/altairswitches.cpp
+    device/altairswitches.h
+)
+
+add_library(
+    sio
+    device/sio.cpp
+    device/sio.h
+)
+
 target_link_libraries(
     iocontroller
     PUBLIC iodevice
     PUBLIC serialout
+    PUBLIC altairswitches
+    PUBLIC sio
 )
 
 target_include_directories(

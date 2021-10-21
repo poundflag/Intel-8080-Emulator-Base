@@ -30,6 +30,7 @@ target_link_libraries(
     PUBLIC iocontroller
     PUBLIC cpu
     PUBLIC instructions
+    PUBLIC curses
 )
 
 target_include_directories(

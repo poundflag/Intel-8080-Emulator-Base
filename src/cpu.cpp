@@ -9,12 +9,18 @@ Cpu::Cpu() {
       new Instructions(*busController, *registerController, *ioController);
 }
 
-void Cpu::step() {
-  // while (true) { // Later replace with attribute "halted"
-  // }
+// Continously run the cpu
+void Cpu::run() {
+  while (true) {
+    bool haltState = cycle();
+    if (haltState) {
+      break;
+    }
+  }
 }
 
-void Cpu::step(int steps) { // Ignore halted for now
+// Step the cpu in n steps
+void Cpu::step(int steps) {
   for (int i = 0; i < steps; i++) {
     bool haltState = cycle();
     if (haltState) {
@@ -23,9 +29,12 @@ void Cpu::step(int steps) { // Ignore halted for now
   }
 }
 
+// Run a single instruction cycle
+// Fetch opcode -> (fetch other bytes) -> decode -> execute -> store
+// If a HALT has been received the method returns true
 bool Cpu::cycle() {
   uint8_t opcode = busController->readByte(programCounter);
-  return instructionDecoder(opcode); // Look into changing it TODO
+  return instructionDecoder(opcode);
 }
 
 BusController &Cpu::getBusController() { return *busController; }
@@ -40,9 +49,13 @@ void Cpu::setProgramCounter(uint16_t programCounter) {
   this->programCounter = programCounter;
 }
 
-// TODO Optimize it, when it passes all tests
+// Decode all instructions
 bool Cpu::instructionDecoder(uint8_t opcode) {
+  // std::cout << "PC: " << (int) programCounter << " OP: " << (int)opcode << std::endl;
   bool skipIncrement = false;
+  if (programCounter == 0x0B6D) {
+    int a  = 0;
+  }
   switch (opcode) {
     // NOP Opcodes
   case 0:
@@ -84,7 +97,7 @@ bool Cpu::instructionDecoder(uint8_t opcode) {
 
     // STA Opcode
   case 0x32:
-    instructions->STA(getNextWord());
+      instructions->STA(getNextWord());
     break;
 
   // INX Opcodes
@@ -96,6 +109,7 @@ bool Cpu::instructionDecoder(uint8_t opcode) {
     break;
   case 0x23:
     instructions->INX(RegisterPair::H);
+    break;
   case 0x33:
     instructions->INX(RegisterPair::SP);
     break;
@@ -663,33 +677,38 @@ bool Cpu::instructionDecoder(uint8_t opcode) {
 
   // Rccc Opcodes
   case 0xC0:
-    instructions->RETCondition(programCounter,
-                               FlagRegister::Condition::NotZero);
+    skipIncrement =
+        instructions
+            ->RETCondition(
+                programCounter, FlagRegister::Condition::NotZero);
     break;
   case 0xD0:
-    instructions->RETCondition(programCounter,
-                               FlagRegister::Condition::NotCarry);
+    skipIncrement = instructions->RETCondition(
+        programCounter, FlagRegister::Condition::NotCarry);
     break;
   case 0xE0:
-    instructions->RETCondition(programCounter,
-                               FlagRegister::Condition::ParityOdd);
+    skipIncrement = instructions->RETCondition(
+        programCounter, FlagRegister::Condition::ParityOdd);
     break;
   case 0xF0:
-    instructions->RETCondition(programCounter,
-                               FlagRegister::Condition::Positive);
+    skipIncrement = instructions->RETCondition(
+        programCounter, FlagRegister::Condition::Positive);
     break;
   case 0xC8:
-    instructions->RETCondition(programCounter, FlagRegister::Condition::Zero);
+    skipIncrement = instructions->RETCondition(programCounter,
+                                               FlagRegister::Condition::Zero);
     break;
   case 0xD8:
-    instructions->RETCondition(programCounter, FlagRegister::Condition::Carry);
+    skipIncrement = instructions->RETCondition(programCounter,
+                                               FlagRegister::Condition::Carry);
     break;
   case 0xE8:
-    instructions->RETCondition(programCounter,
-                               FlagRegister::Condition::ParityEven);
+    skipIncrement = instructions->RETCondition(
+        programCounter, FlagRegister::Condition::ParityEven);
     break;
   case 0xF8:
-    instructions->RETCondition(programCounter, FlagRegister::Condition::Minus);
+    skipIncrement = instructions->RETCondition(programCounter,
+                                               FlagRegister::Condition::Minus);
     break;
 
   // POP Opcodes
@@ -708,9 +727,8 @@ bool Cpu::instructionDecoder(uint8_t opcode) {
 
   // Jccc Opcodes
   case 0xC2:
-    skipIncrement = instructions->JMPCondition(
+      skipIncrement = instructions->JMPCondition(
         programCounter, getNextWord(), FlagRegister::Condition::NotZero);
-    // skipIncrement = true;
     break;
   case 0xD2:
     skipIncrement = instructions->JMPCondition(
@@ -750,7 +768,7 @@ bool Cpu::instructionDecoder(uint8_t opcode) {
 
   // OUT Opcode
   case 0xD3:
-    instructions->OUT(getNextByte()); // TODO Temporary
+    instructions->OUT(getNextByte());
     break;
 
   // XTHL Opcode
@@ -831,16 +849,37 @@ bool Cpu::instructionDecoder(uint8_t opcode) {
     instructions->ORI(getNextByte());
     break;
 
-  // RST Opcodes
-  case 0xC7:
-    // instructions->RST(); // TODO Finish
+// RST Opcodes
+    case 0xC7:
+    instructions->RST(programCounter, 0);
+    break;
+    case 0xCF:
+    instructions->RST(programCounter, 1);
+    break;
+    case 0xD7:
+    instructions->RST(programCounter, 2);
+    break;
+    case 0xDF:
+    instructions->RST(programCounter, 3);
+    break;
+    case 0xE7:
+    instructions->RST(programCounter, 4);
+    break;
+    case 0xEF:
+    instructions->RST(programCounter, 5);
+    break;
+    case 0xF7:
+    instructions->RST(programCounter, 6);
+    break;
+    case 0xFF:
+    instructions->RST(programCounter, 7);
     break;
 
     // RET Opcodes
   case 0xC9:
   case 0xD9:
     instructions->RET(programCounter);
-    // skipIncrement = true;
+    skipIncrement = true;
     break;
 
   // PCHL Opcode
@@ -856,7 +895,7 @@ bool Cpu::instructionDecoder(uint8_t opcode) {
 
   // IN Opcode
   case 0xDB:
-    // instructions->IN();
+    instructions->IN(getNextByte());
     break;
 
   // XCHG Opcode
@@ -874,9 +913,7 @@ bool Cpu::instructionDecoder(uint8_t opcode) {
   case 0xDD:
   case 0xED:
   case 0xFD:
-    instructions->CALL(programCounter,
-                       getNextWord()); // Fix the getter for program counter
-    // Fix the MMU logic TODO
+    instructions->CALL(programCounter, getNextWord());
     skipIncrement = true;
     break;
 
@@ -911,18 +948,25 @@ bool Cpu::instructionDecoder(uint8_t opcode) {
     break;
   }
 
+  // If the instructions does not need more than one cycle, just increment the
+  // PC
   if (!skipIncrement) {
     programCounter++;
   }
+
   return false;
 }
 
+// Get the next word from memory
+// Also increment the PC
 uint16_t Cpu::getNextWord() {
   int result = busController->readWord(programCounter + 1);
   programCounter += 2;
   return result;
 }
 
+// Get the next byte from memory
+// Also increment the PC
 uint8_t Cpu::getNextByte() {
   int result = busController->readByte(programCounter + 1);
   programCounter++;

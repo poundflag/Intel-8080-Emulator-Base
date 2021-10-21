@@ -1,13 +1,12 @@
 #include "flagregister.h"
 
 void FlagRegister::determineCarry(uint16_t value) {
-  // TODO Look into DAD before implementing it fully
   setFlag(Flag::Carry, (value & 0b100000000) == 0b100000000);
 }
 
+// Checks the number of ones in binary, and determines whether they are even
+// or not
 void FlagRegister::determineParity(uint8_t value) {
-  // Checks the number of ones in binary, and determines whether they are even
-  // or not
   value = (value >> 4) ^ (value & 0xF);
   value = (value >> 2) ^ (value & 0b11);
   value = (value >> 1) ^ (value & 0b1);
@@ -16,7 +15,6 @@ void FlagRegister::determineParity(uint8_t value) {
 
 void FlagRegister::determineAuxiliaryCarry(uint8_t value1, uint8_t value2,
                                            std::string operation) {
-  // TODO Get operator
   uint8_t temp = 0;
   if (operation == "+") {
     temp = (value1 & 0x0F) + (value2 & 0x0F);
