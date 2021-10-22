@@ -8,6 +8,7 @@ Intel-8080-Emulator-Base is an Intel 8080 intended for the use of Altair Basic a
 - [x] Passing self-made unit tests
 - [x] Passing the [diagnostic test by Microcosm Associates](https://github.com/superzazu/8080/blob/master/cpu_tests/TST8080.ASM)
 - [x] Passing the [preliminary test by Frank D. Cringle](https://github.com/superzazu/8080/blob/master/cpu_tests/8080PRE.MAC)
+- [ ] Make a proper 88-Sio implementation
 - [ ] Running Altair 4k Basic
 - [ ] Running Altair 8k Basic
 
