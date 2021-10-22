@@ -13,7 +13,7 @@ void SIO::setValue(uint8_t value, uint8_t portAddress) {
 
 uint8_t SIO::getValue(uint8_t portAddress) {
   if (portAddress == 0x10 || portAddress == 0x0) {
-    return 0x2;
+    return 0x02;
   } else if (portAddress == 1) {
     // return 0x41;
     char c = 0;
@@ -34,6 +34,9 @@ uint8_t SIO::getValue(uint8_t portAddress) {
         std::cin >> c;
         if (c == 'm') {
           c = '\r';
+        }
+        if (c == 'n') {
+          c = ' ';
         }
       }
     }

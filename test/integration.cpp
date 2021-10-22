@@ -14,7 +14,7 @@ protected:
 TEST_F(IntegrationsTest, EasyCpuTest) {
   cpu.getBusController().addChipRegion(
       0, 0x05AF,
-      new RamDebug("/Users/robin/Documents/GitHub/Intel-8080-Emulator/src/"
+      new RamDebug("/Users/robin/Documents/GitHub/Intel-8080-Emulator/src/roms/"
                    "cpu_dia.com"));
 
   cpu.getBusController().addChipRegion(0x05AF, 0xFFFF, new Ram(0xFA60));

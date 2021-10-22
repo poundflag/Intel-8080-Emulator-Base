@@ -13,28 +13,16 @@ using namespace std;
 
 int main() {
 
-  /*initscr();
-
-  char c = 0;
-  while (c != 10) {
-    c = getch();
-  }
-  // endwin();
-  */
-  // initscr();
-  // initscr();
   Cpu cpu = Cpu();
-  /*cpu.getBusController().addChipRegion(
-      0x0, 0x0EFC,
+  cpu.getBusController().addChipRegion(
+      0x0, 0x0EF8,
       new RamDebug("/Users/robin/Documents/GitHub/Intel-8080-Emulator/src/roms/"
-                   "BASIC4k32.rom"));
+                   "4kbas40.bin"));
 
-  cpu.getBusController().addChipRegion(0x0EFD, 0x32FF, new Ram(0x32FF));
+  cpu.getBusController().addChipRegion(0xEF9, 0xFFFF, new Ram(0xFFFE));
   uint8_t a[] = {0xFF};
-  // uint8_t b[] = {1};
-  // cpu.getIOController().addIODevice(new SerialOut(b, 1));
   cpu.getIOController().addIODevice(new AltairSwitches(a, 1));
-  cpu.getIOController().setDeviceValue(0xFF, 0b00000000);
+  cpu.getIOController().setDeviceValue(0xFF, 0b00100010); // b00100010
 
   uint8_t ports[4] = {0, 1, 0x10, 0x11};
   cpu.getIOController().addIODevice(
@@ -43,15 +31,15 @@ int main() {
   std::setvbuf(stdout, NULL, _IONBF, 0);
 
   // cpu.step(1500);
-  cpu.run();*/
-
+  cpu.run();
+/*
   cpu.getBusController().addChipRegion(0x0, 0x99, new Ram(0x100));
   cpu.getBusController().addChipRegion(
       0x100, 0x11FF + 0x100,
       new RamDebug("/Users/robin/Documents/GitHub/Intel-8080-Emulator/src/roms/"
                    "8080EXER.COM"));
 
-  cpu.getBusController().addChipRegion(0x1200 + 0x100, 0xFFFF, new Ram(0xFA60));
+  cpu.getBusController().addChipRegion(0x1200 + 0x100, 0xFFFF, new Ram(0xFFFE));
 
   std::string lOutput = "";
   char currentChar = 0;
@@ -74,5 +62,5 @@ int main() {
       currentChar = 0;
       cpu.getBusController().writeByte(5, 0xC9);
     }
-  }
+  }*/
 }

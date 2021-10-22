@@ -229,8 +229,8 @@ void Instructions::DAD(RegisterPair source) {
 // DAA       00100111          ZSPCA   Decimal Adjust accumulator
 void Instructions::DAA() {
   // Stolen from
-  // https://github.com/Milkdrop/Intel-8080-Emulator/blob/master/CPU.cpp Line:
-  // 434 | I don't really know, what this mess does
+  // https://github.com/GunshipPenguin/lib8080/blob/master/src/i8080.c
+  // Line: 405 | I don't really know, what this mess does
   int value = registerController.get(Registers::A).getRegister();
 
   uint8_t tempValue = 0;
@@ -238,21 +238,29 @@ void Instructions::DAA() {
   // If the least significant four bits of the accumulator represents a number
   // greater than 9, or if the Auxiliary Carry bit is equal to one, the
   // accumulator is incremented by six. Otherwise, no incrementing occurs.
-  if ((value & 0xF) > 9 || registerController.getFlagRegister().getFlag(
-                               FlagRegister::Flag::AuxiliaryCarry)) {
-    tempValue += 0x06;
+  if (((value & 0xF) > 9) || registerController.getFlagRegister().getFlag(
+                                 FlagRegister::Flag::AuxiliaryCarry)) {
+    tempValue |= 0x06;
   }
 
+  bool carry =
+      registerController.getFlagRegister().getFlag(FlagRegister::Flag::Carry);
   // If the most significant four bits of the accumulator now represent a number
   // greater than 9, or if the normal carry bit is equal to one, the most
   // significant four bits of the accumulator are incremented by six.
-  if (((value >> 4) >= 9 && (value & 0xF) > 9) || (value >> 4) > 9 ||
+  if (((value & 0xF0) > 0x90) ||
+      (((value & 0xF0) >= 0x90) && ((value & 0xF) > 9)) ||
       registerController.getFlagRegister().getFlag(FlagRegister::Flag::Carry)) {
-    tempValue += 0x60;
+    tempValue |= 0x60;
+    carry = true;
   }
+
 
   registerController.getFlagRegister().processFlags(FlagRegister::FlagRule::All,
                                                     value, tempValue, "+");
+
+  registerController.getFlagRegister().setFlag(FlagRegister::Flag::Carry,
+                                               carry);
 
   registerController.get(Registers::A).setRegister(value + tempValue);
 }

@@ -53,8 +53,8 @@ void Cpu::setProgramCounter(uint16_t programCounter) {
 bool Cpu::instructionDecoder(uint8_t opcode) {
   // std::cout << "PC: " << (int) programCounter << " OP: " << (int)opcode << std::endl;
   bool skipIncrement = false;
-  if (programCounter == 0x0B6D) {
-    int a  = 0;
+  if (programCounter == 0x0DCD) {
+    int a = 0;
   }
   switch (opcode) {
     // NOP Opcodes

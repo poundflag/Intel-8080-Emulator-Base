@@ -315,7 +315,7 @@ TEST_F(InstructionsTest, DAA_1) {
   instructions.DAA();
   GTEST_ASSERT_EQ(0xC1, registerController.get(Registers::A).getRegister());
   GTEST_ASSERT_EQ(registerController.getFlagRegister().getRegister(),
-                  0b10000010);
+                  0b10000011);
 }
 
 TEST_F(InstructionsTest, DAA_2) {
