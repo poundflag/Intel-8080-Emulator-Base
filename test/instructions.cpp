@@ -7,7 +7,8 @@ protected:
   BusController busController = BusController();
   RegisterController registerController = RegisterController(busController);
   IOController ioController = IOController();
-  Instructions instructions = Instructions(busController, registerController, ioController);
+  Instructions instructions =
+      Instructions(busController, registerController, ioController);
   Register lA;
   void SetUp() {
     busController.addChipRegion(ChipRegion(0, 0xFFFF, new Ram(0xFFFF)));
@@ -107,7 +108,7 @@ TEST_F(InstructionsTest, SUB) {
   instructions.SUB(Registers::B);
   GTEST_ASSERT_EQ(registerController.get(Registers::A).getRegister(), 0x4);
   GTEST_ASSERT_EQ(registerController.getFlagRegister().getRegister(),
-                  0b00000010);
+                  0b00010010);
 }
 
 TEST_F(InstructionsTest, SUB_UNDERFLOW) {
@@ -116,7 +117,7 @@ TEST_F(InstructionsTest, SUB_UNDERFLOW) {
   instructions.SUB(Registers::B);
   GTEST_ASSERT_EQ(registerController.get(Registers::A).getRegister(), 0xFC);
   GTEST_ASSERT_EQ(registerController.getFlagRegister().getRegister(),
-                  0b10010111);
+                  0b10000111);
 }
 
 TEST_F(InstructionsTest, SUI) {
@@ -124,7 +125,7 @@ TEST_F(InstructionsTest, SUI) {
   instructions.SUI(0x1);
   GTEST_ASSERT_EQ(registerController.get(Registers::A).getRegister(), 0x4);
   GTEST_ASSERT_EQ(registerController.getFlagRegister().getRegister(),
-                  0b00000010);
+                  0b00010010);
 }
 
 TEST_F(InstructionsTest, SUI_UNDERFLOW) {
@@ -132,7 +133,7 @@ TEST_F(InstructionsTest, SUI_UNDERFLOW) {
   instructions.SUI(0x5);
   GTEST_ASSERT_EQ(registerController.get(Registers::A).getRegister(), 0xFC);
   GTEST_ASSERT_EQ(registerController.getFlagRegister().getRegister(),
-                  0b10010111);
+                  0b10000111);
 }
 
 TEST_F(InstructionsTest, SBB_NO_CARRY) {
@@ -183,12 +184,21 @@ TEST_F(InstructionsTest, DCR) {
   GTEST_ASSERT_EQ(registerController.get(Registers::A).getRegister(), 0x0);
 }
 
+TEST_F(InstructionsTest, DCR1) {
+  registerController.get(Registers::B).setRegister(0x2);
+  instructions.DCR(Registers::B);
+  GTEST_ASSERT_EQ(registerController.get(Registers::B).getRegister(), 0x1);
+  GTEST_ASSERT_EQ(registerController.getFlagRegister().getFlag(
+                      FlagRegister::AuxiliaryCarry),
+                  1);
+}
+
 TEST_F(InstructionsTest, DCR_OVERFLOW) {
   registerController.get(Registers::A).setRegister(0x0);
   instructions.DCR(Registers::A);
   GTEST_ASSERT_EQ(registerController.get(Registers::A).getRegister(), 0xFF);
   GTEST_ASSERT_EQ(registerController.getFlagRegister().getRegister(),
-                  0b10010110);
+                  0b10000110);
 }
 
 TEST_F(InstructionsTest, ANA) {
@@ -235,7 +245,7 @@ TEST_F(InstructionsTest, CMP) {
   instructions.CMP(Registers::A);
   GTEST_ASSERT_EQ(registerController.get(Registers::A).getRegister(), 0x12);
   GTEST_ASSERT_EQ(registerController.getFlagRegister().getRegister(),
-                  0b01000110);
+                  0b01010110);
 }
 
 TEST_F(InstructionsTest, CPI) {
@@ -243,7 +253,7 @@ TEST_F(InstructionsTest, CPI) {
   instructions.CPI(0x12);
   GTEST_ASSERT_EQ(registerController.get(Registers::A).getRegister(), 0x12);
   GTEST_ASSERT_EQ(registerController.getFlagRegister().getRegister(),
-                  0b01000110);
+                  0b01010110);
 }
 
 TEST_F(InstructionsTest, LHLD) {
@@ -297,6 +307,9 @@ TEST_F(InstructionsTest, DAD) {
   registerController.setRegisterPair(RegisterPair::H, 0x2222);
   instructions.DAD(RegisterPair::B);
   GTEST_ASSERT_EQ(0x3333, registerController.getRegisterPair(RegisterPair::H));
+  GTEST_ASSERT_EQ(
+      registerController.getFlagRegister().getFlag(FlagRegister::Flag::Carry),
+      false);
 }
 
 TEST_F(InstructionsTest, DAD_OVERFLOW) {
@@ -394,7 +407,8 @@ TEST_F(InstructionsTest, PUSH) {
 }
 
 TEST_F(InstructionsTest, POP) {
-  // registerController.getStack().setStackPointer(0x5); // TODO Support wrapping
+  // registerController.getStack().setStackPointer(0x5); // TODO Support
+  // wrapping
   registerController.getStack().pushWord(0x1234);
   instructions.POP(RegisterPair::H);
   GTEST_ASSERT_EQ(0x1234, registerController.getRegisterPair(RegisterPair::H));

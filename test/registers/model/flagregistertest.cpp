@@ -84,6 +84,26 @@ TEST_F(FlagRegisterTest, flagregisterAddTest2) {
   GTEST_ASSERT_EQ(0b10010011, flagRegister.getRegister());
 }
 
+TEST_F(FlagRegisterTest, flagregisterAddTest3) {
+  flagRegister.processFlags(FlagRegister::FlagRule::All, 0xC9, 0x10, "+");
+  GTEST_ASSERT_EQ(0b10000010, flagRegister.getRegister());
+}
+
+TEST_F(FlagRegisterTest, flagregisterAddTest4) {
+  flagRegister.processFlags(FlagRegister::FlagRule::All, 0x20, 0x30, "+");
+  GTEST_ASSERT_EQ(0b00000110, flagRegister.getRegister());
+}
+
+TEST_F(FlagRegisterTest, flagregisterAddTest5) {
+  flagRegister.processFlags(FlagRegister::FlagRule::All, 0x80, 0x41, "+");
+  GTEST_ASSERT_EQ(0b10000010, flagRegister.getRegister());
+}
+
+TEST_F(FlagRegisterTest, flagregisterAddTest6) {
+  flagRegister.processFlags(FlagRegister::FlagRule::All, 0x01, 0xD2, "+");
+  GTEST_ASSERT_EQ(0b10000010, flagRegister.getRegister());
+}
+
 TEST_F(FlagRegisterTest, flagregisterMinusTest) {
   flagRegister.processFlags(FlagRegister::FlagRule::All, 0xDE, 0xFE, "-");
   GTEST_ASSERT_EQ(0b10000011, flagRegister.getRegister());
@@ -91,10 +111,30 @@ TEST_F(FlagRegisterTest, flagregisterMinusTest) {
 
 TEST_F(FlagRegisterTest, flagregisterMinusTest1) {
   flagRegister.processFlags(FlagRegister::FlagRule::All, 0x23, 0x45, "-");
-  GTEST_ASSERT_EQ(0b10010111, flagRegister.getRegister());
+  GTEST_ASSERT_EQ(0b10000111, flagRegister.getRegister());
 }
 
 TEST_F(FlagRegisterTest, flagregisterMinusTest2) {
   flagRegister.processFlags(FlagRegister::FlagRule::All, 0x00, 0xAA, "-");
-  GTEST_ASSERT_EQ(0b00010111, flagRegister.getRegister());
+  GTEST_ASSERT_EQ(0b00000111, flagRegister.getRegister());
+}
+
+TEST_F(FlagRegisterTest, flagregisterMinusTest3) {
+  flagRegister.processFlags(FlagRegister::FlagRule::All, 0x21, 0xDE, "-");
+  GTEST_ASSERT_EQ(0b00000011, flagRegister.getRegister());
+}
+
+TEST_F(FlagRegisterTest, flagregisterMinusTest4) {
+  flagRegister.processFlags(FlagRegister::FlagRule::All, 0x1, 0x20, "-");
+  GTEST_ASSERT_EQ(0b10010111, flagRegister.getRegister());
+}
+
+TEST_F(FlagRegisterTest, flagregisterMinusTest5) {
+  flagRegister.processFlags(FlagRegister::FlagRule::All, 0x23, 0xFE, "-");
+  GTEST_ASSERT_EQ(0b00000011, flagRegister.getRegister());
+}
+
+TEST_F(FlagRegisterTest, flagregisterMinusTest6) {
+  flagRegister.processFlags(FlagRegister::FlagRule::All, 0x11, 0x11, "-");
+  GTEST_ASSERT_EQ(0b01010110, flagRegister.getRegister());
 }

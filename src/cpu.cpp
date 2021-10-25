@@ -51,9 +51,10 @@ void Cpu::setProgramCounter(uint16_t programCounter) {
 
 // Decode all instructions
 bool Cpu::instructionDecoder(uint8_t opcode) {
-  // std::cout << "PC: " << (int) programCounter << " OP: " << (int)opcode << std::endl;
+  /*std::cout << "PC: " << std::hex << (int)programCounter << " OP: " << std::hex
+            << (int)opcode << std::endl;*/
   bool skipIncrement = false;
-  if (programCounter == 0x0DCD) {
+  if (programCounter == 0x0103) {
     int a = 0;
   }
   switch (opcode) {
@@ -97,7 +98,7 @@ bool Cpu::instructionDecoder(uint8_t opcode) {
 
     // STA Opcode
   case 0x32:
-      instructions->STA(getNextWord());
+    instructions->STA(getNextWord());
     break;
 
   // INX Opcodes
@@ -677,10 +678,8 @@ bool Cpu::instructionDecoder(uint8_t opcode) {
 
   // Rccc Opcodes
   case 0xC0:
-    skipIncrement =
-        instructions
-            ->RETCondition(
-                programCounter, FlagRegister::Condition::NotZero);
+    skipIncrement = instructions->RETCondition(
+        programCounter, FlagRegister::Condition::NotZero);
     break;
   case 0xD0:
     skipIncrement = instructions->RETCondition(
@@ -727,7 +726,7 @@ bool Cpu::instructionDecoder(uint8_t opcode) {
 
   // Jccc Opcodes
   case 0xC2:
-      skipIncrement = instructions->JMPCondition(
+    skipIncrement = instructions->JMPCondition(
         programCounter, getNextWord(), FlagRegister::Condition::NotZero);
     break;
   case 0xD2:
@@ -849,29 +848,29 @@ bool Cpu::instructionDecoder(uint8_t opcode) {
     instructions->ORI(getNextByte());
     break;
 
-// RST Opcodes
-    case 0xC7:
+    // RST Opcodes
+  case 0xC7:
     instructions->RST(programCounter, 0);
     break;
-    case 0xCF:
+  case 0xCF:
     instructions->RST(programCounter, 1);
     break;
-    case 0xD7:
+  case 0xD7:
     instructions->RST(programCounter, 2);
     break;
-    case 0xDF:
+  case 0xDF:
     instructions->RST(programCounter, 3);
     break;
-    case 0xE7:
+  case 0xE7:
     instructions->RST(programCounter, 4);
     break;
-    case 0xEF:
+  case 0xEF:
     instructions->RST(programCounter, 5);
     break;
-    case 0xF7:
+  case 0xF7:
     instructions->RST(programCounter, 6);
     break;
-    case 0xFF:
+  case 0xFF:
     instructions->RST(programCounter, 7);
     break;
 

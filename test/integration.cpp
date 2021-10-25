@@ -11,39 +11,65 @@ protected:
   void SetUp() {}
 };
 
-TEST_F(IntegrationsTest, EasyCpuTest) {
+void interceptBDOSCall(Cpu &cpu, std::string &pOutput) {
+  // Stolen from
+  // https://github.com/GunshipPenguin/lib8080/blob/master/test/integration/cpmloader.c
+
+  std::setvbuf(stdout, NULL, _IONBF, 0);
+  if (cpu.getRegisterController().get(Registers::C).getRegister() == 2) {
+    if (cpu.getRegisterController().get(Registers::E).getRegister() != 0) {
+      std::cout
+          << (char)cpu.getRegisterController().get(Registers::E).getRegister();
+      pOutput +=
+          (char)cpu.getRegisterController().get(Registers::E).getRegister();
+    }
+  } else if (cpu.getRegisterController().get(Registers::C).getRegister() == 9) {
+    for (int addr =
+             cpu.getRegisterController().getRegisterPair(RegisterPair::D);
+         cpu.getBusController().readByte(addr) != '$'; addr++) {
+      if (cpu.getBusController().readByte(addr) != 0) {
+        std::cout << (char)cpu.getBusController().readByte(addr);
+        pOutput += (char)cpu.getBusController().readByte(addr);
+      }
+    }
+  }
+}
+
+TEST_F(IntegrationsTest, TST8080) {
+  cpu.getBusController().addChipRegion(0x0, 0x99, new Ram(0x100));
   cpu.getBusController().addChipRegion(
-      0, 0x05AF,
+      0x100, 0x5FF + 0x100,
       new RamDebug("/Users/robin/Documents/GitHub/Intel-8080-Emulator/src/roms/"
-                   "cpu_dia.com"));
+                   "TST8080.COM"));
 
-  cpu.getBusController().addChipRegion(0x05AF, 0xFFFF, new Ram(0xFA60));
+  cpu.getBusController().addChipRegion(0x0400, 0xFFFF, new Ram(0xFA60));
 
-  uint8_t b[] = {0};
-  cpu.getIOController().addIODevice(new IODevice(b, sizeof(b) / sizeof(b[0])));
   std::string lOutput = "";
-  char c = 0;
 
-  for (int i = 0; i < 1500; i++) {
+  cpu.getBusController().writeByte(5, 0xC9);
+  cpu.setProgramCounter(0x100);
+
+  while (true) {
     cpu.step(1);
-    if (cpu.getIOController().getDeviceValue(0) != 0) {
-      c = cpu.getIOController().getDeviceValue(0);
-      lOutput += c;
-      cpu.getIOController().setDeviceValue(0, 0);
+
+    if (cpu.getProgramCounter() == 0) {
+      break;
+    }
+
+    if (cpu.getProgramCounter() == 5) {
+      interceptBDOSCall(cpu, lOutput);
     }
   }
 
-  bool found = false;
-  std::string foundMessage = "CPU IS OPERATIONAL$";
+  std::string foundMessage =
+      "MICROCOSM ASSOCIATES 8080/8085 CPU DIAGNOSTIC\r\n VERSION 1.0  (C) "
+      "1980\r\n\r\n CPU IS OPERATIONAL";
 
-  found = lOutput.find(foundMessage) != std::string::npos;
-
-  ASSERT_TRUE(found);
+  ASSERT_TRUE(lOutput == foundMessage);
 }
 
-TEST_F(IntegrationsTest, 8080Preliminary) {
-
-  // cpu.getBusController().addChipRegion(0x0, 0x99, new Ram(0x100));
+TEST_F(IntegrationsTest, 8080PRE) {
+  cpu.getBusController().addChipRegion(0x0, 0x99, new Ram(0x100));
   cpu.getBusController().addChipRegion(
       0x100, 0x3FF + 0x100,
       new RamDebug("/Users/robin/Documents/GitHub/Intel-8080-Emulator/src/roms/"
@@ -52,34 +78,59 @@ TEST_F(IntegrationsTest, 8080Preliminary) {
   cpu.getBusController().addChipRegion(0x0400, 0xFFFF, new Ram(0xFA60));
 
   std::string lOutput = "";
-  char currentChar = 0;
 
-  int programCounter = 0;
-  std::setvbuf(stdout, NULL, _IONBF, 0);
-  while (programCounter != 0x32A) {
+  cpu.getBusController().writeByte(5, 0xC9);
+  cpu.setProgramCounter(0x100);
+
+  while (true) {
     cpu.step(1);
-    programCounter = cpu.getProgramCounter();
-  }
 
-  uint16_t lDRegPair =
-      cpu.getRegisterController().getRegisterPair(RegisterPair::D);
+    if (cpu.getProgramCounter() == 0) {
+      break;
+    }
 
-  while (currentChar != '$') {
-    currentChar = cpu.getBusController().readByte(lDRegPair);
-    lOutput.push_back(currentChar);
-    lDRegPair++;
-    if (lDRegPair == 0) {
-      std::cout << "Hello";
-      currentChar = '$';
+    if (cpu.getProgramCounter() == 5) {
+      interceptBDOSCall(cpu, lOutput);
     }
   }
 
-  bool found = false;
-  std::string foundMessage = "8080 Preliminary tests complete$";
+  std::string foundMessage = "8080 Preliminary tests complete";
 
-  found = lOutput.find(foundMessage) != std::string::npos;
+  ASSERT_TRUE(lOutput == foundMessage);
+}
 
-  ASSERT_TRUE(found);
+TEST_F(IntegrationsTest, CPUTEST) {
+  cpu.getBusController().addChipRegion(0x0, 0x99, new Ram(0x100));
+  cpu.getBusController().addChipRegion(
+      0x100, 0x4AFF + 0x100,
+      new RamDebug("/Users/robin/Documents/GitHub/Intel-8080-Emulator/src/roms/"
+                   "CPUTEST.COM"));
+
+  cpu.getBusController().addChipRegion(0x4B00 + 0x100, 0xFFFF, new Ram(0xFA60));
+
+  std::string lOutput = "";
+
+  cpu.getBusController().writeByte(5, 0xC9);
+  cpu.setProgramCounter(0x100);
+
+  while (true) {
+    cpu.step(1);
+
+    if (cpu.getProgramCounter() == 0) {
+      break;
+    }
+
+    if (cpu.getProgramCounter() == 5) {
+      interceptBDOSCall(cpu, lOutput);
+    }
+  }
+
+  std::string foundMessage =
+      "\r\nDIAGNOSTICS II V1.2 - CPU TEST\r\nCOPYRIGHT (C) 1981 - SUPERSOFT "
+      "ASSOCIATES\r\n\nABCDEFGHIJKLMNOPQRSTUVWXYZ\r\nCPU IS 8080/8085\r\nBEGIN "
+      "TIMING TEST\r\n\a\aEND TIMING TEST\r\nCPU TESTS OK\r\n";
+
+  ASSERT_TRUE(lOutput == foundMessage);
 }
 /*
 TEST_F(IntegrationsTest, 8080Excerciser) {

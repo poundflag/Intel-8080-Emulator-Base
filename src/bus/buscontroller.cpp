@@ -6,7 +6,7 @@ ChipRegion &BusController::findChipRegion(uint16_t address) {
       return chip;
     }
   }
-  
+
   return nullChip; // TODO Change later to a 0
 }
 
@@ -36,9 +36,16 @@ void BusController::writeWord(uint16_t address, uint16_t value) {
 }
 
 uint8_t BusController::readByte(uint16_t address) {
-  ChipRegion chip = findChipRegion(address); // Check if it is zero TODO WRITE TEST 
+  ChipRegion chip =
+      findChipRegion(address); // Check if it is zero TODO WRITE TEST
   if (chip.getChip() != nullptr) {
-    return chip.getChip()->read(address-chip.getStartAddress());
+    /*if (address > 0x899 &&   address < 0x8AA) {
+      std::cout << "Address " << std::hex << (int)address << " Data "
+                << std::hex
+                << (int)chip.getChip()->read(address - chip.getStartAddress())
+                << std::endl;
+    }*/
+    return chip.getChip()->read(address - chip.getStartAddress());
   }
   return 0;
 }
@@ -46,7 +53,7 @@ uint8_t BusController::readByte(uint16_t address) {
 void BusController::writeByte(uint16_t address, uint8_t value) {
   ChipRegion &chip = findChipRegion(address);
   if (chip.getChip() != nullptr) {
-    chip.getChip()->write(address-chip.getStartAddress(), value);
+    chip.getChip()->write(address - chip.getStartAddress(), value);
   }
 }
 

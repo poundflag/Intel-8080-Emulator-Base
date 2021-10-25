@@ -33,3 +33,6 @@
 build/
 lib/**
 **/.DS_Store
+src/roms/8080-Exer Result
+src/roms/CPUTEST.asm
+src/roms/CPUTEST.prm.lst

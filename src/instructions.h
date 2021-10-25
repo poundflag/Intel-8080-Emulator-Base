@@ -15,6 +15,7 @@ private:
   IOController &ioController;
 
   bool conditionSuccessful(FlagRegister::Condition condition);
+  uint8_t performSub(uint8_t value1, uint8_t value2, uint8_t borrow);
 
 public:
   Instructions(BusController &busController,
