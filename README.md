@@ -26,3 +26,5 @@ Intel-8080-Emulator-Base is an Intel 8080 intended for the use of Altair Basic a
 - [Rokkerruslan's Emulator for some minor testing](https://rokkerruslan.github.io/assembler)
 - [Oshonsoft's 8085 Simulator (which apparently produces false flagregister results!)](https://www.oshonsoft.com/8085.php)
 - [Peter Schorn for the Altair Software (Yielded better results than the software from altairclone.com)](https://schorn.ch/altair_3.php)
+- https://pastraiser.com/cpu/i8080/i8080_opcodes.html
+- http://dunfield.classiccmp.org/r/8080.txt
