@@ -3,9 +3,9 @@
 
 Instructions::Instructions(BusController &busController,
                            RegisterController &registerController,
-                           IOController &ioController)
+                           IOController &ioController, ALU &alu)
     : busController(busController), registerController(registerController),
-      ioController(ioController) {}
+      ioController(ioController), alu(alu) {}
 
 // MOV D,S   01DDDSSS - Move register to register
 void Instructions::MOV(Registers::Register destination,
@@ -75,95 +75,37 @@ void Instructions::ADD(Registers::Register source) {
   uint8_t aValue = registerController.get(Registers::A).getRegister();
   uint8_t sourceValue = registerController.get(source).getRegister();
 
-  // Add it in a 16 bit type to avoid an overflow, and therefore the wrong value
-  uint16_t result = aValue + sourceValue;
-  bool carryResult = (result & 0x100) == 0x100;
-  bool acResult = (((aValue & 0xF) + (sourceValue & 0xF)) & 0x10) == 0x10;
-  registerController.get(Registers::A).setRegister((uint8_t)result);
-  registerController.getFlagRegister().processFlags(FlagRegister::FlagRule::All,
-                                                    aValue, sourceValue, "+");
-  registerController.getFlagRegister().setFlag(FlagRegister::Carry,
-                                               carryResult);
-  registerController.getFlagRegister().setFlag(FlagRegister::AuxiliaryCarry,
-                                               acResult);
-  // i8080_set_flag(cpu, FLAG_C, res16 & 0x100);
-  // i8080_set_flag(cpu, FLAG_A, (((a & 0xF) + (b & 0xF) + carry_val) & 0x10));
+  registerController.get(Registers::A)
+      .setRegister(alu.performAdd(aValue, sourceValue, 0));
 }
 
 // ADI #     11000110 db       ZSCPA   Add immediate to A
 void Instructions::ADI(uint8_t immediate) {
   uint8_t aValue = registerController.get(Registers::A).getRegister();
 
-  // Add it in a 16 bit type to avoid an overflow, and therefore the wrong value
-  uint16_t result = aValue + immediate;
-  bool carryResult = (result & 0x100) == 0x100;
-  bool acResult = (((aValue & 0xF) + (immediate & 0xF)) & 0x10) == 0x10;
-  registerController.get(Registers::A).setRegister((uint8_t)result);
-  registerController.getFlagRegister().processFlags(FlagRegister::FlagRule::All,
-                                                    aValue, immediate, "+");
-  registerController.getFlagRegister().setFlag(FlagRegister::Carry,
-                                               carryResult);
-  registerController.getFlagRegister().setFlag(FlagRegister::AuxiliaryCarry,
-                                               acResult);
+  registerController.get(Registers::A)
+      .setRegister(alu.performAdd(aValue, immediate, 0));
 }
 
 // ADC S     10001SSS          ZSCPA   Add register to A with carry
 void Instructions::ADC(Registers::Register source) {
   uint8_t aValue = registerController.get(Registers::A).getRegister();
   uint8_t sourceValue = registerController.get(source).getRegister();
-  uint8_t carryValue =
-      registerController.getFlagRegister().getFlag(FlagRegister::Flag::Carry)
-          ? 1
-          : 0;
 
-  // Add it in a 16 bit type to avoid an overflow, and therefore the wrong value
-  uint16_t result = aValue + sourceValue + carryValue;
-  bool carryResult = (result & 0x100) == 0x100;
-  bool acResult =
-      (((aValue & 0xF) + (sourceValue & 0xF) + carryValue) & 0x10) == 0x10;
-
-  // If the carry flag is on
-  if (registerController.getFlagRegister().getFlag(FlagRegister::Flag::Carry)) {
-    sourceValue += 1;
-    // result += 1;
-  }
-
-  registerController.get(Registers::A).setRegister((uint8_t)result);
-  registerController.getFlagRegister().processFlags(FlagRegister::FlagRule::All,
-                                                    aValue, sourceValue, "+");
-  registerController.getFlagRegister().setFlag(FlagRegister::Carry,
-                                               carryResult);
-  registerController.getFlagRegister().setFlag(FlagRegister::AuxiliaryCarry,
-                                               acResult);
+  registerController.get(Registers::A)
+      .setRegister(alu.performAdd(aValue, sourceValue,
+                                  registerController.getFlagRegister().getFlag(
+                                      FlagRegister::Flag::Carry)));
 }
 
 // ACI #     11001110 db       ZSCPA   Add immediate to A with carry
 void Instructions::ACI(uint8_t immediate) {
   uint8_t aValue = registerController.get(Registers::A).getRegister();
-  uint8_t carryValue =
-      registerController.getFlagRegister().getFlag(FlagRegister::Flag::Carry)
-          ? 1
-          : 0;
-
-  // Add it in a 16 bit type to avoid an overflow, and therefore the wrong value
-  uint16_t result = aValue + immediate + carryValue;
-  bool carryResult = (result & 0x100) == 0x100;
-  bool acResult =
-      (((aValue & 0xF) + (immediate & 0xF) + carryValue) & 0x10) == 0x10;
-
-  // If the carry flag is on
-  if (registerController.getFlagRegister().getFlag(FlagRegister::Flag::Carry)) {
-    immediate += 1;
-    // result += 1;
-  }
-
-  registerController.get(Registers::A).setRegister((uint8_t)result);
-  registerController.getFlagRegister().processFlags(FlagRegister::FlagRule::All,
-                                                    aValue, immediate, "+");
-  registerController.getFlagRegister().setFlag(FlagRegister::Carry,
-                                               carryResult);
-  registerController.getFlagRegister().setFlag(FlagRegister::AuxiliaryCarry,
-                                               acResult);
+  
+  registerController.get(Registers::A)
+      .setRegister(alu.performAdd(aValue, immediate,
+                                  registerController.getFlagRegister().getFlag(
+                                      FlagRegister::Flag::Carry)));
 }
 
 // SUB S     10010SSS          ZSCPA   Subtract register from A
@@ -171,20 +113,16 @@ void Instructions::SUB(Registers::Register source) {
   uint8_t aValue = registerController.get(Registers::A).getRegister();
   uint8_t sourceValue = registerController.get(source).getRegister();
 
-  uint8_t result = aValue - sourceValue;
-  registerController.get(Registers::A).setRegister(result);
-  registerController.getFlagRegister().processFlags(FlagRegister::FlagRule::All,
-                                                    aValue, sourceValue, "-");
+  registerController.get(Registers::A)
+      .setRegister(alu.performSub(aValue, sourceValue, 0));
 }
 
 // SUI #     11010110 db       ZSCPA   Subtract immediate from A
 void Instructions::SUI(uint8_t immediate) {
   uint8_t aValue = registerController.get(Registers::A).getRegister();
 
-  uint8_t result = aValue - immediate;
-  registerController.get(Registers::A).setRegister(result);
-  registerController.getFlagRegister().processFlags(FlagRegister::FlagRule::All,
-                                                    aValue, immediate, "-");
+  registerController.get(Registers::A)
+      .setRegister(alu.performSub(aValue, immediate, 0));
 }
 
 // SBB S     10011SSS          ZSCPA   Subtract register from A with borrow
@@ -192,52 +130,20 @@ void Instructions::SBB(Registers::Register source) {
   uint8_t aValue = registerController.get(Registers::A).getRegister();
   uint8_t sourceValue = registerController.get(source).getRegister();
 
-  // Add it in a 16 bit type to avoid an overflow, and therefore the wrong value
-  uint16_t result = aValue - sourceValue;
-
-  // If the carry flag is on
-  if (registerController.getFlagRegister().getFlag(FlagRegister::Flag::Carry)) {
-    sourceValue -= 1;
-    result -= 1;
-  }
-
-  registerController.get(Registers::A).setRegister((uint8_t)result);
-  registerController.getFlagRegister().processFlags(FlagRegister::FlagRule::All,
-                                                    aValue, sourceValue, "-");
+  registerController.get(Registers::A)
+      .setRegister(alu.performSub(
+          aValue, sourceValue,
+          registerController.getFlagRegister().getFlag(FlagRegister::Carry)));
 }
 
 // SBI #     11011110 db       ZSCPA   Subtract immediate from A with borrow
 void Instructions::SBI(uint8_t immediate) {
   uint8_t aValue = registerController.get(Registers::A).getRegister();
 
-  // Add it in a 16 bit type to avoid an overflow, and therefore the wrong value
-  uint16_t result = aValue - immediate;
-
-  // If the carry flag is on
-  if (registerController.getFlagRegister().getFlag(FlagRegister::Flag::Carry)) {
-    immediate -= 1;
-    result -= 1;
-  }
-
-  registerController.get(Registers::A).setRegister((uint8_t)result);
-  registerController.getFlagRegister().processFlags(FlagRegister::FlagRule::All,
-                                                    aValue, immediate, "-");
-}
-
-uint8_t Instructions::performSub(uint8_t value1, uint8_t value2,
-                                 uint8_t borrow) {
-
-  uint8_t value2Sub = (~value2) & 0xFF;
-  uint16_t result = value1 + value2Sub + (borrow);
-
-  registerController.getFlagRegister().processFlags(FlagRegister::FlagRule::All,
-                                                    result, 0, "+");
-  registerController.getFlagRegister().setFlag(FlagRegister::Carry,
-                                               !(result & 0x100));
-  registerController.getFlagRegister().setFlag(
-      FlagRegister::AuxiliaryCarry,
-      ((value1 & 0xF) + (value2Sub & 0xF) + borrow) & 0x10);
-  return result;
+  registerController.get(Registers::A)
+      .setRegister(alu.performSub(
+          aValue, immediate,
+          registerController.getFlagRegister().getFlag(FlagRegister::Carry)));
 }
 
 // INR D     00DDD100          ZSPA    Increment register

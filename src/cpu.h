@@ -2,6 +2,7 @@
 #include "instructions.h"
 #include "registers/registercontroller.h"
 #include "io/iocontroller.h"
+#include "core/alu.h"
 
 #ifndef __CPU_H__
 #define __CPU_H__
@@ -13,6 +14,7 @@ private:
   BusController *busController;
   Instructions *instructions;
   IOController *ioController;
+  ALU *alu;
   uint16_t programCounter = 0;
   bool instructionDecoder(uint8_t opcode);
   uint16_t getNextWord();

@@ -7,7 +7,7 @@ void FlagRegister::determineCarry(uint16_t value) {
 // Checks the number of ones in binary, and determines whether they are even
 // or not
 void FlagRegister::determineParity(uint8_t value) {
-  /* value = (value >> 4) ^ (value & 0xF);
+  /*value = (value >> 4) ^ (value & 0xF);
   value = (value >> 2) ^ (value & 0b11);
   value = (value >> 1) ^ (value & 0b1);
   setFlag(Flag::Parity, value == 0);*/

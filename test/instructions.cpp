@@ -7,8 +7,9 @@ protected:
   BusController busController = BusController();
   RegisterController registerController = RegisterController(busController);
   IOController ioController = IOController();
+  ALU alu = ALU(registerController);
   Instructions instructions =
-      Instructions(busController, registerController, ioController);
+      Instructions(busController, registerController, ioController, alu);
   Register lA;
   void SetUp() {
     busController.addChipRegion(ChipRegion(0, 0xFFFF, new Ram(0xFFFF)));

@@ -10,6 +10,7 @@ add_subdirectory(bus)
 add_subdirectory(registers)
 add_subdirectory(../test tests)
 add_subdirectory(io)
+add_subdirectory(core)
 
 add_library(
     cpu
@@ -30,6 +31,7 @@ target_link_libraries(
     PUBLIC iocontroller
     PUBLIC cpu
     PUBLIC instructions
+    PUBLIC alu
     PUBLIC curses
 )
 
@@ -39,4 +41,5 @@ target_include_directories(
     PUBLIC "{PROJECT_SOURCE_DIR}/src/bus"
     PUBLIC "{PROJECT_SOURCE_DIR}/src/registers"
     PUBLIC "{PROJECT_SOURCE_DIR}/src/io"
+    PUBLIC "{PROJECT_SOURCE_DIR}/src/alu"
 )

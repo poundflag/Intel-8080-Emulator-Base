@@ -1,4 +1,5 @@
 #include "bus/buscontroller.h"
+#include "core/alu.h"
 #include "io/iocontroller.h"
 #include "registers/model/register.h"
 #include "registers/registercontroller.h"
@@ -13,14 +14,14 @@ private:
   BusController &busController;
   RegisterController &registerController;
   IOController &ioController;
+  ALU &alu;
 
   bool conditionSuccessful(FlagRegister::Condition condition);
-  uint8_t performSub(uint8_t value1, uint8_t value2, uint8_t borrow);
 
 public:
   Instructions(BusController &busController,
                RegisterController &registerController,
-               IOController &ioController);
+               IOController &ioController, ALU &alu);
   void MOV(Registers::Register destination, Registers::Register source);
   void MVI(Registers::Register destination, uint8_t immediate);
   void LXI(RegisterPair registerPair, uint16_t immediate);

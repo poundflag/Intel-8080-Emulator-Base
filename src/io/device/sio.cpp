@@ -35,7 +35,7 @@ uint8_t SIO::getValue(uint8_t portAddress) {
         if (c == 'm') {
           c = '\r';
         }
-        if (c == 'n') {
+        if (c == 'a') {
           c = ' ';
         }
       }

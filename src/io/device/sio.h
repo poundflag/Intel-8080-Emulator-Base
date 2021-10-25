@@ -8,7 +8,7 @@
 class SIO : public IODevice {
 private:
   int index = 0;
-  std::string test = "\r\r\rY\rY\rY\r";
+  std::string test = "\r\r\rY\rPRINT \"HELLO WORLD\"\r";
 
 public:
   SIO(uint8_t ports[], int size);

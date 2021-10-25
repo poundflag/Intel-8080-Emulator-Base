@@ -5,8 +5,9 @@ Cpu::Cpu() {
   ioController =
       new IOController(); // Do i really need a pointer for this??? TODO
   registerController = new RegisterController(*busController);
+  alu = new ALU(*registerController);
   instructions =
-      new Instructions(*busController, *registerController, *ioController);
+      new Instructions(*busController, *registerController, *ioController, *alu);
 }
 
 // Continously run the cpu
@@ -51,7 +52,8 @@ void Cpu::setProgramCounter(uint16_t programCounter) {
 
 // Decode all instructions
 bool Cpu::instructionDecoder(uint8_t opcode) {
-  /*std::cout << "PC: " << std::hex << (int)programCounter << " OP: " << std::hex
+  /*std::cout << "PC: " << std::hex << (int)programCounter << " OP: " <<
+     std::hex
             << (int)opcode << std::endl;*/
   bool skipIncrement = false;
   if (programCounter == 0x0103) {
@@ -983,4 +985,5 @@ Cpu::~Cpu() {
   delete registerController;
   delete busController;
   delete ioController;
+  delete alu;
 }
