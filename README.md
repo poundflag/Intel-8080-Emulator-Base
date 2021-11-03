@@ -12,12 +12,10 @@ Intel-8080-Emulator-Base is an Intel 8080 intended for the use of Altair Basic a
 - [X] Passing the [Z80 instruction set exerciser by Frank D. Cringle](https://github.com/superzazu/8080/blob/master/cpu_tests/8080EXM.COM)
 - [ ] Make a proper 88-Sio implementation
 - [X] Running Altair 4k Basic
-- [ ] Running Altair 8k Basic (I don't know yet, but it's likely)
+- [X] Running Altair 8k Basic (I don't know yet, but it's likely)
 
 ### TODO 
-- Adding a proper ALU implementation
 - Add diagrams to the readme
-- Fix the OV Error in Altair Basic 4k & 8k
 
 ## Resources
 - [Intel 8080 Programmers Manual](https://altairclone.com/downloads/manuals/8080%20Programmers%20Manual.pdf)
