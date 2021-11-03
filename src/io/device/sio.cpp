@@ -1,13 +1,8 @@
 #include "sio.h"
-#include <iostream>
-#include <ncurses.h>
 
 SIO::SIO(uint8_t ports[], int size) : IODevice{ports, size} {}
 
 void SIO::setValue(uint8_t value, uint8_t portAddress) {
-  if (value == 'Z') {
-    int a = 0;
-  }
   std::cout << (char)value;
 }
 
@@ -23,8 +18,8 @@ uint8_t SIO::getValue(uint8_t portAddress) {
         if (c == 'o') {
           c = '\r';
           std::cout << "A";
-        }
-    */
+        }*/
+
     if (index < test.length()) {
       c = test[index];
       index++;

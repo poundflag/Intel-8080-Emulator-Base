@@ -1,5 +1,7 @@
 #include "buscontroller.h"
 
+// Find the object of a given address
+// Part of the MMU
 ChipRegion &BusController::findChipRegion(uint16_t address) {
   for (auto &chip : chipRegions) {
     if (address >= chip.getStartAddress() && address <= chip.getEndAddress()) {
@@ -7,7 +9,7 @@ ChipRegion &BusController::findChipRegion(uint16_t address) {
     }
   }
 
-  return nullChip; // TODO Change later to a 0
+  return nullChip;
 }
 
 void BusController::addChipRegion(ChipRegion chipRegion) {
@@ -20,7 +22,6 @@ void BusController::addChipRegion(int startAddress, int endAddress,
 }
 
 uint16_t BusController::readWord(uint16_t address) {
-  // ChipRegion chip = findChipRegion(address);
   uint8_t msb = readByte(address);
   uint8_t lsb = readByte(address + 1);
   uint16_t value = (lsb << 8) + msb;
@@ -28,7 +29,6 @@ uint16_t BusController::readWord(uint16_t address) {
 }
 
 void BusController::writeWord(uint16_t address, uint16_t value) {
-  // ChipRegion &chip = findChipRegion(address);
   uint8_t msb = value & 0x00FF;
   uint8_t lsb = value >> 8;
   writeByte(address, msb);
@@ -37,14 +37,8 @@ void BusController::writeWord(uint16_t address, uint16_t value) {
 
 uint8_t BusController::readByte(uint16_t address) {
   ChipRegion chip =
-      findChipRegion(address); // Check if it is zero TODO WRITE TEST
+      findChipRegion(address);
   if (chip.getChip() != nullptr) {
-    /*if (address > 0x899 &&   address < 0x8AA) {
-      std::cout << "Address " << std::hex << (int)address << " Data "
-                << std::hex
-                << (int)chip.getChip()->read(address - chip.getStartAddress())
-                << std::endl;
-    }*/
     return chip.getChip()->read(address - chip.getStartAddress());
   }
   return 0;

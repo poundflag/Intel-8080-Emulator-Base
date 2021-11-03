@@ -1,6 +1,4 @@
 #include "../model/iodevice.h"
-#include <iostream>
-#include <string>
 
 #ifndef __SIO_H__
 #define __SIO_H__
@@ -8,7 +6,7 @@
 class SIO : public IODevice {
 private:
   int index = 0;
-  std::string test = "\r\r\rY\rPRINT \"HELLO WORLD\"\r";
+  std::string test = "\r\r\rY\rPRINT \"HELLO WORLD\"\r\rPRINT 1+1\r";
 
 public:
   SIO(uint8_t ports[], int size);

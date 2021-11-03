@@ -14,6 +14,8 @@ public:
   ALU(RegisterController &registerController);
   uint8_t performSub(uint8_t value1, uint8_t value2, uint8_t carryBit);
   uint8_t performAdd(uint8_t value1, uint8_t value2, uint8_t carryBit);
+  uint8_t performAnd(uint8_t value1, uint8_t value2);
+  uint8_t performOr(uint8_t value1, uint8_t value2);
 };
 
 #endif // __ALU_H__

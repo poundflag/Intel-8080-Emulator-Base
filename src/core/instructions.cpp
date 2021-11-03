@@ -1,5 +1,4 @@
 #include "instructions.h"
-#include "registers/model/flagregister.h"
 
 Instructions::Instructions(BusController &busController,
                            RegisterController &registerController,
@@ -101,7 +100,7 @@ void Instructions::ADC(Registers::Register source) {
 // ACI #     11001110 db       ZSCPA   Add immediate to A with carry
 void Instructions::ACI(uint8_t immediate) {
   uint8_t aValue = registerController.get(Registers::A).getRegister();
-  
+
   registerController.get(Registers::A)
       .setRegister(alu.performAdd(aValue, immediate,
                                   registerController.getFlagRegister().getFlag(
@@ -155,6 +154,14 @@ void Instructions::INR(Registers::Register destination) {
       FlagRegister::FlagRule::Partial, temp, 1, "+");
   registerController.getFlagRegister().setFlag(FlagRegister::AuxiliaryCarry,
                                                acResult);
+  // TODO Check later
+  /*bool carryTemp =
+      registerController.getFlagRegister().getFlag(FlagRegister::Carry);
+  bool acResult = (temp & 0x0F) == 0x0F;
+  registerController.get(destination).setRegister(alu.performAdd(temp, 1, 0));
+  registerController.getFlagRegister().setFlag(FlagRegister::Carry, carryTemp);
+  registerController.getFlagRegister().setFlag(FlagRegister::AuxiliaryCarry,
+                                               acResult);*/
 }
 
 // DCR D     00DDD101          ZSPA    Decrement register
@@ -233,45 +240,33 @@ void Instructions::ANA(Registers::Register source) {
   uint8_t sourceValue = registerController.get(source).getRegister();
   uint8_t aValue = registerController.get(Registers::A).getRegister();
 
-  bool acResult = ((aValue | sourceValue) & 0x08) != 0;
-
-  registerController.get(Registers::A).setRegister(aValue & sourceValue);
-  registerController.getFlagRegister().processFlags( // Test Number 1A7
-      FlagRegister::FlagRule::All, aValue & sourceValue, 0, "+");
-  registerController.getFlagRegister().setFlag(FlagRegister::Carry, false);
-  registerController.getFlagRegister().setFlag(FlagRegister::AuxiliaryCarry,
-                                               acResult);
+  registerController.get(Registers::A)
+      .setRegister(alu.performAnd(aValue, sourceValue));
 }
 
 // ANI #     11100110 db       ZSPCA   AND immediate with A
 void Instructions::ANI(uint8_t immediate) {
   uint8_t aValue = registerController.get(Registers::A).getRegister();
 
-  bool acResult = ((aValue | immediate) & 0x08) != 0;
-
-  registerController.get(Registers::A).setRegister(aValue & immediate);
-  registerController.getFlagRegister().processFlags(FlagRegister::FlagRule::All,
-                                                    aValue & immediate, 0, "+");
-  registerController.getFlagRegister().setFlag(FlagRegister::Carry, false);
-  registerController.getFlagRegister().setFlag(FlagRegister::AuxiliaryCarry,
-                                               acResult);
+  registerController.get(Registers::A)
+      .setRegister(alu.performAnd(aValue, immediate));
 }
 
 // ORA S     10110SSS          ZSPCA   OR  register with A
 void Instructions::ORA(Registers::Register source) {
   uint8_t sourceValue = registerController.get(source).getRegister();
   uint8_t aValue = registerController.get(Registers::A).getRegister();
-  registerController.get(Registers::A).setRegister(aValue | sourceValue);
-  registerController.getFlagRegister().processFlags(
-      FlagRegister::FlagRule::All, aValue | sourceValue, 0, "+");
+
+  registerController.get(Registers::A)
+      .setRegister(alu.performOr(aValue, sourceValue));
 }
 
 // ORI #     11110110          ZSPCA   OR  immediate with A
 void Instructions::ORI(uint8_t immediate) {
   uint8_t aValue = registerController.get(Registers::A).getRegister();
-  registerController.get(Registers::A).setRegister(aValue | immediate);
-  registerController.getFlagRegister().processFlags(FlagRegister::FlagRule::All,
-                                                    aValue | immediate, 0, "+");
+
+  registerController.get(Registers::A)
+      .setRegister(alu.performOr(aValue, immediate));
 }
 
 // XRA S     10101SSS          ZSPCA   ExclusiveOR register with A
@@ -294,7 +289,7 @@ void Instructions::XRI(uint8_t immediate) {
 // CMP S     10111SSS          ZSPCA   Compare register with A
 void Instructions::CMP(Registers::Register source) {
   uint8_t intermediate = registerController.get(Registers::A).getRegister();
-  SUB(source); // TODO FIX
+  SUB(source);
   registerController.get(Registers::A).setRegister(intermediate);
 }
 
@@ -439,7 +434,7 @@ bool Instructions::JMPCondition(uint16_t &source, uint16_t address,
 
 // CALL a    11001101 lb hb    -       Unconditional subroutine call
 void Instructions::CALL(uint16_t &source, uint16_t address) {
-  registerController.getStack().pushWord(source + 1); // TODO Check
+  registerController.getStack().pushWord(source + 1);
   source = address;
 }
 

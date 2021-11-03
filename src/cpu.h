@@ -1,5 +1,5 @@
 #include "bus/buscontroller.h"
-#include "instructions.h"
+#include "core/instructions.h"
 #include "registers/registercontroller.h"
 #include "io/iocontroller.h"
 #include "core/alu.h"

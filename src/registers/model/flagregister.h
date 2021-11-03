@@ -25,10 +25,9 @@ private:
                                std::string operation);
   void determineZero(uint8_t value);
   void determineSigned(uint8_t value);
-  void determineCarry16Bit(uint32_t value);
 
 public:
-  enum class FlagRule { All, Partial, CarryOnly, DAD };
+  enum class FlagRule { All, Partial, CarryOnly };
 
   enum class Condition { // Move to designated class TODO
     Carry,

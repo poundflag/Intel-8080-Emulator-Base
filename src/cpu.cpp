@@ -3,7 +3,7 @@
 Cpu::Cpu() {
   busController = new BusController();
   ioController =
-      new IOController(); // Do i really need a pointer for this??? TODO
+      new IOController();
   registerController = new RegisterController(*busController);
   alu = new ALU(*registerController);
   instructions =
@@ -56,9 +56,6 @@ bool Cpu::instructionDecoder(uint8_t opcode) {
      std::hex
             << (int)opcode << std::endl;*/
   bool skipIncrement = false;
-  if (programCounter == 0x0103) {
-    int a = 0;
-  }
   switch (opcode) {
     // NOP Opcodes
   case 0:

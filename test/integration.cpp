@@ -132,43 +132,66 @@ TEST_F(IntegrationsTest, CPUTEST) {
 
   ASSERT_TRUE(lOutput == foundMessage);
 }
-/*
+
 TEST_F(IntegrationsTest, 8080Excerciser) {
 
   cpu.getBusController().addChipRegion(0x0, 0x99, new Ram(0x100));
   cpu.getBusController().addChipRegion(
       0x100, 0x11FF + 0x100,
       new RamDebug("/Users/robin/Documents/GitHub/Intel-8080-Emulator/src/roms/"
-                   "8080EXER.COM"));
+                   "8080EXM.COM"));
 
-  cpu.getBusController().addChipRegion(0x11FF + 0x100, 0xFFFF, new Ram(0xFA60));
+  cpu.getBusController().addChipRegion(0x1200 + 0x100, 0xFFFF, new Ram(0xFFFE));
 
   std::string lOutput = "";
   char currentChar = 0;
 
   int programCounter = 0;
 
-  cpu.setProgramCounter(cpu.getProgramCounter() + 0x100);
+  cpu.setProgramCounter(0x100);
+
+  cpu.getBusController().writeByte(5, 0xC9);
 
   while (true) {
     cpu.step(1);
-    uint16_t lDRegPair =
-        cpu.getRegisterController().getRegisterPair(RegisterPair::D);
+
+    if (cpu.getProgramCounter() == 0) {
+      break;
+    }
+
     if (cpu.getProgramCounter() == 5) {
-      while (currentChar != '$') {
-        currentChar = cpu.getBusController().readByte(lDRegPair);
-        std::cout << currentChar;
-        lDRegPair++;
-      }
-      currentChar = 0;
-      cpu.getBusController().writeByte(5, 0xC9);
+      interceptBDOSCall(cpu, lOutput);
     }
   }
 
-  bool found = false;
-  std::string foundMessage = "8080 Preliminary tests complete$";
-
-  found = lOutput.find(foundMessage) != std::string::npos;
-
-  ASSERT_TRUE(found);
-}*/
+// TODO Finish
+  std::string lExpected =
+      "8080 instruction exerciser\n\rdad <b,d,h,sp>................  PASS! crc "
+      "is:14474ba6\n\raluop nn......................  PASS! crc "
+      "is:9e922f9e\n\raluop <b,c,d,e,h,l,m,a>.......  PASS! crc "
+      "is:cf762c86\n\r<daa,cma,stc,cmc>.............  PASS! crc "
+      "is:bb3f030c\n\r<inr,dcr> a...................  PASS! crc "
+      "is:adb6460e\n\r<inr,dcr> b...................  PASS! crc "
+      "is:83ed1345\n\r<inx,dcx> b...................  PASS! crc "
+      "is:f79287cd\n\r<inr,dcr> c...................  PASS! crc "
+      "is:e5f6721b\n\r<inr,dcr> d...................  PASS! crc "
+      "is:15b5579a\n\r<inx,dcx> d...................  PASS! crc "
+      "is:7f4e2501\n\r<inr,dcr> e...................  PASS! crc "
+      "is:cf2ab396\n\r<inr,dcr> h...................  PASS! crc "
+      "is:12b2952c\n\r<inx,dcx> h...................  PASS! crc "
+      "is:9f2b23c0\n\r<inr,dcr> l...................  PASS! crc "
+      "is:ff57d356\n\r<inr,dcr> m...................  PASS! crc "
+      "is:92e963bd\n\r<inx,dcx> sp..................  PASS! crc "
+      "is:d5702fab\n\rlhld nnnn.....................  PASS! crc "
+      "is:a9c3d5cb\n\rshld nnnn.....................  PASS! crc "
+      "is:e8864f26\n\rlxi <b,d,h,sp>,nnnn...........  PASS! crc "
+      "is:fcf46e12\n\rldax <b,d>....................  PASS! crc "
+      "is:2b821d5f\n\rmvi <b,c,d,e,h,l,m,a>,nn......  PASS! crc "
+      "is:eaa72044\n\rmov <bcdehla>,<bcdehla>.......  PASS! crc "
+      "is:10b58cee\n\rsta nnnn / lda nnnn...........  PASS! crc "
+      "is:ed57af72\n\r<rlc,rrc,ral,rar>.............  PASS! crc "
+      "is:e0d89235\n\rstax <b,d>....................  PASS! crc "
+      "is:2b0471e9\n\rTests complete";
+  
+  ASSERT_TRUE(lOutput == lExpected);
+}

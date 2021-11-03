@@ -7,6 +7,7 @@ class IODevice {
 private:
   // LATER INPUT OUTPUT ENUM
   uint8_t *portAddresses;
+  // Pointer for the current Array-Size of "portAddresses"
   int arraySize = 0;
 
 protected:

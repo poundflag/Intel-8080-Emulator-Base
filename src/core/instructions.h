@@ -1,9 +1,10 @@
-#include "bus/buscontroller.h"
-#include "core/alu.h"
-#include "io/iocontroller.h"
-#include "registers/model/register.h"
-#include "registers/registercontroller.h"
-#include "registers/registers.h"
+#include "../bus/buscontroller.h"
+#include "../core/alu.h"
+#include "../io/iocontroller.h"
+#include "../registers/model/register.h"
+#include "../registers/registercontroller.h"
+#include "../registers/registers.h"
+#include "../registers/model/flagregister.h"
 
 #ifndef __INSTRUCTIONS_H__
 #define __INSTRUCTIONS_H__

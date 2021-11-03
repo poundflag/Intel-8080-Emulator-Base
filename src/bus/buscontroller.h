@@ -5,15 +5,14 @@
 #ifndef __BUSCONTROLLER_H__
 #define __BUSCONTROLLER_H__
 
-// Inspired from
-// https://github.com/LowLevelJavaScript/16-Bit-Virtual-Machine/blob/master/episode-5/memory-mapper.js
 class BusController {
 private:
   std::vector<ChipRegion>
-      chipRegions; // Change into something more versaitile TODO
-  ChipRegion &findChipRegion(uint16_t address); // Return a reference??
+      chipRegions;
+  ChipRegion &findChipRegion(uint16_t address);
 
-  ChipRegion nullChip = ChipRegion(0, 0, nullptr); // Implement
+  // Nullpointer for an unsuccessful chip return
+  ChipRegion nullChip = ChipRegion(0, 0, nullptr);
 
 public:
   void addChipRegion(ChipRegion chipRegion);

@@ -1,4 +1,4 @@
-#include "../src/instructions.h"
+#include "../src/core/instructions.h"
 #include <gtest/gtest.h>
 
 class InstructionsTest : public ::testing::Test {

@@ -18,12 +18,6 @@ add_library(
     cpu.h
 )
 
-add_library(
-    instructions
-    instructions.cpp
-    instructions.h
-)
-
 target_link_libraries(
     main
     PUBLIC buscontroller
