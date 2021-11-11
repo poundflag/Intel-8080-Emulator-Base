@@ -31,6 +31,7 @@
 *.out
 *.app
 build/
+out/
 lib/**
 **/.DS_Store
 src/roms/8080-Exer Result
