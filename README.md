@@ -15,7 +15,9 @@ Intel-8080-Emulator-Base is an Intel 8080 intended for the use of Altair Basic a
 - [X] Running Altair 8k Basic (I don't know yet, but it's likely)
 
 ### TODO 
-- Add diagrams to the readme
+- Make the program User-Friendly
+- Add CMDline args.
+- Expand Wiki
 
 ## Resources
 - [Intel 8080 Programmers Manual](https://altairclone.com/downloads/manuals/8080%20Programmers%20Manual.pdf)
