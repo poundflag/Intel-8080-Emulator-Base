@@ -27,8 +27,6 @@ void runBasic4K() {
   cpu.getIOController().addIODevice(
       new SIO(ports, sizeof(ports) / sizeof(ports[0])));
 
-  std::setvbuf(stdout, NULL, _IONBF, 0);
-
   cpu.run();
 }
 
@@ -48,24 +46,12 @@ void runBasic8K() {
   cpu.getIOController().addIODevice(
       new SIO(ports, sizeof(ports) / sizeof(ports[0])));
 
-  std::setvbuf(stdout, NULL, _IONBF, 0);
-
   cpu.run();
 }
 
 int main() {
-
-  runBasic8K();
-  /*char input = -1;
-
-  initscr();
-  // timeout(-1);
-  std::cout << "Hello";
-  input = getch();
-
-  if (input != -1) {
-    std::cout << input << std::endl;
-  }
+  runBasic4K();
+  getch();
   endwin();
-*/
+  
 }
