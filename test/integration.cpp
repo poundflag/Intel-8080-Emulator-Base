@@ -16,14 +16,14 @@ void interceptBDOSCall(Cpu &cpu, std::string &pOutput) {
   // https://github.com/GunshipPenguin/lib8080/blob/master/test/integration/cpmloader.c
 
   std::setvbuf(stdout, NULL, _IONBF, 0);
-  if (cpu.getRegisterController().getRegister(Registers::C).getRegister() == 2) {
-    if (cpu.getRegisterController().getRegister(Registers::E).getRegister() != 0) {
+  if (cpu.getRegisterController().getRegister(Registers::C) == 2) {
+    if (cpu.getRegisterController().getRegister(Registers::E) != 0) {
       std::cout
-          << (char)cpu.getRegisterController().getRegister(Registers::E).getRegister();
+          << (char)cpu.getRegisterController().getRegister(Registers::E);
       pOutput +=
-          (char)cpu.getRegisterController().getRegister(Registers::E).getRegister();
+          (char)cpu.getRegisterController().getRegister(Registers::E);
     }
-  } else if (cpu.getRegisterController().getRegister(Registers::C).getRegister() == 9) {
+  } else if (cpu.getRegisterController().getRegister(Registers::C) == 9) {
     for (int addr =
              cpu.getRegisterController().getRegisterPair(RegisterPair::D);
          cpu.getBusController().readByte(addr) != '$'; addr++) {
@@ -133,7 +133,7 @@ TEST_F(IntegrationsTest, CPUTEST) {
   ASSERT_TRUE(lOutput == foundMessage);
 }
 
-TEST_F(IntegrationsTest, 8080Excerciser) {
+/*TEST_F(IntegrationsTest, 8080Excerciser) {
 
   cpu.getBusController().addChipRegion(0x0, 0x99, new Ram(0x100));
   cpu.getBusController().addChipRegion(
@@ -194,4 +194,4 @@ TEST_F(IntegrationsTest, 8080Excerciser) {
       "is:2b0471e9\n\rTests complete";
   
   ASSERT_TRUE(lOutput == lExpected);
-}
+}*/

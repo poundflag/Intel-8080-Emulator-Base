@@ -137,7 +137,7 @@ bool Cpu::instructionDecoder(uint8_t opcode) {
     instructions->INR(Registers::L);
     break;
   case 0x34:
-    instructions->INR(Registers::M);
+    instructions->INR(Registers::MemoryReference);
     break;
 
   // DCR Opcodes
@@ -163,7 +163,7 @@ bool Cpu::instructionDecoder(uint8_t opcode) {
     instructions->DCR(Registers::L);
     break;
   case 0x35:
-    instructions->DCR(Registers::M);
+    instructions->DCR(Registers::MemoryReference);
     break;
 
   // MVI Opcodes
@@ -189,7 +189,7 @@ bool Cpu::instructionDecoder(uint8_t opcode) {
     instructions->MVI(Registers::L, getNextByte());
     break;
   case 0x36:
-    instructions->MVI(Registers::M, getNextByte());
+    instructions->MVI(Registers::MemoryReference, getNextByte());
     break;
 
   // RLC Opcode
@@ -298,7 +298,7 @@ bool Cpu::instructionDecoder(uint8_t opcode) {
     instructions->MOV(Registers::B, Registers::L);
     break;
   case 0x46:
-    instructions->MOV(Registers::B, Registers::M);
+    instructions->MOV(Registers::B, Registers::MemoryReference);
     break;
   case 0x47:
     instructions->MOV(Registers::B, Registers::A);
@@ -322,7 +322,7 @@ bool Cpu::instructionDecoder(uint8_t opcode) {
     instructions->MOV(Registers::C, Registers::L);
     break;
   case 0x4E:
-    instructions->MOV(Registers::C, Registers::M);
+    instructions->MOV(Registers::C, Registers::MemoryReference);
     break;
   case 0x4F:
     instructions->MOV(Registers::C, Registers::A);
@@ -346,7 +346,7 @@ bool Cpu::instructionDecoder(uint8_t opcode) {
     instructions->MOV(Registers::D, Registers::L);
     break;
   case 0x56:
-    instructions->MOV(Registers::D, Registers::M);
+    instructions->MOV(Registers::D, Registers::MemoryReference);
     break;
   case 0x57:
     instructions->MOV(Registers::D, Registers::A);
@@ -370,7 +370,7 @@ bool Cpu::instructionDecoder(uint8_t opcode) {
     instructions->MOV(Registers::E, Registers::L);
     break;
   case 0x5E:
-    instructions->MOV(Registers::E, Registers::M);
+    instructions->MOV(Registers::E, Registers::MemoryReference);
     break;
   case 0x5F:
     instructions->MOV(Registers::E, Registers::A);
@@ -394,7 +394,7 @@ bool Cpu::instructionDecoder(uint8_t opcode) {
     instructions->MOV(Registers::H, Registers::L);
     break;
   case 0x66:
-    instructions->MOV(Registers::H, Registers::M);
+    instructions->MOV(Registers::H, Registers::MemoryReference);
     break;
   case 0x67:
     instructions->MOV(Registers::H, Registers::A);
@@ -418,31 +418,31 @@ bool Cpu::instructionDecoder(uint8_t opcode) {
     instructions->MOV(Registers::L, Registers::L);
     break;
   case 0x6E:
-    instructions->MOV(Registers::L, Registers::M);
+    instructions->MOV(Registers::L, Registers::MemoryReference);
     break;
   case 0x6F:
     instructions->MOV(Registers::L, Registers::A);
     break;
   case 0x70:
-    instructions->MOV(Registers::M, Registers::B);
+    instructions->MOV(Registers::MemoryReference, Registers::B);
     break;
   case 0x71:
-    instructions->MOV(Registers::M, Registers::C);
+    instructions->MOV(Registers::MemoryReference, Registers::C);
     break;
   case 0x72:
-    instructions->MOV(Registers::M, Registers::D);
+    instructions->MOV(Registers::MemoryReference, Registers::D);
     break;
   case 0x73:
-    instructions->MOV(Registers::M, Registers::E);
+    instructions->MOV(Registers::MemoryReference, Registers::E);
     break;
   case 0x74:
-    instructions->MOV(Registers::M, Registers::H);
+    instructions->MOV(Registers::MemoryReference, Registers::H);
     break;
   case 0x75:
-    instructions->MOV(Registers::M, Registers::L);
+    instructions->MOV(Registers::MemoryReference, Registers::L);
     break;
   case 0x77:
-    instructions->MOV(Registers::M, Registers::A);
+    instructions->MOV(Registers::MemoryReference, Registers::A);
     break;
   case 0x78:
     instructions->MOV(Registers::A, Registers::B);
@@ -463,7 +463,7 @@ bool Cpu::instructionDecoder(uint8_t opcode) {
     instructions->MOV(Registers::A, Registers::L);
     break;
   case 0x7E:
-    instructions->MOV(Registers::A, Registers::M);
+    instructions->MOV(Registers::A, Registers::MemoryReference);
     break;
   case 0x7F:
     instructions->MOV(Registers::A, Registers::A);
@@ -489,7 +489,7 @@ bool Cpu::instructionDecoder(uint8_t opcode) {
     instructions->ADD(Registers::L);
     break;
   case 0x86:
-    instructions->ADD(Registers::M);
+    instructions->ADD(Registers::MemoryReference);
     break;
   case 0x87:
     instructions->ADD(Registers::A);
@@ -515,7 +515,7 @@ bool Cpu::instructionDecoder(uint8_t opcode) {
     instructions->ADC(Registers::L);
     break;
   case 0x8E:
-    instructions->ADC(Registers::M);
+    instructions->ADC(Registers::MemoryReference);
     break;
   case 0x8F:
     instructions->ADC(Registers::A);
@@ -541,7 +541,7 @@ bool Cpu::instructionDecoder(uint8_t opcode) {
     instructions->SUB(Registers::L);
     break;
   case 0x96:
-    instructions->SUB(Registers::M);
+    instructions->SUB(Registers::MemoryReference);
     break;
   case 0x97:
     instructions->SUB(Registers::A);
@@ -565,7 +565,7 @@ bool Cpu::instructionDecoder(uint8_t opcode) {
     instructions->SBB(Registers::L);
     break;
   case 0x9E:
-    instructions->SBB(Registers::M);
+    instructions->SBB(Registers::MemoryReference);
     break;
   case 0x9F:
     instructions->SBB(Registers::A);
@@ -591,7 +591,7 @@ bool Cpu::instructionDecoder(uint8_t opcode) {
     instructions->ANA(Registers::L);
     break;
   case 0xA6:
-    instructions->ANA(Registers::M);
+    instructions->ANA(Registers::MemoryReference);
     break;
   case 0xA7:
     instructions->ANA(Registers::A);
@@ -617,7 +617,7 @@ bool Cpu::instructionDecoder(uint8_t opcode) {
     instructions->XRA(Registers::L);
     break;
   case 0xAE:
-    instructions->XRA(Registers::M);
+    instructions->XRA(Registers::MemoryReference);
     break;
   case 0xAF:
     instructions->XRA(Registers::A);
@@ -643,7 +643,7 @@ bool Cpu::instructionDecoder(uint8_t opcode) {
     instructions->ORA(Registers::L);
     break;
   case 0xB6:
-    instructions->ORA(Registers::M);
+    instructions->ORA(Registers::MemoryReference);
     break;
   case 0xB7:
     instructions->ORA(Registers::A);
@@ -669,7 +669,7 @@ bool Cpu::instructionDecoder(uint8_t opcode) {
     instructions->CMP(Registers::L);
     break;
   case 0xBE:
-    instructions->CMP(Registers::M);
+    instructions->CMP(Registers::MemoryReference);
     break;
   case 0xBF:
     instructions->CMP(Registers::A);

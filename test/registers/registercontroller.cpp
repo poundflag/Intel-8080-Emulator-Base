@@ -11,17 +11,17 @@ protected:
 };
 
 TEST_F(RegisterControllerTest, getRegister) {
-  registerController.getRegister(Registers::A).setRegister(0x15);
+  registerController.setRegister(Registers::A, 0x15);
 
-  GTEST_ASSERT_EQ(0x15, registerController.getRegister(Registers::A).getRegister());
+  GTEST_ASSERT_EQ(0x15, registerController.getRegister(Registers::A));
 }
 
 TEST_F(RegisterControllerTest, getMemoryReference) {
   registerController.setRegisterPair(RegisterPair::H, 0x0005);
   // busController.writeByte(0x0005, 0x12);
-  registerController.getRegister(Registers::M).setRegister(0x15);
+  registerController.setRegister(Registers::MemoryReference, 0x15);
 
-  GTEST_ASSERT_EQ(0x15, registerController.getRegister(Registers::M).getRegister());
+  GTEST_ASSERT_EQ(0x15, registerController.getRegister(Registers::MemoryReference));
   GTEST_ASSERT_EQ(0x15,
                   busController.readByte(
                       registerController.getRegisterPair(RegisterPair::H)));
@@ -34,8 +34,8 @@ TEST_F(RegisterControllerTest, getRegisterPairWithPairSet) {
 }
 
 TEST_F(RegisterControllerTest, getRegisterPairWithSingleSet) {
-  registerController.getRegister(Registers::B).setRegister(0x12);
-  registerController.getRegister(Registers::C).setRegister(0x34);
+  registerController.setRegister(Registers::B, 0x12);
+  registerController.setRegister(Registers::C, 0x34);
 
   GTEST_ASSERT_EQ(0x1234, registerController.getRegisterPair(RegisterPair::B));
 }

@@ -11,22 +11,19 @@
 // Manage the registers of the i8080
 class RegisterController {
 private:
-  Register *registers[8];
+  uint8_t registers[Registers::MemoryReference] = {0};
   BusController &busController;
-  FlagRegister flagRegister;
+  FlagRegister flagRegister = FlagRegister();
   Stack stackRegister = Stack(busController);
 
 public:
   RegisterController(BusController &busController);
 
-  Register &getRegister(Registers::Register reg);
-  void setRegister(Registers::Register register, uint8_t value);
+  uint8_t getRegister(Registers::Register registerIndex);
+  void setRegister(Registers::Register registerIndex, uint8_t value);
 
   uint16_t getRegisterPair(RegisterPair registerPair);
-  void setRegisterPair(RegisterPair registerPair, uint16_t immediate);
-
-  uint8_t getMemoryReference();
-  void setMemoryReference(uint8_t value);
+  void setRegisterPair(RegisterPair registerPair, uint16_t value);
 
   FlagRegister &getFlagRegister();
   Stack &getStack();

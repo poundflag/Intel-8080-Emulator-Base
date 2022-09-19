@@ -1,42 +1,37 @@
 #include "registercontroller.h"
 
 RegisterController::RegisterController(BusController &busController)
-    : busController(busController) {
-
-  for (int i = 0; i <= Registers::L; i++) {
-    registers[i] = new Register();
-  }
-
-  registers[Registers::M] = new MemoryReference(
-      busController, *registers[Registers::H], *registers[Registers::L]);
-}
+    : busController(busController) {}
 
 // Get a register
-Register &RegisterController::getRegister(Registers::Register reg) {
-  return *registers[reg];
+uint8_t RegisterController::getRegister(Registers::Register registerIndex) {
+  if (registerIndex == Registers::MemoryReference) {
+    return busController.readByte(getRegisterPair(RegisterPair::H));
+  }
+  return registers[registerIndex];
 }
 
-FlagRegister &RegisterController::getFlagRegister() { return flagRegister; }
-
-Stack &RegisterController::getStack() { return stackRegister; }
+void RegisterController::setRegister(Registers::Register registerIndex,
+                                     uint8_t value) {
+  if (registerIndex == Registers::MemoryReference) {
+    busController.writeByte(getRegisterPair(RegisterPair::H), value);
+  }
+  registers[registerIndex] = value;
+}
 
 uint16_t RegisterController::getRegisterPair(RegisterPair registerPair) {
   switch (registerPair) {
   case B:
-    return (registers[Registers::B]->getRegister() << 8) |
-           registers[Registers::C]->getRegister();
+    return (getRegister(Registers::B) << 8) | getRegister(Registers::C);
     break;
   case D:
-    return (registers[Registers::D]->getRegister() << 8) |
-           registers[Registers::E]->getRegister();
+    return (getRegister(Registers::D) << 8) | getRegister(Registers::E);
     break;
   case H:
-    return (registers[Registers::H]->getRegister() << 8) |
-           registers[Registers::L]->getRegister();
+    return (getRegister(Registers::H) << 8) | getRegister(Registers::L);
     break;
   case PSW:
-    return (registers[Registers::A]->getRegister() << 8) |
-           getFlagRegister().getRegister();
+    return (getRegister(Registers::A) << 8) | getFlagRegister().getRegister();
     break;
   case SP:
     return stackRegister.getStackPointer();
@@ -46,34 +41,38 @@ uint16_t RegisterController::getRegisterPair(RegisterPair registerPair) {
 }
 
 void RegisterController::setRegisterPair(RegisterPair registerPair,
-                                         uint16_t immediate) {
-  uint8_t higherByte = immediate & 0xFF;
-  uint8_t lowerByte = immediate >> 8;
+                                         uint16_t value) {
+  uint8_t higherByte = value & 0xFF;
+  uint8_t lowerByte = value >> 8;
   switch (registerPair) {
   case B:
-    registers[Registers::B]->setRegister(lowerByte);
-    registers[Registers::C]->setRegister(higherByte);
+    setRegister(Registers::B, lowerByte);
+    setRegister(Registers::C, higherByte);
     break;
   case D:
-    registers[Registers::D]->setRegister(lowerByte);
-    registers[Registers::E]->setRegister(higherByte);
+    setRegister(Registers::D, lowerByte);
+    setRegister(Registers::E, higherByte);
     break;
   case H:
-    registers[Registers::H]->setRegister(lowerByte);
-    registers[Registers::L]->setRegister(higherByte);
+    setRegister(Registers::H, lowerByte);
+    setRegister(Registers::L, higherByte);
     break;
   case PSW:
-    registers[Registers::A]->setRegister(lowerByte);
+    setRegister(Registers::A, lowerByte);
     getFlagRegister().setRegister(higherByte);
     break;
   case SP:
-    stackRegister.setStackPointer(immediate);
+    stackRegister.setStackPointer(value);
     break;
   };
 }
 
+FlagRegister &RegisterController::getFlagRegister() { return flagRegister; }
+
+Stack &RegisterController::getStack() { return stackRegister; }
+
 RegisterController::~RegisterController() {
-  for (int i = 0; i <= Registers::M; i++) {
+  /*for (int i = 0; i <= Registers::M; i++) {
     delete registers[i];
-  }
+  }*/
 }
