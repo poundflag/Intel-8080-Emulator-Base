@@ -12,7 +12,7 @@ RegisterController::RegisterController(BusController &busController)
 }
 
 // Get a register
-Register &RegisterController::get(Registers::Register reg) {
+Register &RegisterController::getRegister(Registers::Register reg) {
   return *registers[reg];
 }
 

@@ -16,14 +16,14 @@ void interceptBDOSCall(Cpu &cpu, std::string &pOutput) {
   // https://github.com/GunshipPenguin/lib8080/blob/master/test/integration/cpmloader.c
 
   std::setvbuf(stdout, NULL, _IONBF, 0);
-  if (cpu.getRegisterController().get(Registers::C).getRegister() == 2) {
-    if (cpu.getRegisterController().get(Registers::E).getRegister() != 0) {
+  if (cpu.getRegisterController().getRegister(Registers::C).getRegister() == 2) {
+    if (cpu.getRegisterController().getRegister(Registers::E).getRegister() != 0) {
       std::cout
-          << (char)cpu.getRegisterController().get(Registers::E).getRegister();
+          << (char)cpu.getRegisterController().getRegister(Registers::E).getRegister();
       pOutput +=
-          (char)cpu.getRegisterController().get(Registers::E).getRegister();
+          (char)cpu.getRegisterController().getRegister(Registers::E).getRegister();
     }
-  } else if (cpu.getRegisterController().get(Registers::C).getRegister() == 9) {
+  } else if (cpu.getRegisterController().getRegister(Registers::C).getRegister() == 9) {
     for (int addr =
              cpu.getRegisterController().getRegisterPair(RegisterPair::D);
          cpu.getBusController().readByte(addr) != '$'; addr++) {
