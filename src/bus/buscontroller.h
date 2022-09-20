@@ -7,15 +7,13 @@
 
 class BusController {
 private:
-  std::vector<ChipRegion>
-      chipRegions;
-  ChipRegion &findChipRegion(uint16_t address);
+  static const int MAX_CHIPS = 5;
+  ChipRegion *chipRegions[MAX_CHIPS] = {nullptr};
+  ChipRegion *findChipRegion(uint16_t address);
 
-  // Nullpointer for an unsuccessful chip return
-  ChipRegion nullChip = ChipRegion(0, 0, nullptr);
 
 public:
-  void addChipRegion(ChipRegion chipRegion);
+  BusController();
   void addChipRegion(int startAddress, int endAddress, BusDevice *chip);
 
   uint16_t readWord(uint16_t address);

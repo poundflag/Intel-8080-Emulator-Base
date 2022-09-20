@@ -1,6 +1,5 @@
 #include "../bus/buscontroller.h"
 #include "model/flagregister.h"
-#include "model/memoryreference.h"
 #include "model/register.h"
 #include "model/stack.h"
 #include "registers.h"

@@ -13,12 +13,6 @@ add_library(
 )
 
 add_library(
-    memoryreference
-    model/memoryreference.cpp
-    model/memoryreference.h
-)
-
-add_library(
     register
     model/register.cpp
     model/register.h
@@ -34,7 +28,6 @@ target_link_libraries(
     registercontroller
     PUBLIC register1
     PUBLIC flagregister
-    PUBLIC memoryreference
     PUBLIC register
     PUBLIC stack
 )

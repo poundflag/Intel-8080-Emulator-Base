@@ -12,7 +12,7 @@ protected:
       Instructions(busController, registerController, ioController, alu);
   Register lA;
   void SetUp() {
-    busController.addChipRegion(ChipRegion(0, 0xFFFF, new Ram(0xFFFF)));
+    busController.addChipRegion(0, 0xFFFF, new Ram(0xFFFF));
     lA = Register();
   }
 };

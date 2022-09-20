@@ -7,7 +7,7 @@ class RegisterControllerTest : public ::testing::Test {
 protected:
   BusController busController = BusController();
   RegisterController registerController = RegisterController(busController);
-  void SetUp() { busController.addChipRegion(ChipRegion(0, 10, new Ram(10))); }
+  void SetUp() { busController.addChipRegion(0, 10, new Ram(10)); }
 };
 
 TEST_F(RegisterControllerTest, getRegister) {
