@@ -3,7 +3,6 @@
 RegisterController::RegisterController(BusController &busController)
     : busController(busController) {}
 
-// Get a register
 uint8_t RegisterController::getRegister(Registers::Register registerIndex) {
   if (registerIndex == Registers::MemoryReference) {
     return busController.readByte(getRegisterPair(RegisterPair::H));
@@ -20,6 +19,7 @@ void RegisterController::setRegister(Registers::Register registerIndex,
 }
 
 uint16_t RegisterController::getRegisterPair(RegisterPair registerPair) {
+  // Decode the enum and get the value
   switch (registerPair) {
   case B:
     return (getRegister(Registers::B) << 8) | getRegister(Registers::C);
@@ -42,6 +42,7 @@ uint16_t RegisterController::getRegisterPair(RegisterPair registerPair) {
 
 void RegisterController::setRegisterPair(RegisterPair registerPair,
                                          uint16_t value) {
+  // Decode the enum and set the value
   uint8_t higherByte = value & 0xFF;
   uint8_t lowerByte = value >> 8;
   switch (registerPair) {
@@ -71,8 +72,4 @@ FlagRegister &RegisterController::getFlagRegister() { return flagRegister; }
 
 Stack &RegisterController::getStack() { return stackRegister; }
 
-RegisterController::~RegisterController() {
-  /*for (int i = 0; i <= Registers::M; i++) {
-    delete registers[i];
-  }*/
-}
+RegisterController::~RegisterController() {}

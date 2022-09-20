@@ -5,9 +5,8 @@
 
 class IOController {
 private:
-  IODevice **ioDevices = new IODevice *[256];
-  // Used to keep track of the next index for the ioDevices pointer-array
-  int deviceIndex = 0;
+  const int MAX_DEVICE_SIZE = 256;
+  IODevice *ioDevices[MAX_DEVICE_SIZE] = {nullptr};
   IODevice *findDevice(uint8_t portAddress);
 
 public:

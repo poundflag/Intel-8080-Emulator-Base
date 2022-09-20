@@ -15,10 +15,10 @@ void runBasic4K() {
   Cpu cpu = Cpu();
   cpu.getBusController().addChipRegion(
       0x0, 0x0EF8,
-      RamDebug("/Users/robin/Documents/GitHub/Intel-8080-Emulator/src/roms/"
+      new RamDebug("/Users/robin/Documents/GitHub/Intel-8080-Emulator/src/roms/"
                    "4kbas40.bin"));
 
-  cpu.getBusController().addChipRegion(0xEF9, 0xFFFE, Ram(0xFFFE));
+  cpu.getBusController().addChipRegion(0xEF9, 0xFFFE, new Ram(0xFFFE));
   uint8_t a[] = {0xFF};
   cpu.getIOController().addIODevice(new AltairSwitches(a, 1));
   cpu.getIOController().setDeviceValue(0xFF, 0b00100010); // b00100010
@@ -34,10 +34,10 @@ void runBasic8K() {
   Cpu cpu = Cpu();
   cpu.getBusController().addChipRegion(
       0x0, 0x1FFF,
-      RamDebug("/Users/robin/Documents/GitHub/Intel-8080-Emulator/src/roms/"
+      new RamDebug("/Users/robin/Documents/GitHub/Intel-8080-Emulator/src/roms/"
                    "8kbas.bin"));
 
-  cpu.getBusController().addChipRegion(0x2000, 0xFFFE, Ram(0xFFFE));
+  cpu.getBusController().addChipRegion(0x2000, 0xFFFE, new Ram(0xFFFE));
   uint8_t a[] = {0xFF};
   cpu.getIOController().addIODevice(new AltairSwitches(a, 1));
   cpu.getIOController().setDeviceValue(0xFF, 0b00100010); // b00100010
@@ -53,5 +53,4 @@ int main() {
   runBasic4K();
   getch();
   endwin();
-  
 }

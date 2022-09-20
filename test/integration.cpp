@@ -133,7 +133,7 @@ TEST_F(IntegrationsTest, CPUTEST) {
   ASSERT_TRUE(lOutput == foundMessage);
 }
 
-TEST_F(IntegrationsTest, 8080Excerciser) {
+/*TEST_F(IntegrationsTest, 8080Excerciser) {
 
   cpu.getBusController().addChipRegion(0x0, 0x99, new Ram(0x100));
   cpu.getBusController().addChipRegion(
@@ -194,4 +194,4 @@ TEST_F(IntegrationsTest, 8080Excerciser) {
       "is:2b0471e9\n\rTests complete";
   
   ASSERT_TRUE(lOutput == lExpected);
-}
+}*/
