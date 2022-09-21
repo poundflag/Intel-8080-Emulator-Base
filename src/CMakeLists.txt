@@ -11,6 +11,7 @@ add_subdirectory(registers)
 add_subdirectory(../test tests)
 add_subdirectory(io)
 add_subdirectory(core)
+add_subdirectory(instruction)
 
 add_library(
     cpu
@@ -27,6 +28,7 @@ target_link_libraries(
     PUBLIC instructions
     PUBLIC alu
     PUBLIC curses
+    PUBLIC instructiondecoder
 )
 
 target_include_directories(
@@ -36,4 +38,5 @@ target_include_directories(
     PUBLIC "{PROJECT_SOURCE_DIR}/src/registers"
     PUBLIC "{PROJECT_SOURCE_DIR}/src/io"
     PUBLIC "{PROJECT_SOURCE_DIR}/src/alu"
+    PUBLIC "{PROJECT_SOURCE_DIR}/src/instruction"
 )

@@ -68,6 +68,8 @@ void RegisterController::setRegisterPair(RegisterPair registerPair,
   };
 }
 
+uint16_t &RegisterController::getProgramCounter() { return programCounter; }
+
 FlagRegister &RegisterController::getFlagRegister() { return flagRegister; }
 
 Stack &RegisterController::getStack() { return stackRegister; }

@@ -11,6 +11,7 @@
 class RegisterController {
 private:
   uint8_t registers[Registers::MemoryReference] = {0};
+  uint16_t programCounter = 0;
   BusController &busController;
   FlagRegister flagRegister = FlagRegister();
   Stack stackRegister = Stack(busController);
@@ -23,6 +24,8 @@ public:
 
   uint16_t getRegisterPair(RegisterPair registerPair);
   void setRegisterPair(RegisterPair registerPair, uint16_t value);
+
+  uint16_t &getProgramCounter();
 
   FlagRegister &getFlagRegister();
   Stack &getStack();

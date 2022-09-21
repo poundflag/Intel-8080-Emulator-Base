@@ -1,8 +1,8 @@
 #include "bus/buscontroller.h"
-#include "core/instructions.h"
-#include "registers/registercontroller.h"
-#include "io/iocontroller.h"
 #include "core/alu.h"
+#include "instruction/instructiondecoder.h"
+#include "io/iocontroller.h"
+#include "registers/registercontroller.h"
 
 #ifndef __CPU_H__
 #define __CPU_H__
@@ -10,15 +10,12 @@
 // The core class of the i8080
 class Cpu {
 private:
+  BusController busController = BusController();
+  IOController ioController = IOController();
   RegisterController *registerController;
-  BusController *busController;
   Instructions *instructions;
-  IOController *ioController;
+  InstructionDecoder *instructionDecoder;
   ALU *alu;
-  uint16_t programCounter = 0;
-  bool instructionDecoder(uint8_t opcode);
-  uint16_t getNextWord();
-  uint8_t getNextByte();
 
 public:
   Cpu();

@@ -5,7 +5,7 @@
 
 class IOController {
 private:
-  const int MAX_DEVICE_SIZE = 256;
+  static const int MAX_DEVICE_SIZE = 256;
   IODevice *ioDevices[MAX_DEVICE_SIZE] = {nullptr};
   IODevice *findDevice(uint8_t portAddress);
 
