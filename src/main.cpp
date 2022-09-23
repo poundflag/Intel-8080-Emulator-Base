@@ -15,8 +15,7 @@ void runBasic4K() {
   Cpu cpu = Cpu();
   cpu.getBusController().addChipRegion(
       0x0, 0x0EF8,
-      new RamDebug("/Users/robin/Documents/GitHub/Intel-8080-Emulator/src/roms/"
-                   "4kbas40.bin"));
+      new RamDebug("/home/robin/Dokumente/GitHub/Intel-8080-Emulator-Base/src/roms/4kbas40.bin"));
 
   cpu.getBusController().addChipRegion(0xEF9, 0xFFFE, new Ram(0xFFFE));
   uint8_t a[] = {0xFF};
@@ -34,8 +33,7 @@ void runBasic8K() {
   Cpu cpu = Cpu();
   cpu.getBusController().addChipRegion(
       0x0, 0x1FFF,
-      new RamDebug("/Users/robin/Documents/GitHub/Intel-8080-Emulator/src/roms/"
-                   "8kbas.bin"));
+      new RamDebug("/home/robin/Dokumente/GitHub/Intel-8080-Emulator-Base/src/roms/8kbas.bin"));
 
   cpu.getBusController().addChipRegion(0x2000, 0xFFFE, new Ram(0xFFFE));
   uint8_t a[] = {0xFF};

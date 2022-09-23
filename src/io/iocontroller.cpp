@@ -39,7 +39,7 @@ void IOController::setDeviceValue(uint8_t portAddress, uint8_t value) {
 }
 
 IOController::~IOController() {
-  for (auto ioDevice : ioDevices) {
+  /*for (auto ioDevice : ioDevices) {
     delete ioDevice;
-  }
+  }*/
 }
