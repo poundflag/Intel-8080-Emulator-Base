@@ -26,6 +26,7 @@
 *.a
 *.lib
 googletest/*
+bin/*
 
 # Executables
 *.exe
@@ -38,3 +39,4 @@ lib/**
 src/roms/8080-Exer Result
 src/roms/CPUTEST.asm
 src/roms/CPUTEST.prm.lst
+bin/main
