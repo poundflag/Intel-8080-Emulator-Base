@@ -1,4 +1,5 @@
 #include "../src/instruction/instructions.h"
+#include "../src/bus/device/ram.h"
 #include <gtest/gtest.h>
 
 class InstructionsTest : public ::testing::Test {

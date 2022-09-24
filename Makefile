@@ -1,9 +1,9 @@
 # Directories where CPP-Files are located
-CPP_DIR := . registers registers/model bus bus/device bus/model core instruction io io/device io/model
+CPP_DIR := src/. src/registers src/registers/model src/bus src/bus/device src/bus/model src/core src/instruction src/io src/io/device src/io/model
 
 # Default locations to the the object files and binaries
-OUTPUT_DIR := ../build
-BIN_DIR := ../bin
+OUTPUT_DIR := ./build
+BIN_DIR := ./bin
 DEFAULT:= $(BIN_DIR)/main
 
 # Flags for the building process
@@ -35,6 +35,11 @@ $(OUTPUT_DIR)/%.o:%.cpp
 # Include Headers
 -include $(HEAD_FILES)
 
+
+TEST: $(DEFAULT)
+	make -C test/
+
+# Clean target
 .PHONY: clean
 clean:
 	rm $(OUTPUT_DIR)/* -r

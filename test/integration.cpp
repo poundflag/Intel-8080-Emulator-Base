@@ -1,6 +1,7 @@
 #include "../src/bus/device/ramdebug.h"
 #include "../src/cpu.h"
 #include "../src/io/model/iodevice.h"
+#include "../src/bus/device/ram.h"
 #include <gtest/gtest.h>
 #include <string>
 

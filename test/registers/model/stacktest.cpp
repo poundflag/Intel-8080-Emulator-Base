@@ -1,5 +1,6 @@
-#include "../../../src/registers/model/stack.h"
 #include <gtest/gtest.h>
+#include "../../../src/registers/model/stack.h"
+#include "../../../src/bus/device/ram.h"
 
 class StackTest : public ::testing::Test {
 

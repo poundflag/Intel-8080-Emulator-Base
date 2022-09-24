@@ -1,5 +1,6 @@
 #include "../../src/registers/registercontroller.h"
 #include "../../src/registers/registers.h"
+#include "../../src/bus/device/ram.h"
 #include <gtest/gtest.h>
 
 class RegisterControllerTest : public ::testing::Test {
