@@ -19,6 +19,11 @@
             "type": "shell",
             "command": "make",
             "problemMatcher": []
+        },
+        {
+            "label": "Build Debug",
+            "type": "shell",
+            "command": "make DEBUG=1"
         }
     ]
 }

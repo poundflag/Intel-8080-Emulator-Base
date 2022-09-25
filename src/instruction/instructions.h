@@ -18,6 +18,8 @@ private:
   ALU &alu;
 
   bool conditionSuccessful(FlagRegister::Condition condition);
+  void memoryReadOneByte();
+  void memoryReadTwoBytes();
 
 public:
   Instructions(BusController &busController,

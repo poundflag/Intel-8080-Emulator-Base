@@ -12,6 +12,12 @@ OPT := -O0
 DEPS := -lncurses
 CPP_FLAGS := -MD $(OPT) $(foreach D, $(CPP_DIR), -I$(D))
 
+# Setting the debug flag at compilation time for g++ if DEBUG=1
+DEBUG ?= 0
+ifeq ($(DEBUG), 1)
+	CPP_FLAGS += -g
+endif
+
 # Filter variables to select certain files
 BUILD_DIR_OUT := $(foreach D, $(CPP_DIR), $(OUTPUT_DIR)/$(D))
 CPP_FILES := $(foreach D,$(CPP_DIR), $(wildcard $(D)/*cpp))

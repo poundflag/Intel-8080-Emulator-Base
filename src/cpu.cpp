@@ -11,6 +11,7 @@ Cpu::Cpu() {
 
 // Continously run the cpu
 void Cpu::run() {
+  registerController->fetchNextInstruction();
   while (true) {
     bool haltState = cycle();
     if (haltState) {
@@ -21,6 +22,7 @@ void Cpu::run() {
 
 // Step the cpu in n steps
 void Cpu::step(int steps) {
+  registerController->fetchNextInstruction();
   for (int i = 0; i < steps; i++) {
     bool haltState = cycle();
     if (haltState) {
@@ -33,8 +35,8 @@ void Cpu::step(int steps) {
 // Fetch opcode -> (fetch other bytes) -> decode -> execute -> store
 // If a HALT has been received the method returns true
 bool Cpu::cycle() {
-  uint8_t opcode = busController.readByte(getProgramCounter());
-  // uint8_t opcode = registerController->getRegister(Registers::InstructionRegister);
+  // uint8_t opcode = busController.readByte(getProgramCounter());
+  uint8_t opcode = registerController->getRegister(Registers::InstructionRegister);
   return instructionDecoder->instructionDecoder(opcode);
 }
 

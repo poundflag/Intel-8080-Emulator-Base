@@ -36,6 +36,8 @@ uint16_t RegisterController::getRegisterPair(RegisterPair registerPair) {
         case SP:
             return stackRegister.getStackPointer();
             break;
+        case Temporary:
+            return (getRegister(Registers::TemporaryHigh) << 8) | getRegister(Registers::TemporaryLow);
     };
     return 0;
 }
@@ -71,7 +73,7 @@ void RegisterController::setRegisterPair(RegisterPair registerPair,
 uint16_t &RegisterController::getProgramCounter() { return programCounter; }
 
 void RegisterController::fetchNextInstruction() {
-    uint8_t instructionLength = 1; // TODO DO I NEED AN EXTRA ARRAY TO DETERMINE THE LENGTH??
+    uint8_t instructionLength = 0;  // TODO DO I NEED AN EXTRA ARRAY TO DETERMINE THE LENGTH??
     programCounter = getRegister(Registers::InstructionRegister) + instructionLength;
     setRegister(Registers::InstructionRegister,
                 busController.readByte(programCounter));

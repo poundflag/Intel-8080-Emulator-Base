@@ -47,8 +47,19 @@ void runBasic8K() {
   cpu.run();
 }
 
+void basicInstructionRun() {
+  Cpu cpu = Cpu();
+  Ram *ram = new Ram(0x100);
+  ram->write(0, 0x40);
+
+  cpu.getBusController().addChipRegion(0x0, 0x9FF, ram);
+
+  cpu.run();
+}
+
 int main() {
-  runBasic4K();
+  // runBasic4K();
+  basicInstructionRun();
   getch();
   endwin();
 }

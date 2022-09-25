@@ -22,6 +22,7 @@ bool InstructionDecoder::instructionDecoder(uint8_t opcode) {
   case 0x18:
   case 0x28:
   case 0x38:
+  registerController.fetchNextInstruction();
     break;
 
   // LXI Opcodes
@@ -921,9 +922,9 @@ bool InstructionDecoder::instructionDecoder(uint8_t opcode) {
 
   // If the instructions does not need more than one cycle, just increment the
   // PC
-  if (!skipIncrement) {
+  // if (!skipIncrement) {
     registerController.getProgramCounter()++;
-  }
+  // }
 
   return false;
 }
