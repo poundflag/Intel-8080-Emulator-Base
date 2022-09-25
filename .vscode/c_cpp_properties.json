@@ -13,10 +13,11 @@
             "configurationProvider": "ms-vscode.cmake-tools"
         },
         {
-            "name": "Fedora",
+            "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**",
-                "/home/robin/Dokumente/GitHub/Intel-8080-Emulator-Base/googletest/googletest/include/**"
+                "${workspaceFolder}/src/",
+                "${workspaceFolder}/googletest/googletest/include/",
+                "/usr/include/linux/**"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/g++",

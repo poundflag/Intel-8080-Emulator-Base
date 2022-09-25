@@ -1,6 +1,7 @@
 # Test files from the test directory
 CPP_DIR := . bus bus/device registers registers/model
 TEST_OUT := ../build/test
+BIN_OUT := ../bin
 CPP_FILES := $(foreach D, $(CPP_DIR), $(wildcard $(D)/*cpp))
 OBJ_FILES := $(patsubst %.cpp, $(TEST_OUT)/%.o, $(CPP_FILES))
 
@@ -16,7 +17,7 @@ GTEST_ARCHIVE := /usr/src/googletest/*.a
 .PHONY: default
 default: $(OBJ_FILES)
 	echo $(SRC_OBJ_FILES)
-	g++ -lncurses $(GTEST_INCLUDE) $^ $(SRC_OBJ_FILES) $(GTEST_ARCHIVE) -o temp_bin
+	g++ -lncurses $(GTEST_INCLUDE) $^ $(SRC_OBJ_FILES) $(GTEST_ARCHIVE) -o $(BIN_OUT)/test
 
 $(TEST_OUT)/%.o: %.cpp
 	mkdir -p $(@D)
