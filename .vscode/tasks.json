@@ -1,0 +1,24 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run Main",
+            "type": "shell",
+            "command": "./bin/main",
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "dependsOn": [
+                "Build Main"
+            ]
+        },
+        {
+            "label": "Build Main",
+            "type": "shell",
+            "command": "make",
+            "problemMatcher": []
+        }
+    ]
+}

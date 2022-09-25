@@ -1,0 +1,13 @@
+{
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/home/robin/Dokumente/GitHub/Intel-8080-Emulator-Base/bin",
+            "binaryPath": "/home/robin/Dokumente/GitHub/Intel-8080-Emulator-Base/bin/main",
+            "binaryArgs": []
+        }
+    ],
+    "files.associations": {
+        "string": "cpp"
+    },
+    "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Google, IndentWidth: 4, ColumnLimit: 0}"
+}

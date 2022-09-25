@@ -27,6 +27,9 @@ public:
 
   uint16_t &getProgramCounter();
 
+// TODO Put it in the registerController or rather in the busController???
+  void fetchNextInstruction();
+
   FlagRegister &getFlagRegister();
   Stack &getStack();
   ~RegisterController();

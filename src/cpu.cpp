@@ -34,6 +34,7 @@ void Cpu::step(int steps) {
 // If a HALT has been received the method returns true
 bool Cpu::cycle() {
   uint8_t opcode = busController.readByte(getProgramCounter());
+  // uint8_t opcode = registerController->getRegister(Registers::InstructionRegister);
   return instructionDecoder->instructionDecoder(opcode);
 }
 

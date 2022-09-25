@@ -2,7 +2,7 @@
 #define __REGISTERS_H__
 
 namespace Registers {
-enum Register { A = 0, B, C, D, E, H, L, MemoryReference };
+enum Register { A = 0, B, C, D, E, H, L, InstructionRegister, MemoryReference };
 }
 
 enum RegisterPair { PSW, B, D, H, SP };

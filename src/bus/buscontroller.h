@@ -11,7 +11,6 @@ private:
   ChipRegion *chipRegions[MAX_CHIPS] = {nullptr};
   ChipRegion *findChipRegion(uint16_t address);
 
-
 public:
   BusController();
   void addChipRegion(int startAddress, int endAddress, BusDevice *chip);
@@ -20,6 +19,7 @@ public:
   void writeWord(uint16_t address, uint16_t value);
   uint8_t readByte(uint16_t address);
   void writeByte(uint16_t address, uint8_t value);
+
   ~BusController();
 };
 
