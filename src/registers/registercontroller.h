@@ -15,6 +15,7 @@ private:
   BusController &busController;
   FlagRegister flagRegister = FlagRegister();
   Stack stackRegister = Stack(busController);
+  uint8_t machineCycle = 0;
 
 public:
   RegisterController(BusController &busController);
@@ -29,6 +30,9 @@ public:
 
 // TODO Put it in the registerController or rather in the busController???
   void fetchNextInstruction();
+  uint8_t getMachineCycle();
+  void setMachineCycle(uint8_t value);
+  void incrementMachineCycle();
 
   FlagRegister &getFlagRegister();
   Stack &getStack();

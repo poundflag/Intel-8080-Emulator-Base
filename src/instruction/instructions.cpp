@@ -14,8 +14,8 @@ void Instructions::MOV(Registers::Register destination,
 }
 
 // MVI D,#   00DDD110 db - Move immediate to register
-void Instructions::MVI(Registers::Register destination, uint8_t immediate) {
-    switch (registerController.getRegister(Registers::InstructionRegister)) {
+void Instructions::MVI(Registers::Register destination) {
+    switch (registerController.getMachineCycle()) {
         // Read the immediate value
         case 0:
             registerController.getProgramCounter()++;
@@ -31,7 +31,7 @@ void Instructions::MVI(Registers::Register destination, uint8_t immediate) {
 
 // LXI RP,#  00RP0001 lb hb - Load register pair immediate
 void Instructions::LXI(RegisterPair registerPair, uint16_t immediate) {
-    switch (registerController.getRegister(Registers::InstructionRegister)) {
+    switch (registerController.getMachineCycle()) {
         // Read the 16-Bit Value
         case 0:
             registerController.setRegister(Registers::TemporaryHigh,
@@ -52,21 +52,23 @@ void Instructions::LXI(RegisterPair registerPair, uint16_t immediate) {
 }
 
 // LDA a     00111010 lb hb - Load A from memory
-void Instructions::LDA(uint16_t address) {
-  /*switch (registerController.getRegister(Registers::InstructionRegister))
-  {
-  case 0:
-  case 1:
-            registerController.getProgramCounter()++;
-    break;
-    case 2:
-    uint8_t memoryValue = busController.readByte(address);
-    registerController.setRegister(Registers::A, memoryValue);
-  
-  default:
+void Instructions::LDA() {
+    switch (registerController.getMachineCycle()) {
+        // Read the 16-Bit Value
+        case 0:
+            registerController.setRegister(Registers::TemporaryHigh,
+                                           busController.readByte(++registerController.getProgramCounter()));
+            break;
+        case 1:
+            registerController.setRegister(Registers::TemporaryLow,
+                                           busController.readByte(++registerController.getProgramCounter()));
+            break;
+        case 2:
+            registerController.setRegister(Registers::A, busController.readByte(registerController.getRegisterPair(RegisterPair::Temporary)));
+        default:
             registerController.fetchNextInstruction();
-    break;
-  }*/
+            break;
+    }
 }
 
 // STA a     00110010 lb hb - Store A to memory

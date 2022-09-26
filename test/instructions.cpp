@@ -11,10 +11,15 @@ protected:
   ALU alu = ALU(registerController);
   Instructions instructions =
       Instructions(busController, registerController, ioController, alu);
-  Register lA;
+      Ram *ram = new Ram(0xFFFF);
   void SetUp() {
-    busController.addChipRegion(0, 0xFFFF, new Ram(0xFFFF));
-    lA = Register();
+    busController.addChipRegion(0, 0xFFFF, ram);
+    registerController.getProgramCounter() = 0;
+    registerController.setMachineCycle(0);
+  }
+  void TearDown() {
+    delete ram;
+    ram = new Ram(0xFFFF);
   }
 };
 
@@ -26,13 +31,40 @@ TEST_F(InstructionsTest, MOV) {
 
 TEST_F(InstructionsTest, MVI) {
   registerController.setRegister(Registers::A, 0);
-  instructions.MVI(Registers::A, 0x12);
+  busController.writeByte(1, 0x12);
+  instructions.MVI(Registers::A);
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 1);
+  GTEST_ASSERT_EQ(registerController.getRegister(Registers::A), 0);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 1);
+  instructions.MVI(Registers::A);
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 0);
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 2);
   GTEST_ASSERT_EQ(registerController.getRegister(Registers::A), 0x12);
 }
 
+// TODO LXI
+
 TEST_F(InstructionsTest, LDA) {
-  busController.writeByte(0x2, 0x15);
-  instructions.LDA(0x2);
+  registerController.setRegister(Registers::A, 0);
+  busController.writeByte(0x1, 0x00);
+  busController.writeByte(0x2, 0x03);
+  busController.writeByte(0x3, 0x15);
+  instructions.LDA();
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 1);
+  GTEST_ASSERT_EQ(registerController.getRegister(Registers::A), 0);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 1);
+  instructions.LDA();
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 2);
+  GTEST_ASSERT_EQ(registerController.getRegister(Registers::A), 0);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 2);
+  instructions.LDA();
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 3);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 0);
   GTEST_ASSERT_EQ(registerController.getRegister(Registers::A), 0x15);
 }
 

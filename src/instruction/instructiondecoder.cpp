@@ -125,28 +125,28 @@ bool InstructionDecoder::instructionDecoder(uint8_t opcode) {
 
   // MVI Opcodes
   case 0x3E:
-    instructions.MVI(Registers::A, getNextByte());
+    instructions.MVI(Registers::A);
     break;
   case 0x06:
-    instructions.MVI(Registers::B, getNextByte());
+    instructions.MVI(Registers::B);
     break;
   case 0x0E:
-    instructions.MVI(Registers::C, getNextByte());
+    instructions.MVI(Registers::C);
     break;
   case 0x16:
-    instructions.MVI(Registers::D, getNextByte());
+    instructions.MVI(Registers::D);
     break;
   case 0x1E:
-    instructions.MVI(Registers::E, getNextByte());
+    instructions.MVI(Registers::E);
     break;
   case 0x26:
-    instructions.MVI(Registers::H, getNextByte());
+    instructions.MVI(Registers::H);
     break;
   case 0x2E:
-    instructions.MVI(Registers::L, getNextByte());
+    instructions.MVI(Registers::L);
     break;
   case 0x36:
-    instructions.MVI(Registers::MemoryReference, getNextByte());
+    instructions.MVI(Registers::MemoryReference);
     break;
 
   // RLC Opcode
@@ -218,7 +218,7 @@ bool InstructionDecoder::instructionDecoder(uint8_t opcode) {
 
   // LDA Opcode
   case 0x3A:
-    instructions.LDA(getNextWord());
+    instructions.LDA();
     break;
 
   // DCX Opcode
@@ -923,8 +923,9 @@ bool InstructionDecoder::instructionDecoder(uint8_t opcode) {
   // If the instructions does not need more than one cycle, just increment the
   // PC
   // if (!skipIncrement) {
-    registerController.getProgramCounter()++;
+  //   registerController.getProgramCounter()++;
   // }
+  registerController.incrementMachineCycle();
 
   return false;
 }

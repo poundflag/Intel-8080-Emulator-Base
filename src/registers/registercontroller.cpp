@@ -73,10 +73,21 @@ void RegisterController::setRegisterPair(RegisterPair registerPair,
 uint16_t &RegisterController::getProgramCounter() { return programCounter; }
 
 void RegisterController::fetchNextInstruction() {
-    uint8_t instructionLength = 0;  // TODO DO I NEED AN EXTRA ARRAY TO DETERMINE THE LENGTH??
-    programCounter = getRegister(Registers::InstructionRegister) + instructionLength;
+    machineCycle = 0xFF;
     setRegister(Registers::InstructionRegister,
-                busController.readByte(programCounter));
+                busController.readByte(++programCounter));
+}
+
+uint8_t RegisterController::getMachineCycle() {
+    return machineCycle;
+}
+
+void RegisterController::setMachineCycle(uint8_t value) {
+    machineCycle = value;
+}
+
+void RegisterController::incrementMachineCycle() {
+    machineCycle++;    
 }
 
 FlagRegister &RegisterController::getFlagRegister() { return flagRegister; }
@@ -84,3 +95,5 @@ FlagRegister &RegisterController::getFlagRegister() { return flagRegister; }
 Stack &RegisterController::getStack() { return stackRegister; }
 
 RegisterController::~RegisterController() {}
+
+

@@ -26,9 +26,9 @@ public:
                RegisterController &registerController,
                IOController &ioController, ALU &alu);
   void MOV(Registers::Register destination, Registers::Register source);
-  void MVI(Registers::Register destination, uint8_t immediate);
+  void MVI(Registers::Register destination);
   void LXI(RegisterPair registerPair, uint16_t immediate);
-  void LDA(uint16_t address);
+  void LDA();
   void STA(uint16_t address);
   void LHLD(uint16_t address);
   void SHLD(uint16_t address);

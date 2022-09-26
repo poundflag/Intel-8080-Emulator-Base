@@ -51,6 +51,8 @@ void basicInstructionRun() {
   Cpu cpu = Cpu();
   Ram *ram = new Ram(0x100);
   ram->write(0, 0x40);
+  ram->write(1, 0x06);
+  ram->write(2, 0x27);
 
   cpu.getBusController().addChipRegion(0x0, 0x9FF, ram);
 

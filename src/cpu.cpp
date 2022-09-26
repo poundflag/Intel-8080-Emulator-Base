@@ -11,12 +11,12 @@ Cpu::Cpu() {
 
 // Continously run the cpu
 void Cpu::run() {
-  registerController->fetchNextInstruction();
-  while (true) {
-    bool haltState = cycle();
-    if (haltState) {
-      break;
-    }
+    registerController->setRegister(Registers::InstructionRegister, busController.readByte(registerController->getProgramCounter()));
+    while (true) {
+        bool haltState = cycle();
+        if (haltState) {
+            break;
+        }
   }
 }
 
