@@ -67,6 +67,10 @@ void RegisterController::setRegisterPair(RegisterPair registerPair,
         case SP:
             stackRegister.setStackPointer(value);
             break;
+        case Temporary:
+            setRegister(Registers::TemporaryHigh, lowerByte);
+            setRegister(Registers::TemporaryLow, higherByte);
+            break;
     };
 }
 

@@ -22,7 +22,7 @@ void Cpu::run() {
 
 // Step the cpu in n steps
 void Cpu::step(int steps) {
-  registerController->fetchNextInstruction();
+  // registerController->setRegister(Registers::InstructionRegister, busController.readByte(registerController->getProgramCounter()));
   for (int i = 0; i < steps; i++) {
     bool haltState = cycle();
     if (haltState) {
@@ -37,6 +37,7 @@ void Cpu::step(int steps) {
 bool Cpu::cycle() {
   // uint8_t opcode = busController.readByte(getProgramCounter());
   uint8_t opcode = registerController->getRegister(Registers::InstructionRegister);
+  // std::cout << std::hex << (int)opcode << std::endl;
   return instructionDecoder->instructionDecoder(opcode);
 }
 

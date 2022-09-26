@@ -54,7 +54,7 @@ bool InstructionDecoder::instructionDecoder(uint8_t opcode) {
 
     // STA Opcode
   case 0x32:
-    instructions.STA(getNextWord());
+    instructions.STA();
     break;
 
   // INX Opcodes
@@ -923,7 +923,7 @@ bool InstructionDecoder::instructionDecoder(uint8_t opcode) {
   // If the instructions does not need more than one cycle, just increment the
   // PC
   // if (!skipIncrement) {
-  //   registerController.getProgramCounter()++;
+     registerController.getProgramCounter()++;
   // }
   registerController.incrementMachineCycle();
 

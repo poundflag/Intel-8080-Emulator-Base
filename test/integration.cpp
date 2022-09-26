@@ -40,8 +40,7 @@ TEST_F(IntegrationsTest, TST8080) {
   cpu.getBusController().addChipRegion(0x0, 0x99, new Ram(0x100));
   cpu.getBusController().addChipRegion(
       0x100, 0x5FF + 0x100,
-      new RamDebug("../src/roms/"
-                   "TST8080.COM"));
+      new RamDebug("/home/robin/Dokumente/GitHub/Intel-8080-Emulator-Base/src/roms/TST8080.COM"));
 
   cpu.getBusController().addChipRegion(0x0400, 0xFFFF, new Ram(0xFA60));
 
@@ -73,8 +72,7 @@ TEST_F(IntegrationsTest, 8080PRE) {
   cpu.getBusController().addChipRegion(0x0, 0x99, new Ram(0x100));
   cpu.getBusController().addChipRegion(
       0x100, 0x3FF + 0x100,
-      new RamDebug("../src/roms/"
-                   "8080PRE.COM"));
+      new RamDebug("/home/robin/Dokumente/GitHub/Intel-8080-Emulator-Base/src/roms/8080PRE.COM"));
 
   cpu.getBusController().addChipRegion(0x0400, 0xFFFF, new Ram(0xFA60));
 
@@ -104,8 +102,7 @@ TEST_F(IntegrationsTest, CPUTEST) {
   cpu.getBusController().addChipRegion(0x0, 0x99, new Ram(0x100));
   cpu.getBusController().addChipRegion(
       0x100, 0x4AFF + 0x100,
-      new RamDebug("../src/roms/"
-                   "CPUTEST.COM"));
+      new RamDebug("/home/robin/Dokumente/GitHub/Intel-8080-Emulator-Base/src/roms/CPUTEST.COM"));
 
   cpu.getBusController().addChipRegion(0x4B00 + 0x100, 0xFFFF, new Ram(0xFA60));
 
@@ -139,8 +136,7 @@ TEST_F(IntegrationsTest, CPUTEST) {
   cpu.getBusController().addChipRegion(0x0, 0x99, new Ram(0x100));
   cpu.getBusController().addChipRegion(
       0x100, 0x11FF + 0x100,
-      new RamDebug("/Users/robin/Documents/GitHub/Intel-8080-Emulator/src/roms/"
-                   "8080EXM.COM"));
+      new RamDebug("/home/robin/Dokumente/GitHub/Intel-8080-Emulator-Base/src/roms/8080EXM.COM"));
 
   cpu.getBusController().addChipRegion(0x1200 + 0x100, 0xFFFF, new Ram(0xFFFE));
 

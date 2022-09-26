@@ -49,8 +49,8 @@ TEST_F(InstructionsTest, MVI) {
 TEST_F(InstructionsTest, LDA) {
   registerController.setRegister(Registers::A, 0);
   busController.writeByte(0x1, 0x00);
-  busController.writeByte(0x2, 0x03);
-  busController.writeByte(0x3, 0x15);
+  busController.writeByte(0x2, 0x05);
+  busController.writeByte(0x5, 0x15);
   instructions.LDA();
   registerController.incrementMachineCycle();
   GTEST_ASSERT_EQ(registerController.getProgramCounter(), 1);
@@ -63,6 +63,11 @@ TEST_F(InstructionsTest, LDA) {
   GTEST_ASSERT_EQ(registerController.getMachineCycle(), 2);
   instructions.LDA();
   registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 5);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 3);
+  GTEST_ASSERT_EQ(registerController.getRegister(Registers::A), 0);
+  instructions.LDA();
+  registerController.incrementMachineCycle();
   GTEST_ASSERT_EQ(registerController.getProgramCounter(), 3);
   GTEST_ASSERT_EQ(registerController.getMachineCycle(), 0);
   GTEST_ASSERT_EQ(registerController.getRegister(Registers::A), 0x15);
@@ -70,8 +75,28 @@ TEST_F(InstructionsTest, LDA) {
 
 TEST_F(InstructionsTest, STA) {
   registerController.setRegister(Registers::A, 66);
-  instructions.STA(0x2);
-  GTEST_ASSERT_EQ(busController.readByte(0x2), 66);
+  busController.writeByte(1, 0);
+  busController.writeByte(2, 0x10);
+  instructions.STA();
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 1);
+  GTEST_ASSERT_EQ(busController.readByte(0x10), 0);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 1);
+  instructions.STA();
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 2);
+  GTEST_ASSERT_EQ(busController.readByte(0x10), 0);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 2);
+  instructions.STA();
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 0x10);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 3);
+  GTEST_ASSERT_EQ(busController.readByte(0x10), 0);
+  instructions.STA();
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 3);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 0);
+  GTEST_ASSERT_EQ(busController.readByte(0x10), 66);
 }
 
 TEST_F(InstructionsTest, ADD) {

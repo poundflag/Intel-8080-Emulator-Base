@@ -53,28 +53,28 @@ void Instructions::LXI(RegisterPair registerPair, uint16_t immediate) {
 
 // LDA a     00111010 lb hb - Load A from memory
 void Instructions::LDA() {
+    memoryReadOneByte(registerController.getMachineCycle());
     switch (registerController.getMachineCycle()) {
-        // Read the 16-Bit Value
-        case 0:
-            registerController.setRegister(Registers::TemporaryHigh,
-                                           busController.readByte(++registerController.getProgramCounter()));
-            break;
-        case 1:
-            registerController.setRegister(Registers::TemporaryLow,
-                                           busController.readByte(++registerController.getProgramCounter()));
-            break;
-        case 2:
+        case 3:
             registerController.setRegister(Registers::A, busController.readByte(registerController.getRegisterPair(RegisterPair::Temporary)));
-        default:
             registerController.fetchNextInstruction();
+        default:
             break;
     }
 }
 
 // STA a     00110010 lb hb - Store A to memory
-void Instructions::STA(uint16_t address) {
-    busController.writeByte(address,
-                            registerController.getRegister(Registers::A));
+void Instructions::STA() {
+    memoryReadOneByte(registerController.getMachineCycle());
+    switch (registerController.getMachineCycle()) {
+            // Save the value in the address
+        case 3:
+            busController.writeByte(registerController.getRegisterPair(RegisterPair::Temporary),
+                                    registerController.getRegister(Registers::A));
+            registerController.fetchNextInstruction();
+        default:
+            break;
+    }
 }
 
 // LHLD a    00101010 lb hb    -       Load H:L from memory
@@ -536,3 +536,31 @@ void Instructions::OUT(int portNumber) {
 
 // HLT       01110110          -       Halt processor
 bool Instructions::HLT() { return true; }
+
+void Instructions::memoryReadOneByte(uint8_t machineCycle) {
+    uint16_t temp = 0;
+    switch (machineCycle) {
+        // Read the 16-Bit Address
+        case 0:
+            registerController.setRegister(Registers::TemporaryHigh,
+                                           busController.readByte(++registerController.getProgramCounter()));
+            break;
+        case 1:
+            registerController.setRegister(Registers::TemporaryLow,
+                                           busController.readByte(++registerController.getProgramCounter()));
+            break;
+            // Switch the temporary register with the program counter
+            // To simulate the fetch instruction
+        case 2:
+            temp = registerController.getProgramCounter();
+            registerController.getProgramCounter() = registerController.getRegisterPair(RegisterPair::Temporary);
+            registerController.setRegisterPair(RegisterPair::Temporary, temp);
+            break;
+        case 3:
+            temp = registerController.getRegisterPair(RegisterPair::Temporary);
+            registerController.setRegisterPair(RegisterPair::Temporary, registerController.getProgramCounter());
+            registerController.getProgramCounter() = temp;
+        default:
+            break;
+    }
+}

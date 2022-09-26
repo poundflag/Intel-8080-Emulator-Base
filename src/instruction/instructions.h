@@ -18,7 +18,7 @@ private:
   ALU &alu;
 
   bool conditionSuccessful(FlagRegister::Condition condition);
-  void memoryReadOneByte();
+  void memoryReadOneByte(uint8_t machineCycle);
   void memoryReadTwoBytes();
 
 public:
@@ -29,7 +29,7 @@ public:
   void MVI(Registers::Register destination);
   void LXI(RegisterPair registerPair, uint16_t immediate);
   void LDA();
-  void STA(uint16_t address);
+  void STA();
   void LHLD(uint16_t address);
   void SHLD(uint16_t address);
   void LDAX(RegisterPair indirectAddress);
