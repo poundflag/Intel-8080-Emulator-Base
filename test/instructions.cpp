@@ -16,6 +16,7 @@ protected:
     busController.addChipRegion(0, 0xFFFF, ram);
     registerController.getProgramCounter() = 0;
     registerController.setMachineCycle(0);
+    registerController.setRegisterPair(RegisterPair::Temporary, 0);
   }
   void TearDown() {
     delete ram;
@@ -119,7 +120,17 @@ TEST_F(InstructionsTest, ADD_OVERFLOW) {
 
 TEST_F(InstructionsTest, ADI) {
   registerController.setRegister(Registers::A, 0x12);
-  instructions.ADI(0x12);
+  busController.writeByte(1, 0x12);
+  instructions.ADI();
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 1);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 1);
+  GTEST_ASSERT_EQ(registerController.getRegister(Registers::A), 0x12);
+
+  instructions.ADI();
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 2);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 0);
   GTEST_ASSERT_EQ(registerController.getRegister(Registers::A), 0x24);
   GTEST_ASSERT_EQ(registerController.getFlagRegister().getRegister(),
                   0b00000110);
@@ -127,7 +138,17 @@ TEST_F(InstructionsTest, ADI) {
 
 TEST_F(InstructionsTest, ADI_OVERFLOW) {
   registerController.setRegister(Registers::A, 0xFF);
-  instructions.ADI(0x10);
+  busController.writeByte(1, 0x10);
+  instructions.ADI();
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 1);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 1);
+  GTEST_ASSERT_EQ(registerController.getRegister(Registers::A), 0xFF);
+
+  instructions.ADI();
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 2);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 0);
   GTEST_ASSERT_EQ(registerController.getRegister(Registers::A), 0xF);
   GTEST_ASSERT_EQ(registerController.getFlagRegister().getRegister(),
                   0b00000111);
@@ -150,15 +171,35 @@ TEST_F(InstructionsTest, ADC_CARRY) {
 
 TEST_F(InstructionsTest, ACI_NO_CARRY) {
   registerController.setRegister(Registers::A, 1);
-  instructions.ACI(0x1);
-  GTEST_ASSERT_EQ(registerController.getRegister(Registers::A), 0x2);
+  busController.writeByte(1, 0x1);
+  instructions.ACI();
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 1);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 1);
+  GTEST_ASSERT_EQ(registerController.getRegister(Registers::A), 1);
+
+  instructions.ACI();
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 2);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 0);
+  GTEST_ASSERT_EQ(registerController.getRegister(Registers::A), 2);
 }
 
 TEST_F(InstructionsTest, ACI_CARRY) {
   registerController.setRegister(Registers::A, 1);
   registerController.getFlagRegister().setFlag(FlagRegister::Flag::Carry, true);
-  instructions.ACI(0x1);
-  GTEST_ASSERT_EQ(registerController.getRegister(Registers::A), 0x3);
+  busController.writeByte(1, 0x1);
+  instructions.ACI();
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 1);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 1);
+  GTEST_ASSERT_EQ(registerController.getRegister(Registers::A), 1);
+
+  instructions.ACI();
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 2);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 0);
+  GTEST_ASSERT_EQ(registerController.getRegister(Registers::A), 3);
 }
 
 TEST_F(InstructionsTest, SUB) {
@@ -181,15 +222,37 @@ TEST_F(InstructionsTest, SUB_UNDERFLOW) {
 
 TEST_F(InstructionsTest, SUI) {
   registerController.setRegister(Registers::A, 5);
-  instructions.SUI(0x1);
-  GTEST_ASSERT_EQ(registerController.getRegister(Registers::A), 0x4);
+  registerController.getFlagRegister().setFlag(FlagRegister::Flag::Carry, false);
+  busController.writeByte(1, 0x1);
+  instructions.SUI();
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 1);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 1);
+  GTEST_ASSERT_EQ(registerController.getRegister(Registers::A), 5);
+
+  instructions.SUI();
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 2);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 0);
+  GTEST_ASSERT_EQ(registerController.getRegister(Registers::A), 4);
   GTEST_ASSERT_EQ(registerController.getFlagRegister().getRegister(),
                   0b00010010);
 }
 
 TEST_F(InstructionsTest, SUI_UNDERFLOW) {
   registerController.setRegister(Registers::A, 1);
-  instructions.SUI(0x5);
+  registerController.getFlagRegister().setFlag(FlagRegister::Flag::Carry, false);
+  busController.writeByte(1, 0x5);
+  instructions.SUI();
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 1);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 1);
+  GTEST_ASSERT_EQ(registerController.getRegister(Registers::A), 1);
+
+  instructions.SUI();
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 2);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 0);
   GTEST_ASSERT_EQ(registerController.getRegister(Registers::A), 0xFC);
   GTEST_ASSERT_EQ(registerController.getFlagRegister().getRegister(),
                   0b10000111);
@@ -212,14 +275,35 @@ TEST_F(InstructionsTest, SBB_CARRY) {
 
 TEST_F(InstructionsTest, SBI_NO_CARRY) {
   registerController.setRegister(Registers::A, 5);
-  instructions.SBI(0x1);
+  registerController.getFlagRegister().setFlag(FlagRegister::Flag::Carry, false);
+  busController.writeByte(1, 0x1);
+  instructions.SBI();
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 1);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 1);
+  GTEST_ASSERT_EQ(registerController.getRegister(Registers::A), 5);
+
+  instructions.SBI();
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 2);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 0);
   GTEST_ASSERT_EQ(registerController.getRegister(Registers::A), 0x4);
 }
 
 TEST_F(InstructionsTest, SBI_CARRY) {
   registerController.setRegister(Registers::A, 5);
   registerController.getFlagRegister().setFlag(FlagRegister::Flag::Carry, true);
-  instructions.SBI(0x1);
+  busController.writeByte(1, 0x1);
+  instructions.SBI();
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 1);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 1);
+  GTEST_ASSERT_EQ(registerController.getRegister(Registers::A), 5);
+
+  instructions.SBI();
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 2);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 0);
   GTEST_ASSERT_EQ(registerController.getRegister(Registers::A), 0x3);
 }
 
@@ -316,29 +400,113 @@ TEST_F(InstructionsTest, CPI) {
 }
 
 TEST_F(InstructionsTest, LHLD) {
-  busController.writeWord(0x2, 0x1234);
-  instructions.LHLD(0x2);
-  GTEST_ASSERT_EQ(0x1234, registerController.getRegisterPair(RegisterPair::H));
+  busController.writeWord(0x1, 0x1234);
+  instructions.LHLD();
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 1);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 1);
+  GTEST_ASSERT_EQ(registerController.getRegisterPair(RegisterPair::H), 0);
+  GTEST_ASSERT_EQ(registerController.getRegisterPair(RegisterPair::Temporary), 0x0034);
+
+  instructions.LHLD();
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 2);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 2);
+  GTEST_ASSERT_EQ(registerController.getRegisterPair(RegisterPair::H), 0);
+  GTEST_ASSERT_EQ(registerController.getRegisterPair(RegisterPair::Temporary), 0x1234);
+
+  instructions.LHLD();
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 3);
+  GTEST_ASSERT_EQ(registerController.getRegisterPair(RegisterPair::Temporary), 0x0002);
+  GTEST_ASSERT_EQ(registerController.getRegisterPair(RegisterPair::H), 0);
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 0x1234);
+
+  instructions.LHLD();
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 0x1235);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 4);
+  GTEST_ASSERT_EQ(registerController.getRegisterPair(RegisterPair::Temporary), 0x0002);
+  GTEST_ASSERT_EQ(registerController.getRegisterPair(RegisterPair::H), 0);
+
+  instructions.LHLD();
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 0x3);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 0);
+  GTEST_ASSERT_EQ(registerController.getRegisterPair(RegisterPair::Temporary), 0x1234);
+  GTEST_ASSERT_EQ(registerController.getRegisterPair(RegisterPair::H), 0x1234);
 }
 
 TEST_F(InstructionsTest, SHLD) {
-  registerController.setRegisterPair(RegisterPair::H, 0x1234);
-  instructions.SHLD(0x2);
-  GTEST_ASSERT_EQ(0x1234, busController.readWord(0x2));
+  busController.writeWord(0x1, 0x1234);
+  registerController.setRegisterPair(RegisterPair::H, 0x4567);
+  instructions.SHLD();
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 1);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 1);
+  GTEST_ASSERT_EQ(busController.readWord(0x1234), 0);
+  GTEST_ASSERT_EQ(registerController.getRegisterPair(RegisterPair::Temporary), 0x0034);
+
+  instructions.SHLD();
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 2);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 2);
+  GTEST_ASSERT_EQ(busController.readWord(0x1234), 0);
+  GTEST_ASSERT_EQ(registerController.getRegisterPair(RegisterPair::Temporary), 0x1234);
+
+  instructions.SHLD();
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 3);
+  GTEST_ASSERT_EQ(registerController.getRegisterPair(RegisterPair::Temporary), 0x0002);
+  GTEST_ASSERT_EQ(busController.readWord(0x1234), 0);
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 0x1234);
+
+  instructions.SHLD();
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 0x1235);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 4);
+  GTEST_ASSERT_EQ(registerController.getRegisterPair(RegisterPair::Temporary), 0x0002);
+  GTEST_ASSERT_EQ(busController.readWord(0x1234), 0);
+
+  instructions.SHLD();
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 0x3);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 0);
+  GTEST_ASSERT_EQ(registerController.getRegisterPair(RegisterPair::Temporary), 0x1234);
+  GTEST_ASSERT_EQ(registerController.getRegisterPair(RegisterPair::H), 0x4567);
+  GTEST_ASSERT_EQ(busController.readWord(0x1234), 0x4567);
 }
 
 TEST_F(InstructionsTest, LDAX) {
-  registerController.setRegisterPair(RegisterPair::B, 0x0002);
-  busController.writeByte(0x2, 0x60);
+  registerController.setRegisterPair(RegisterPair::B, 0x7890);
+  busController.writeByte(0x7890, 0x45);
   instructions.LDAX(RegisterPair::B);
-  GTEST_ASSERT_EQ(0x60, registerController.getRegister(Registers::A));
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 0x7890);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 1);
+  GTEST_ASSERT_EQ(0x00, registerController.getRegister(Registers::A));
+
+  instructions.LDAX(RegisterPair::B);
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 1);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 0);
+  GTEST_ASSERT_EQ(0x45, registerController.getRegister(Registers::A));
 }
 
 TEST_F(InstructionsTest, STAX) {
-  registerController.setRegisterPair(RegisterPair::B, 0x0002);
-  registerController.setRegister(Registers::A, 0x33);
+  registerController.setRegisterPair(RegisterPair::B, 0x1111);
+  registerController.setRegister(Registers::A, 0x22);
   instructions.STAX(RegisterPair::B);
-  GTEST_ASSERT_EQ(0x33, busController.readByte(2));
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 0x1111);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 1);
+  GTEST_ASSERT_EQ(0x00, busController.readByte(0x1111));
+
+  instructions.STAX(RegisterPair::B);
+  registerController.incrementMachineCycle();
+  GTEST_ASSERT_EQ(registerController.getProgramCounter(), 1);
+  GTEST_ASSERT_EQ(registerController.getMachineCycle(), 0);
+  GTEST_ASSERT_EQ(0x22, busController.readByte(0x1111));
 }
 
 TEST_F(InstructionsTest, XCHG) {

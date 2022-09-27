@@ -49,7 +49,7 @@ bool InstructionDecoder::instructionDecoder(uint8_t opcode) {
 
   // SHLD Opcode
   case 0x22:
-    instructions.SHLD(getNextWord());
+    instructions.SHLD();
     break;
 
     // STA Opcode
@@ -213,7 +213,7 @@ bool InstructionDecoder::instructionDecoder(uint8_t opcode) {
 
   // LHLD Opcode
   case 0x2A:
-    instructions.LHLD(getNextWord());
+    instructions.LHLD();
     break;
 
   // LDA Opcode
@@ -803,12 +803,12 @@ bool InstructionDecoder::instructionDecoder(uint8_t opcode) {
 
   // ADI Opcode
   case 0xC6:
-    instructions.ADI(getNextByte());
+    instructions.ADI();
     break;
 
   // SUI Opcode
   case 0xD6:
-    instructions.SUI(getNextByte());
+    instructions.SUI();
     break;
 
   // ANI Opcode
@@ -891,12 +891,12 @@ bool InstructionDecoder::instructionDecoder(uint8_t opcode) {
 
   // ACI Opcode
   case 0xCE:
-    instructions.ACI(getNextByte());
+    instructions.ACI();
     break;
 
   // SBI Opcode
   case 0xDE:
-    instructions.SBI(getNextByte());
+    instructions.SBI();
     break;
 
   // XRI Opcode

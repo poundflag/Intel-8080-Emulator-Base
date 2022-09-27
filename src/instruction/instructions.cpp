@@ -78,28 +78,118 @@ void Instructions::STA() {
 }
 
 // LHLD a    00101010 lb hb    -       Load H:L from memory
-void Instructions::LHLD(uint16_t address) {
-    registerController.setRegisterPair(RegisterPair::H,
-                                       busController.readWord(address));
+void Instructions::LHLD() {
+    uint16_t temp = 0;
+   switch (registerController.getMachineCycle()) {// Read the 16-Bit Value
+        case 0:
+            registerController.setRegister(Registers::TemporaryLow,
+                                           busController.readByte(++registerController.getProgramCounter()));
+            break;
+        case 1:
+            registerController.setRegister(Registers::TemporaryHigh,
+                                           busController.readByte(++registerController.getProgramCounter()));
+            break;
+        // Once the value has been loaded set the register pair
+        case 2:
+            temp = registerController.getProgramCounter();
+            registerController.getProgramCounter() = registerController.getRegisterPair(RegisterPair::Temporary);
+            registerController.setRegisterPair(RegisterPair::Temporary, temp);
+            break;
+        case 3:
+            registerController.setRegisterPair(RegisterPair::H, busController.readWord(registerController.getProgramCounter()));
+            registerController.getProgramCounter()++;
+            break;
+        case 4:
+            temp = registerController.getProgramCounter()-1;
+            registerController.getProgramCounter() = registerController.getRegisterPair(RegisterPair::Temporary);
+            registerController.setRegisterPair(RegisterPair::Temporary, temp);
+            registerController.setRegisterPair(RegisterPair::H,
+                                               registerController.getRegisterPair(RegisterPair::Temporary));
+        default:
+            registerController.fetchNextInstruction();
+            break;
+    }
 }
 
 // SHLD a    00100010 lb hb    -       Store H:L to memory
-void Instructions::SHLD(uint16_t address) {
-    busController.writeWord(address,
-                            registerController.getRegisterPair(RegisterPair::H));
+void Instructions::SHLD() {
+    uint16_t temp = 0;
+    switch (registerController.getMachineCycle()) {
+        case 0:
+            registerController.setRegister(Registers::TemporaryLow,
+                                           busController.readByte(++registerController.getProgramCounter()));
+            break;
+        case 1:
+            registerController.setRegister(Registers::TemporaryHigh,
+                                           busController.readByte(++registerController.getProgramCounter()));
+            break;
+        // Once the value has been loaded set the register pair
+        case 2:
+            temp = registerController.getProgramCounter();
+            registerController.getProgramCounter() = registerController.getRegisterPair(RegisterPair::Temporary);
+            registerController.setRegisterPair(RegisterPair::Temporary, temp);
+            break;
+        case 3:
+            registerController.getProgramCounter()++;
+            break;
+        case 4:
+            temp = registerController.getProgramCounter() - 1;
+            registerController.getProgramCounter() = registerController.getRegisterPair(RegisterPair::Temporary);
+            registerController.setRegisterPair(RegisterPair::Temporary, temp);
+            busController.writeWord(registerController.getRegisterPair(RegisterPair::Temporary),
+                                    registerController.getRegisterPair(RegisterPair::H));
+        default:
+            registerController.fetchNextInstruction();
+            break;
+    }
 }
 
 // LDAX RP   00RP1010 *1       -       Load indirect through BC or DE
 void Instructions::LDAX(RegisterPair indirectAddress) {
-    uint16_t address = registerController.getRegisterPair(indirectAddress);
-    registerController.setRegister(Registers::A, busController.readByte(address));
+    uint16_t temp;
+    switch (registerController.getMachineCycle()) {
+        case 0:
+            // Set the reg. pair address in the temp register
+            registerController.setRegisterPair(RegisterPair::Temporary, registerController.getRegisterPair(indirectAddress));
+
+            // TODO LATER IN SWAP FUNCTION
+            temp = registerController.getProgramCounter();
+            registerController.getProgramCounter() = registerController.getRegisterPair(RegisterPair::Temporary);
+            registerController.setRegisterPair(RegisterPair::Temporary, temp);
+            break;
+        case 1:
+            temp = registerController.getProgramCounter();
+            registerController.getProgramCounter() = registerController.getRegisterPair(RegisterPair::Temporary);
+            registerController.setRegisterPair(RegisterPair::Temporary, temp);
+            registerController.setRegister(Registers::A, busController.readByte(registerController.getRegisterPair(RegisterPair::Temporary)));
+        default:
+            registerController.fetchNextInstruction();
+            break;
+    }
 }
 
 // STAX RP   00RP0010 *1       -       Store indirect through BC or DE
 void Instructions::STAX(RegisterPair indirectAddress) {
-    uint16_t address = registerController.getRegisterPair(indirectAddress);
-    busController.writeByte(address,
-                            registerController.getRegister(Registers::A));
+    uint16_t temp;
+    switch (registerController.getMachineCycle()) {
+        case 0:
+            // Set the reg. pair address in the temp register
+            registerController.setRegisterPair(RegisterPair::Temporary, registerController.getRegisterPair(indirectAddress));
+
+            // TODO LATER IN SWAP FUNCTION
+            temp = registerController.getProgramCounter();
+            registerController.getProgramCounter() = registerController.getRegisterPair(RegisterPair::Temporary);
+            registerController.setRegisterPair(RegisterPair::Temporary, temp);
+            break;
+        case 1:
+            temp = registerController.getProgramCounter();
+            registerController.getProgramCounter() = registerController.getRegisterPair(RegisterPair::Temporary);
+            registerController.setRegisterPair(RegisterPair::Temporary, temp);
+            busController.writeByte(registerController.getRegisterPair(RegisterPair::Temporary), registerController.getRegister(Registers::A));
+        default:
+            registerController.fetchNextInstruction();
+            break;
+    }
 }
 
 // XCHG      11101011          -       Exchange DE and HL content
@@ -108,6 +198,7 @@ void Instructions::XCHG() {
     registerController.setRegisterPair(
         RegisterPair::D, registerController.getRegisterPair(RegisterPair::H));
     registerController.setRegisterPair(RegisterPair::H, temp);
+    registerController.fetchNextInstruction();
 }
 
 // ADD S     10000SSS          ZSPCA   Add register to A
@@ -117,14 +208,23 @@ void Instructions::ADD(Registers::Register source) {
 
     registerController.setRegister(Registers::A,
                                    alu.performAdd(aValue, sourceValue, 0));
+    registerController.fetchNextInstruction();
 }
 
 // ADI #     11000110 db       ZSCPA   Add immediate to A
-void Instructions::ADI(uint8_t immediate) {
-    uint8_t aValue = registerController.getRegister(Registers::A);
+void Instructions::ADI() {
+    switch (registerController.getMachineCycle()) {
+        case 0:
+            registerController.getProgramCounter()++;
+            break;
+        case 1:
+            uint8_t aValue = registerController.getRegister(Registers::A);
 
-    registerController.setRegister(Registers::A,
-                                   alu.performAdd(aValue, immediate, 0));
+            registerController.setRegister(Registers::A,
+                                           alu.performAdd(aValue, busController.readByte(registerController.getProgramCounter()), 0));
+            registerController.fetchNextInstruction();
+            break;
+    }
 }
 
 // ADC S     10001SSS          ZSCPA   Add register to A with carry
@@ -136,15 +236,23 @@ void Instructions::ADC(Registers::Register source) {
         Registers::A, alu.performAdd(aValue, sourceValue,
                                      registerController.getFlagRegister().getFlag(
                                          FlagRegister::Flag::Carry)));
+    registerController.fetchNextInstruction();
 }
 
 // ACI #     11001110 db       ZSCPA   Add immediate to A with carry
-void Instructions::ACI(uint8_t immediate) {
-    uint8_t aValue = registerController.getRegister(Registers::A);
-
-    registerController.setRegister(Registers::A, alu.performAdd(aValue, immediate,
-                                                                registerController.getFlagRegister().getFlag(
-                                                                    FlagRegister::Flag::Carry)));
+void Instructions::ACI() {
+    switch (registerController.getMachineCycle()) {
+        case 0:
+            registerController.getProgramCounter()++;
+            break;
+        case 1:
+            uint8_t aValue = registerController.getRegister(Registers::A);
+            registerController.setRegister(Registers::A, alu.performAdd(aValue, busController.readByte(registerController.getProgramCounter()),
+                                                                        registerController.getFlagRegister().getFlag(
+                                                                            FlagRegister::Flag::Carry)));
+            registerController.fetchNextInstruction();
+            break;
+    }
 }
 
 // SUB S     10010SSS          ZSCPA   Subtract register from A
@@ -153,13 +261,24 @@ void Instructions::SUB(Registers::Register source) {
     uint8_t sourceValue = registerController.getRegister(source);
 
     registerController.setRegister(Registers::A, alu.performSub(aValue, sourceValue, 0));
+    registerController.fetchNextInstruction();
 }
 
 // SUI #     11010110 db       ZSCPA   Subtract immediate from A
-void Instructions::SUI(uint8_t immediate) {
-    uint8_t aValue = registerController.getRegister(Registers::A);
+void Instructions::SUI() {
+    switch (registerController.getMachineCycle()) {
+        case 0:
+            registerController.getProgramCounter()++;
+            break;
+        case 1:
+            uint8_t aValue = registerController.getRegister(Registers::A);
 
-    registerController.setRegister(Registers::A, alu.performSub(aValue, immediate, 0));
+            registerController
+                .setRegister(Registers::A, alu.performSub(
+                                               aValue, busController.readByte(registerController.getProgramCounter()), 0));
+            registerController.fetchNextInstruction();
+            break;
+    }
 }
 
 // SBB S     10011SSS          ZSCPA   Subtract register from A with borrow
@@ -170,15 +289,24 @@ void Instructions::SBB(Registers::Register source) {
     registerController.setRegister(Registers::A, alu.performSub(
                                                      aValue, sourceValue,
                                                      registerController.getFlagRegister().getFlag(FlagRegister::Carry)));
+    registerController.fetchNextInstruction();
 }
 
 // SBI #     11011110 db       ZSCPA   Subtract immediate from A with borrow
-void Instructions::SBI(uint8_t immediate) {
-    uint8_t aValue = registerController.getRegister(Registers::A);
+void Instructions::SBI() {
+    switch (registerController.getMachineCycle()) {
+        case 0:
+            registerController.getProgramCounter()++;
+            break;
+        case 1:
+            uint8_t aValue = registerController.getRegister(Registers::A);
 
-    registerController.setRegister(Registers::A, alu.performSub(
-                                                     aValue, immediate,
-                                                     registerController.getFlagRegister().getFlag(FlagRegister::Carry)));
+            registerController.setRegister(Registers::A, alu.performSub(
+                                                             aValue, busController.readByte(registerController.getProgramCounter()),
+                                                             registerController.getFlagRegister().getFlag(FlagRegister::Carry)));
+            registerController.fetchNextInstruction();
+            break;
+    }
 }
 
 // INR D     00DDD100          ZSPA    Increment register
@@ -190,6 +318,7 @@ void Instructions::INR(Registers::Register destination) {
         FlagRegister::FlagRule::Partial, temp, 1, "+");
     registerController.getFlagRegister().setFlag(FlagRegister::AuxiliaryCarry,
                                                  acResult);
+    registerController.fetchNextInstruction();
 }
 
 // DCR D     00DDD101          ZSPA    Decrement register
@@ -201,18 +330,21 @@ void Instructions::DCR(Registers::Register destination) {
         FlagRegister::FlagRule::Partial, temp, 1, "-");
     registerController.getFlagRegister().setFlag(FlagRegister::AuxiliaryCarry,
                                                  acResult);
+    registerController.fetchNextInstruction();
 }
 
 // INX RP    00RP0011          -       Increment register pair
 void Instructions::INX(RegisterPair destination) {
     uint16_t temp = registerController.getRegisterPair(destination);
     registerController.setRegisterPair(destination, temp + 1);
+    registerController.fetchNextInstruction();
 }
 
 // DCX RP    00RP1011          -       Decrement register pair
 void Instructions::DCX(RegisterPair destination) {
     uint16_t temp = registerController.getRegisterPair(destination);
     registerController.setRegisterPair(destination, temp - 1);
+    registerController.fetchNextInstruction();
 }
 
 // DAD RP    00RP1001          C       Add register pair to HL (16 bit add)
@@ -223,6 +355,7 @@ void Instructions::DAD(RegisterPair source) {
     registerController.setRegisterPair(RegisterPair::H, hValue + sourceValue);
     registerController.getFlagRegister().setFlag(FlagRegister::Carry,
                                                  carryResult);
+    registerController.fetchNextInstruction();
 }
 
 // DAA       00100111          ZSPCA   Decimal Adjust accumulator
@@ -261,6 +394,7 @@ void Instructions::DAA() {
                                                  carry);
 
     registerController.setRegister(Registers::A, value + tempValue);
+    registerController.fetchNextInstruction();
 }
 
 // ANA S     10100SSS          ZSCPA   AND register with A
@@ -269,6 +403,7 @@ void Instructions::ANA(Registers::Register source) {
     uint8_t aValue = registerController.getRegister(Registers::A);
 
     registerController.setRegister(Registers::A, alu.performAnd(aValue, sourceValue));
+    registerController.fetchNextInstruction();
 }
 
 // ANI #     11100110 db       ZSPCA   AND immediate with A
@@ -322,7 +457,7 @@ void Instructions::CMP(Registers::Register source) {
 void Instructions::CPI(uint8_t immediate) {
     uint8_t intermediate =
         registerController.getRegister(Registers::A);
-    SUI(immediate);
+    // SUI(immediate); TODO FIX LATER FROM 27 09 19:09
     registerController.setRegister(Registers::A, intermediate);
 }
 

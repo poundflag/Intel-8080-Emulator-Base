@@ -24,6 +24,22 @@
             "label": "Build Debug",
             "type": "shell",
             "command": "make DEBUG=1"
+        },
+        {
+            "label": "Build Test",
+            "type": "shell",
+            "command": "make TEST"
+        },
+        {
+            "label": "Run Tests",
+            "type": "shell",
+            "command": "./bin/test",
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "dependsOn": [
+                "Build Test"
+            ]
         }
     ]
 }
