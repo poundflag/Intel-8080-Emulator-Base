@@ -50,13 +50,13 @@ public:
   void DAD(RegisterPair source);
   void DAA();
   void ANA(Registers::Register source);
-  void ANI(uint8_t immediate);
+  void ANI();
   void ORA(Registers::Register source);
-  void ORI(uint8_t immediate);
+  void ORI();
   void XRA(Registers::Register source);
-  void XRI(uint8_t immediate);
+  void XRI();
   void CMP(Registers::Register source);
-  void CPI(uint8_t immediate);
+  void CPI();
   void RLC();
   void RRC();
   void RAL();

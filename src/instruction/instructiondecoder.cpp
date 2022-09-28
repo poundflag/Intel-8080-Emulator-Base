@@ -813,12 +813,12 @@ bool InstructionDecoder::instructionDecoder(uint8_t opcode) {
 
   // ANI Opcode
   case 0xE6:
-    instructions.ANI(getNextByte());
+    instructions.ANI();
     break;
 
   // ORI Opcode
   case 0xF6:
-    instructions.ORI(getNextByte());
+    instructions.ORI();
     break;
 
     // RST Opcodes
@@ -901,12 +901,12 @@ bool InstructionDecoder::instructionDecoder(uint8_t opcode) {
 
   // XRI Opcode
   case 0xEE:
-    instructions.XRI(getNextByte());
+    instructions.XRI();
     break;
 
   // CPI Opcode
   case 0xFE:
-    instructions.CPI(getNextByte());
+    instructions.CPI();
     break;
 
   case 0x76:

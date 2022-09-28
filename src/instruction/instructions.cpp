@@ -407,10 +407,18 @@ void Instructions::ANA(Registers::Register source) {
 }
 
 // ANI #     11100110 db       ZSPCA   AND immediate with A
-void Instructions::ANI(uint8_t immediate) {
-    uint8_t aValue = registerController.getRegister(Registers::A);
+void Instructions::ANI() {
+    switch (registerController.getMachineCycle()) {
+        case 0:
+            registerController.getProgramCounter()++;
+            break;
+        case 1:
+            uint8_t aValue = registerController.getRegister(Registers::A);
 
-    registerController.setRegister(Registers::A, alu.performAnd(aValue, immediate));
+            registerController.setRegister(Registers::A, alu.performAnd(aValue, busController.readByte(registerController.getProgramCounter())));
+            registerController.fetchNextInstruction();
+            break;
+    }
 }
 
 // ORA S     10110SSS          ZSPCA   OR  register with A
@@ -419,13 +427,22 @@ void Instructions::ORA(Registers::Register source) {
     uint8_t aValue = registerController.getRegister(Registers::A);
 
     registerController.setRegister(Registers::A, alu.performOr(aValue, sourceValue));
+    registerController.fetchNextInstruction();
 }
 
 // ORI #     11110110          ZSPCA   OR  immediate with A
-void Instructions::ORI(uint8_t immediate) {
-    uint8_t aValue = registerController.getRegister(Registers::A);
+void Instructions::ORI() {
+    switch (registerController.getMachineCycle()) {
+        case 0:
+            registerController.getProgramCounter()++;
+            break;
+        case 1:
+            uint8_t aValue = registerController.getRegister(Registers::A);
 
-    registerController.setRegister(Registers::A, alu.performOr(aValue, immediate));
+            registerController.setRegister(Registers::A, alu.performOr(aValue, busController.readByte(registerController.getProgramCounter())));
+            registerController.fetchNextInstruction();
+            break;
+    }
 }
 
 // XRA S     10101SSS          ZSPCA   ExclusiveOR register with A
@@ -435,14 +452,23 @@ void Instructions::XRA(Registers::Register source) {
     registerController.setRegister(Registers::A, aValue ^ sourceValue);
     registerController.getFlagRegister().processFlags(
         FlagRegister::FlagRule::All, aValue ^ sourceValue, 0, "+");
+    registerController.fetchNextInstruction();
 }
 
 // XRI #     11101110 db       ZSPCA   ExclusiveOR immediate with A
-void Instructions::XRI(uint8_t immediate) {
-    uint8_t aValue = registerController.getRegister(Registers::A);
-    registerController.setRegister(Registers::A, aValue ^ immediate);
-    registerController.getFlagRegister().processFlags(FlagRegister::FlagRule::All,
-                                                      aValue ^ immediate, 0, "+");
+void Instructions::XRI() {
+    switch (registerController.getMachineCycle()) {
+        case 0:
+            registerController.getProgramCounter()++;
+            break;
+        case 1:
+            uint8_t aValue = registerController.getRegister(Registers::A);
+            registerController.setRegister(Registers::A, aValue ^ busController.readByte(registerController.getProgramCounter()));
+            registerController.getFlagRegister().processFlags(FlagRegister::FlagRule::All,
+                                                              aValue ^ busController.readByte(registerController.getProgramCounter()), 0, "+");
+            registerController.fetchNextInstruction();
+            break;
+    }
 }
 
 // CMP S     10111SSS          ZSPCA   Compare register with A
@@ -451,14 +477,26 @@ void Instructions::CMP(Registers::Register source) {
         registerController.getRegister(Registers::A);
     SUB(source);
     registerController.setRegister(Registers::A, intermediate);
+    registerController.fetchNextInstruction();
 }
 
 // CPI #     11111110          ZSPCA   Compare immediate with A
-void Instructions::CPI(uint8_t immediate) {
-    uint8_t intermediate =
-        registerController.getRegister(Registers::A);
-    // SUI(immediate); TODO FIX LATER FROM 27 09 19:09
-    registerController.setRegister(Registers::A, intermediate);
+void Instructions::CPI() {
+    switch (registerController.getMachineCycle()) {
+        case 0:
+            registerController.getProgramCounter()++;
+            break;
+        case 1:
+            uint8_t aValue = registerController.getRegister(Registers::A);
+
+            registerController
+                .setRegister(Registers::A, alu.performSub(
+                                               aValue, busController.readByte(registerController.getProgramCounter()), 0));
+
+            registerController.setRegister(Registers::A, aValue);
+            registerController.fetchNextInstruction();
+            break;
+    }
 }
 
 // RLC       00000111          C       Rotate A left
@@ -469,6 +507,7 @@ void Instructions::RLC() {
                                                  (value & 0x100) == 0x100);
 
     registerController.setRegister(Registers::A, value);
+    registerController.fetchNextInstruction();
 }
 
 // RRC       00001111          C       Rotate A right
@@ -487,6 +526,7 @@ void Instructions::RRC() {
     registerController.getFlagRegister().setFlag(FlagRegister::Flag::Carry,
                                                  carry);
     registerController.setRegister(Registers::A, value);
+    registerController.fetchNextInstruction();
 }
 
 // RAL       00010111          C       Rotate A left through carry
@@ -506,6 +546,7 @@ void Instructions::RAL() {
     registerController.getFlagRegister().setFlag(FlagRegister::Flag::Carry,
                                                  carry);
     registerController.setRegister(Registers::A, value);
+    registerController.fetchNextInstruction();
 }
 
 // RAR       00011111          C       Rotate A right through carry
@@ -525,12 +566,14 @@ void Instructions::RAR() {
     registerController.getFlagRegister().setFlag(FlagRegister::Flag::Carry,
                                                  carry);
     registerController.setRegister(Registers::A, value);
+    registerController.fetchNextInstruction();
 }
 
 // CMA       00101111          -       Compliment A
 void Instructions::CMA() {
     uint8_t value = registerController.getRegister(Registers::A);
     registerController.setRegister(Registers::A, ~value);
+    registerController.fetchNextInstruction();
 }
 
 // CMC       00111111          C       Compliment Carry flag
@@ -539,11 +582,13 @@ void Instructions::CMC() {
         registerController.getFlagRegister().getFlag(FlagRegister::Flag::Carry);
     registerController.getFlagRegister().setFlag(FlagRegister::Flag::Carry,
                                                  !carry);
+    registerController.fetchNextInstruction();
 }
 
 // STC       00110111          C       Set Carry flag
 void Instructions::STC() {
     registerController.getFlagRegister().setFlag(FlagRegister::Flag::Carry, true);
+    registerController.fetchNextInstruction();
 }
 
 // JMP a     11000011 lb hb    -       Unconditional jump
