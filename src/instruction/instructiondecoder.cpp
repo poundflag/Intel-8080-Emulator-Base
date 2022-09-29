@@ -635,40 +635,32 @@ bool InstructionDecoder::instructionDecoder(uint8_t opcode) {
   // Rccc Opcodes
   case 0xC0:
     skipIncrement =
-        instructions.RETCondition(registerController.getProgramCounter(),
-                                  FlagRegister::Condition::NotZero);
+        instructions.RETCondition(FlagRegister::Condition::NotZero);
     break;
   case 0xD0:
     skipIncrement =
-        instructions.RETCondition(registerController.getProgramCounter(),
-                                  FlagRegister::Condition::NotCarry);
+        instructions.RETCondition(FlagRegister::Condition::NotCarry);
     break;
   case 0xE0:
     skipIncrement =
-        instructions.RETCondition(registerController.getProgramCounter(),
-                                  FlagRegister::Condition::ParityOdd);
+        instructions.RETCondition(FlagRegister::Condition::ParityOdd);
     break;
   case 0xF0:
     skipIncrement =
-        instructions.RETCondition(registerController.getProgramCounter(),
-                                  FlagRegister::Condition::Positive);
+        instructions.RETCondition(FlagRegister::Condition::Positive);
     break;
   case 0xC8:
-    skipIncrement = instructions.RETCondition(
-        registerController.getProgramCounter(), FlagRegister::Condition::Zero);
+    skipIncrement = instructions.RETCondition(FlagRegister::Condition::Zero);
     break;
   case 0xD8:
-    skipIncrement = instructions.RETCondition(
-        registerController.getProgramCounter(), FlagRegister::Condition::Carry);
+    skipIncrement = instructions.RETCondition(FlagRegister::Condition::Carry);
     break;
   case 0xE8:
     skipIncrement =
-        instructions.RETCondition(registerController.getProgramCounter(),
-                                  FlagRegister::Condition::ParityEven);
+        instructions.RETCondition(FlagRegister::Condition::ParityEven);
     break;
   case 0xF8:
-    skipIncrement = instructions.RETCondition(
-        registerController.getProgramCounter(), FlagRegister::Condition::Minus);
+    skipIncrement = instructions.RETCondition(FlagRegister::Condition::Minus);
     break;
 
   // POP Opcodes
@@ -676,61 +668,53 @@ bool InstructionDecoder::instructionDecoder(uint8_t opcode) {
     instructions.POP(RegisterPair::B);
     break;
   case 0xD1:
-    instructions.POP(RegisterPair::D);
-    break;
+      instructions.POP(RegisterPair::D);
+      break;
   case 0xE1:
-    instructions.POP(RegisterPair::H);
-    break;
+      instructions.POP(RegisterPair::H);
+      break;
   case 0xF1:
-    instructions.POP(RegisterPair::PSW);
-    break;
+      instructions.POP(RegisterPair::PSW);
+      break;
 
   // Jccc Opcodes
   case 0xC2:
-    skipIncrement = instructions.JMPCondition(
-        registerController.getProgramCounter(), getNextWord(),
-        FlagRegister::Condition::NotZero);
-    break;
+      skipIncrement = instructions.JMPCondition(
+          FlagRegister::Condition::NotZero);
+      break;
   case 0xD2:
-    skipIncrement = instructions.JMPCondition(
-        registerController.getProgramCounter(), getNextWord(),
-        FlagRegister::Condition::NotCarry);
-    break;
+      skipIncrement = instructions.JMPCondition(
+          FlagRegister::Condition::NotCarry);
+      break;
   case 0xE2:
-    skipIncrement = instructions.JMPCondition(
-        registerController.getProgramCounter(), getNextWord(),
-        FlagRegister::Condition::ParityOdd);
-    break;
+      skipIncrement = instructions.JMPCondition(
+          FlagRegister::Condition::ParityOdd);
+      break;
   case 0xF2:
-    skipIncrement = instructions.JMPCondition(
-        registerController.getProgramCounter(), getNextWord(),
-        FlagRegister::Condition::Positive);
-    break;
+      skipIncrement = instructions.JMPCondition(
+          FlagRegister::Condition::Positive);
+      break;
   case 0xCA:
-    skipIncrement =
-        instructions.JMPCondition(registerController.getProgramCounter(),
-                                  getNextWord(), FlagRegister::Condition::Zero);
-    break;
+      skipIncrement =
+          instructions.JMPCondition(FlagRegister::Condition::Zero);
+      break;
   case 0xDA:
-    skipIncrement = instructions.JMPCondition(
-        registerController.getProgramCounter(), getNextWord(),
-        FlagRegister::Condition::Carry);
-    break;
+      skipIncrement = instructions.JMPCondition(
+          FlagRegister::Condition::Carry);
+      break;
   case 0xEA:
-    skipIncrement = instructions.JMPCondition(
-        registerController.getProgramCounter(), getNextWord(),
-        FlagRegister::Condition::ParityEven);
-    break;
+      skipIncrement = instructions.JMPCondition(
+          FlagRegister::Condition::ParityEven);
+      break;
   case 0xFA:
-    skipIncrement = instructions.JMPCondition(
-        registerController.getProgramCounter(), getNextWord(),
-        FlagRegister::Condition::Minus);
-    break;
+      skipIncrement = instructions.JMPCondition(
+          FlagRegister::Condition::Minus);
+      break;
 
   // JMP Opcodes
   case 0xC3:
   case 0xCB:
-    instructions.JMP(registerController.getProgramCounter(), getNextWord());
+    instructions.JMP();
     skipIncrement = true;
     break;
 
@@ -751,40 +735,28 @@ bool InstructionDecoder::instructionDecoder(uint8_t opcode) {
 
   // Cccc Opcodes
   case 0xC4:
-    skipIncrement = instructions.CALLCondition(
-        registerController.getProgramCounter(), getNextWord(),
-        FlagRegister::Condition::NotZero);
+    skipIncrement = instructions.CALLCondition(FlagRegister::Condition::NotZero);
     break;
   case 0xD4:
-    skipIncrement = instructions.CALLCondition(
-        registerController.getProgramCounter(), getNextWord(),
-        FlagRegister::Condition::NotCarry);
+    skipIncrement = instructions.CALLCondition(FlagRegister::Condition::NotCarry);
     break;
   case 0xE4:
-    skipIncrement = instructions.CALLCondition(
-        registerController.getProgramCounter(), getNextWord(),
-        FlagRegister::Condition::ParityOdd);
+    skipIncrement = instructions.CALLCondition(FlagRegister::Condition::ParityOdd);
     break;
   case 0xF4:
-    skipIncrement = instructions.CALLCondition(
-        registerController.getProgramCounter(), getNextWord(),
-        FlagRegister::Condition::Positive);
+    skipIncrement = instructions.CALLCondition(FlagRegister::Condition::Positive);
     break;
   case 0xCC:
-    skipIncrement = instructions.CALLCondition(registerController.getProgramCounter(), getNextWord(),
-                                               FlagRegister::Condition::Zero);
+    skipIncrement = instructions.CALLCondition(FlagRegister::Condition::Zero);
     break;
   case 0xDC:
-    skipIncrement = instructions.CALLCondition(registerController.getProgramCounter(), getNextWord(),
-                                               FlagRegister::Condition::Carry);
+    skipIncrement = instructions.CALLCondition(FlagRegister::Condition::Carry);
     break;
   case 0xEC:
-    skipIncrement = instructions.CALLCondition(
-        registerController.getProgramCounter(), getNextWord(), FlagRegister::Condition::ParityEven);
+    skipIncrement = instructions.CALLCondition(FlagRegister::Condition::ParityEven);
     break;
   case 0xFC:
-    skipIncrement = instructions.CALLCondition(registerController.getProgramCounter(), getNextWord(),
-                                               FlagRegister::Condition::Minus);
+    skipIncrement = instructions.CALLCondition(FlagRegister::Condition::Minus);
     break;
 
   // PUSH Opcodes
@@ -823,34 +795,34 @@ bool InstructionDecoder::instructionDecoder(uint8_t opcode) {
 
     // RST Opcodes
   case 0xC7:
-    instructions.RST(registerController.getProgramCounter(), 0);
+    instructions.RST(0);
     break;
   case 0xCF:
-    instructions.RST(registerController.getProgramCounter(), 1);
+    instructions.RST(1);
     break;
   case 0xD7:
-    instructions.RST(registerController.getProgramCounter(), 2);
+    instructions.RST(2);
     break;
   case 0xDF:
-    instructions.RST(registerController.getProgramCounter(), 3);
+    instructions.RST(3);
     break;
   case 0xE7:
-    instructions.RST(registerController.getProgramCounter(), 4);
+    instructions.RST(4);
     break;
   case 0xEF:
-    instructions.RST(registerController.getProgramCounter(), 5);
+    instructions.RST(5);
     break;
   case 0xF7:
-    instructions.RST(registerController.getProgramCounter(), 6);
+    instructions.RST(6);
     break;
   case 0xFF:
-    instructions.RST(registerController.getProgramCounter(), 7);
+    instructions.RST(7);
     break;
 
     // RET Opcodes
   case 0xC9:
   case 0xD9:
-    instructions.RET(registerController.getProgramCounter());
+    instructions.RET();
     skipIncrement = true;
     break;
 
@@ -885,7 +857,7 @@ bool InstructionDecoder::instructionDecoder(uint8_t opcode) {
   case 0xDD:
   case 0xED:
   case 0xFD:
-    instructions.CALL(registerController.getProgramCounter(), getNextWord());
+    instructions.CALL();
     skipIncrement = true;
     break;
 

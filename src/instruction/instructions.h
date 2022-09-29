@@ -64,15 +64,13 @@ public:
   void CMA();
   void CMC();
   void STC();
-  void JMP(uint16_t &source, uint16_t address);
-  bool JMPCondition(uint16_t &source, uint16_t address,
-                    FlagRegister::Condition condition);
-  void CALL(uint16_t &source, uint16_t address);
-  bool CALLCondition(uint16_t &source, uint16_t address,
-                     FlagRegister::Condition condition);
-  void RET(uint16_t &source);
-  bool RETCondition(uint16_t &source, FlagRegister::Condition condition);
-  void RST(uint16_t &source, uint8_t n);
+  void JMP();
+  bool JMPCondition(FlagRegister::Condition condition);
+  void CALL();
+  bool CALLCondition(FlagRegister::Condition condition);
+  void RET();
+  bool RETCondition(FlagRegister::Condition condition);
+  void RST(uint8_t n);
   void PCHL(uint16_t &source);
   void PUSH(RegisterPair registerPair);
   void POP(RegisterPair registerPair);

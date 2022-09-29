@@ -592,7 +592,25 @@ void Instructions::STC() {
 }
 
 // JMP a     11000011 lb hb    -       Unconditional jump
-void Instructions::JMP(uint16_t &source, uint16_t address) { source = address; }
+void Instructions::JMP() {
+    uint16_t temp = 0;
+    switch (registerController.getMachineCycle()) {
+        case 0:
+            registerController.setRegister(Registers::TemporaryLow,
+                                           busController.readByte(++registerController.getProgramCounter()));
+            break;
+        case 1:
+            registerController.setRegister(Registers::TemporaryHigh,
+                                           busController.readByte(++registerController.getProgramCounter()));
+            break;
+        // Once the value has been loaded set the register pair
+        case 2:
+            registerController.getProgramCounter() = registerController.getRegisterPair(RegisterPair::Temporary)-1;
+        default:
+            registerController.fetchNextInstruction();
+            break;
+    }
+}
 
 // Checks the condition for all the condi. jmp, ret and call instr.
 bool Instructions::conditionSuccessful(FlagRegister::Condition condition) {
@@ -626,55 +644,82 @@ bool Instructions::conditionSuccessful(FlagRegister::Condition condition) {
 }
 
 // Jccc a    11CCC010 lb hb    -       Conditional jump
-bool Instructions::JMPCondition(uint16_t &source, uint16_t address,
-                                FlagRegister::Condition condition) {
+bool Instructions::JMPCondition(FlagRegister::Condition condition) {
     bool success = conditionSuccessful(condition);
     if (success) {
-        JMP(source, address);
+        JMP();
+    } else {
+        // If the condition fails, then skip over the current jmp instr.
+        registerController.getProgramCounter()+=2;
+        registerController.fetchNextInstruction();
     }
     return success;
 }
 
 // CALL a    11001101 lb hb    -       Unconditional subroutine call
-void Instructions::CALL(uint16_t &source, uint16_t address) {
-    registerController.getStack().pushWord(source + 1);
-    source = address;
+void Instructions::CALL() {
+    switch (registerController.getMachineCycle()) {
+        case 0:
+            registerController.setRegister(Registers::TemporaryLow,
+                                           busController.readByte(++registerController.getProgramCounter()));
+            break;
+        case 1:
+            registerController.setRegister(Registers::TemporaryHigh,
+                                           busController.readByte(++registerController.getProgramCounter()));
+            break;
+        // Once the value has been loaded set the register pair
+        case 2:
+            registerController.getStack().pushWord(registerController.getProgramCounter() + 1);
+            registerController.getProgramCounter() = registerController.getRegisterPair(RegisterPair::Temporary) - 1;
+        default:
+            registerController.fetchNextInstruction();
+            break;
+    }
 }
 
 // Cccc a    11CCC100 lb hb    -       Conditional subroutine call
-bool Instructions::CALLCondition(uint16_t &source, uint16_t address,
-                                 FlagRegister::Condition condition) {
+bool Instructions::CALLCondition(FlagRegister::Condition condition) {
     bool success = conditionSuccessful(condition);
     if (success) {
-        CALL(source, address);
+        CALL();
+    } else {
+        // If the condition fails, then skip over the current call instr.
+        registerController.getProgramCounter()+=2;
+        registerController.fetchNextInstruction();
     }
     return success;
 }
 
 // RET       11001001          -       Unconditional return from subroutine
-void Instructions::RET(uint16_t &source) {
-    source = registerController.getStack().popWord();
+void Instructions::RET() {
+    registerController.getProgramCounter() = registerController.getStack().popWord() + 1;
+    registerController.fetchNextInstruction();
 }
 
 // Rccc      11CCC000          -       Conditional return from subroutine
-bool Instructions::RETCondition(uint16_t &source,
-                                FlagRegister::Condition condition) {
+bool Instructions::RETCondition(FlagRegister::Condition condition) {
     bool success = conditionSuccessful(condition);
     if (success) {
-        RET(source);
+        RET();
+    } else {
+        // If the condition fails, then skip over the current call instr.
+        registerController.getProgramCounter();
+        registerController.fetchNextInstruction();
     }
     return success;
 }
 
 // RST n     11NNN111          -       Restart (Call n*8)
-void Instructions::RST(uint16_t &source, uint8_t n) {
-    registerController.getStack().pushWord(source + 1);
-    source = (8 * n) - 1;
+void Instructions::RST(uint8_t n) {
+    registerController.getStack().pushWord(registerController.getProgramCounter() + 1);
+    registerController.getProgramCounter() = (8 * n) - 1;
+    registerController.fetchNextInstruction();
 }
 
 // PCHL      11101001          -       Jump to address in H:L
 void Instructions::PCHL(uint16_t &source) {
     source = registerController.getRegisterPair(RegisterPair::H);
+    registerController.fetchNextInstruction();
 }
 
 // PUSH RP   11RP0101 *2       -       Push register pair on the stack
@@ -695,12 +740,14 @@ void Instructions::XTHL() {
     registerController.getStack().pushWord(
         registerController.getRegisterPair(RegisterPair::H));
     registerController.setRegisterPair(RegisterPair::H, stackTemp);
+    registerController.fetchNextInstruction();
 }
 
 // SPHL      11111001          -       Set SP to content of H:L
 void Instructions::SPHL() {
     registerController.getStack().setStackPointer(
         registerController.getRegisterPair(RegisterPair::H));
+    registerController.fetchNextInstruction();
 }
 
 // IN p      11011011 pa       -       Read input port into A

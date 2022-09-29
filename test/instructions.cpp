@@ -697,3 +697,76 @@ TEST_F(InstructionsTest, SPHL) {
   instructions.SPHL();
   GTEST_ASSERT_EQ(0x1234, registerController.getStack().getStackPointer());
 }
+
+TEST_F(InstructionsTest, JMP) {
+    busController.writeWord(1, 1234);
+    instructions.JMP();
+    registerController.incrementMachineCycle();
+    GTEST_ASSERT_EQ(registerController.getProgramCounter(), 0x1);
+
+    instructions.JMP();
+    registerController.incrementMachineCycle();
+    GTEST_ASSERT_EQ(registerController.getProgramCounter(), 0x2);
+
+    instructions.JMP();
+    registerController.incrementMachineCycle();
+    GTEST_ASSERT_EQ(registerController.getProgramCounter(), 1234);
+}
+
+TEST_F(InstructionsTest, JMPConditionWithTrueCase) {
+    busController.writeWord(1, 1234);
+    registerController.getFlagRegister().setFlag(FlagRegister::Flag::Carry, 1);
+    instructions.JMPCondition(FlagRegister::Condition::Carry);
+    registerController.incrementMachineCycle();
+    GTEST_ASSERT_EQ(registerController.getProgramCounter(), 0x1);
+    GTEST_ASSERT_EQ(registerController.getMachineCycle(), 0x1);
+
+    instructions.JMPCondition(FlagRegister::Condition::Carry);
+    registerController.incrementMachineCycle();
+    GTEST_ASSERT_EQ(registerController.getProgramCounter(), 0x2);
+    GTEST_ASSERT_EQ(registerController.getMachineCycle(), 0x2);
+
+    instructions.JMPCondition(FlagRegister::Condition::Carry);
+    registerController.incrementMachineCycle();
+    GTEST_ASSERT_EQ(registerController.getProgramCounter(), 1234);
+    GTEST_ASSERT_EQ(registerController.getMachineCycle(), 0x0);
+}
+
+TEST_F(InstructionsTest, JMPConditionWithFalseCase) {
+    busController.writeWord(1, 1234);
+    registerController.getFlagRegister().setFlag(FlagRegister::Flag::Carry, 0);
+    instructions.JMPCondition(FlagRegister::Condition::Carry);
+    registerController.incrementMachineCycle();
+    GTEST_ASSERT_EQ(registerController.getProgramCounter(), 0x3);
+    GTEST_ASSERT_EQ(registerController.getMachineCycle(), 0x0);
+}
+
+TEST_F(InstructionsTest, CALL) {
+    busController.writeWord(1, 0x9876);
+    instructions.CALL();
+    registerController.incrementMachineCycle();
+    GTEST_ASSERT_EQ(registerController.getProgramCounter(), 1);
+    GTEST_ASSERT_EQ(registerController.getMachineCycle(), 1);
+
+    instructions.CALL();
+    registerController.incrementMachineCycle();
+    GTEST_ASSERT_EQ(registerController.getProgramCounter(), 2);
+    GTEST_ASSERT_EQ(registerController.getMachineCycle(), 2);
+
+    instructions.CALL();
+    registerController.incrementMachineCycle();
+    GTEST_ASSERT_EQ(registerController.getProgramCounter(), 0x9876);
+    GTEST_ASSERT_EQ(registerController.getMachineCycle(), 0);
+}
+
+TEST_F(InstructionsTest, RET) {
+    busController.writeWord(0xFF, 0x9234);
+    registerController.getStack().setStackPointer(0xFF);
+    GTEST_ASSERT_EQ(registerController.getProgramCounter(), 0);
+    GTEST_ASSERT_EQ(registerController.getMachineCycle(), 0);
+
+    instructions.RET();
+    registerController.incrementMachineCycle();
+    GTEST_ASSERT_EQ(registerController.getProgramCounter(), 0x9236);
+    GTEST_ASSERT_EQ(registerController.getMachineCycle(), 0);
+}
