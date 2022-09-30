@@ -670,18 +670,52 @@ TEST_F(InstructionsTest, STC) {
 }
 
 TEST_F(InstructionsTest, PUSH) {
-  registerController.setRegisterPair(RegisterPair::H, 0x1234);
-  registerController.getStack().setStackPointer(0x3);
-  instructions.PUSH(RegisterPair::H);
-  GTEST_ASSERT_EQ(0x1234, registerController.getStack().popWord());
+    registerController.setRegisterPair(RegisterPair::H, 0x1234);
+    registerController.getStack().setStackPointer(0x3A2C);
+    instructions.PUSH(RegisterPair::H);
+    registerController.incrementMachineCycle();
+    GTEST_ASSERT_EQ(registerController.getProgramCounter(), 0x3A2B);
+    GTEST_ASSERT_EQ(registerController.getMachineCycle(), 1);
+
+    instructions.PUSH(RegisterPair::H);
+    registerController.incrementMachineCycle();
+    GTEST_ASSERT_EQ(registerController.getProgramCounter(), 0x3A2A);
+    GTEST_ASSERT_EQ(registerController.getMachineCycle(), 2);
+
+    instructions.PUSH(RegisterPair::H);
+    registerController.incrementMachineCycle();
+    GTEST_ASSERT_EQ(registerController.getProgramCounter(), 0x1);
+    GTEST_ASSERT_EQ(registerController.getMachineCycle(), 0);
+    GTEST_ASSERT_EQ(0x1234, registerController.getStack().popWord());
 }
 
 TEST_F(InstructionsTest, POP) {
-  // registerController.getStack().setStackPointer(0x5); // TODO Support
-  // wrapping
-  registerController.getStack().pushWord(0x1234);
-  instructions.POP(RegisterPair::H);
-  GTEST_ASSERT_EQ(0x1234, registerController.getRegisterPair(RegisterPair::H));
+    registerController.setRegisterPair(RegisterPair::H, 0x1234);
+    registerController.getStack().setStackPointer(0x123B);
+    registerController.getStack().pushWord(0x4444); // 0x12
+    instructions.POP(RegisterPair::H);
+    registerController.incrementMachineCycle();
+    GTEST_ASSERT_EQ(registerController.getProgramCounter(), 0x1239);
+    GTEST_ASSERT_EQ(registerController.getMachineCycle(), 1);
+
+    instructions.POP(RegisterPair::H);
+    registerController.incrementMachineCycle();
+    GTEST_ASSERT_EQ(registerController.getProgramCounter(), 0x123A);
+    GTEST_ASSERT_EQ(registerController.getMachineCycle(), 2);
+
+    instructions.POP(RegisterPair::H);
+    registerController.incrementMachineCycle();
+    GTEST_ASSERT_EQ(registerController.getProgramCounter(), 0x1);
+    GTEST_ASSERT_EQ(registerController.getMachineCycle(), 0);
+    GTEST_ASSERT_EQ(registerController.getStack().getStackPointer(), 0x123B);
+    // GTEST_ASSERT_EQ(0x4444, registerController.getStack().popWord());
+    GTEST_ASSERT_EQ(0x4444, registerController.getRegisterPair(RegisterPair::H));
+
+    // registerController.getStack().setStackPointer(0x5); // TODO Support
+    // wrapping
+    /*registerController.getStack().pushWord(0x1234);
+    instructions.POP(RegisterPair::H);
+    GTEST_ASSERT_EQ(0x4444, registerController.getRegisterPair(RegisterPair::H));*/
 }
 
 TEST_F(InstructionsTest, XTHL) {

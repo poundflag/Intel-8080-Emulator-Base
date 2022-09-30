@@ -724,14 +724,46 @@ void Instructions::PCHL(uint16_t &source) {
 
 // PUSH RP   11RP0101 *2       -       Push register pair on the stack
 void Instructions::PUSH(RegisterPair registerPair) {
-    registerController.getStack().pushWord(
-        registerController.getRegisterPair(registerPair));
+    uint16_t temp;
+    switch (registerController.getMachineCycle()) {
+        case 0:
+            temp = registerController.getProgramCounter();
+            registerController.getProgramCounter() = registerController.getStack().getStackPointer() - 1;
+            registerController.setRegisterPair(RegisterPair::Temporary, temp);
+            break;
+        case 1:
+            registerController.getProgramCounter()--;
+            break;
+        case 2:
+            registerController.getProgramCounter() = registerController.getRegisterPair(RegisterPair::Temporary);
+
+            registerController.getStack().pushWord(
+                registerController.getRegisterPair(registerPair));
+            registerController.fetchNextInstruction();
+            break;
+    }
 }
 
 // POP RP    11RP0001 *2       *2      Pop  register pair from the stack
 void Instructions::POP(RegisterPair registerPair) {
-    registerController.setRegisterPair(registerPair,
-                                       registerController.getStack().popWord());
+    uint16_t temp;
+    switch (registerController.getMachineCycle()) {
+        case 0:
+            temp = registerController.getProgramCounter();
+            registerController.getProgramCounter() = registerController.getStack().getStackPointer();
+            registerController.setRegisterPair(RegisterPair::Temporary, temp);
+            break;
+        case 1:
+            registerController.getProgramCounter()++;
+            break;
+        case 2:
+            registerController.getProgramCounter() = registerController.getRegisterPair(RegisterPair::Temporary);
+
+            registerController.setRegisterPair(registerPair,
+                                               registerController.getStack().popWord());
+            registerController.fetchNextInstruction();
+            break;
+    }
 }
 
 // XTHL      11100011          -       Swap H:L with top word on stack
@@ -753,12 +785,14 @@ void Instructions::SPHL() {
 // IN p      11011011 pa       -       Read input port into A
 void Instructions::IN(int portNumber) {
     registerController.setRegister(Registers::A, ioController.getDeviceValue(portNumber));
+    registerController.fetchNextInstruction();
 }
 
 // OUT p     11010011 pa       -       Write A to output port
 void Instructions::OUT(int portNumber) {
     ioController.setDeviceValue(
         portNumber, registerController.getRegister(Registers::A));
+    registerController.fetchNextInstruction();
 }
 
 // HLT       01110110          -       Halt processor
