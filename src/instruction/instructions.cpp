@@ -30,15 +30,15 @@ void Instructions::MVI(Registers::Register destination) {
 }
 
 // LXI RP,#  00RP0001 lb hb - Load register pair immediate
-void Instructions::LXI(RegisterPair registerPair, uint16_t immediate) {
+void Instructions::LXI(RegisterPair registerPair) {
     switch (registerController.getMachineCycle()) {
         // Read the 16-Bit Value
         case 0:
-            registerController.setRegister(Registers::TemporaryHigh,
+            registerController.setRegister(Registers::TemporaryLow,
                                            busController.readByte(++registerController.getProgramCounter()));
             break;
         case 1:
-            registerController.setRegister(Registers::TemporaryLow,
+            registerController.setRegister(Registers::TemporaryHigh,
                                            busController.readByte(++registerController.getProgramCounter()));
             break;
         // Set the register pair to the temporary value
@@ -103,8 +103,8 @@ void Instructions::LHLD() {
             temp = registerController.getProgramCounter()-1;
             registerController.getProgramCounter() = registerController.getRegisterPair(RegisterPair::Temporary);
             registerController.setRegisterPair(RegisterPair::Temporary, temp);
-            registerController.setRegisterPair(RegisterPair::H,
-                                               registerController.getRegisterPair(RegisterPair::Temporary));
+            /*registerController.setRegisterPair(RegisterPair::H,
+                                               registerController.getRegisterPair(RegisterPair::Temporary));*/
         default:
             registerController.fetchNextInstruction();
             break;
@@ -475,7 +475,13 @@ void Instructions::XRI() {
 void Instructions::CMP(Registers::Register source) {
     uint8_t intermediate =
         registerController.getRegister(Registers::A);
-    SUB(source);
+        
+        uint8_t aValue = registerController.getRegister(Registers::A);
+    uint8_t sourceValue = registerController.getRegister(source);
+
+    registerController.setRegister(Registers::A, alu.performSub(aValue, sourceValue, 0));
+    
+
     registerController.setRegister(Registers::A, intermediate);
     registerController.fetchNextInstruction();
 }
@@ -669,7 +675,7 @@ void Instructions::CALL() {
             break;
         // Once the value has been loaded set the register pair
         case 2:
-            registerController.getStack().pushWord(registerController.getProgramCounter() + 1);
+            registerController.getStack().pushWord(registerController.getProgramCounter()-2);
             registerController.getProgramCounter() = registerController.getRegisterPair(RegisterPair::Temporary) - 1;
         default:
             registerController.fetchNextInstruction();
@@ -692,7 +698,7 @@ bool Instructions::CALLCondition(FlagRegister::Condition condition) {
 
 // RET       11001001          -       Unconditional return from subroutine
 void Instructions::RET() {
-    registerController.getProgramCounter() = registerController.getStack().popWord() + 1;
+    registerController.getProgramCounter() = registerController.getStack().popWord() + 2;
     registerController.fetchNextInstruction();
 }
 
@@ -718,7 +724,7 @@ void Instructions::RST(uint8_t n) {
 
 // PCHL      11101001          -       Jump to address in H:L
 void Instructions::PCHL(uint16_t &source) {
-    source = registerController.getRegisterPair(RegisterPair::H);
+    source = registerController.getRegisterPair(RegisterPair::H)-1;
     registerController.fetchNextInstruction();
 }
 
@@ -803,11 +809,11 @@ void Instructions::memoryReadOneByte(uint8_t machineCycle) {
     switch (machineCycle) {
         // Read the 16-Bit Address
         case 0:
-            registerController.setRegister(Registers::TemporaryHigh,
+            registerController.setRegister(Registers::TemporaryLow,
                                            busController.readByte(++registerController.getProgramCounter()));
             break;
         case 1:
-            registerController.setRegister(Registers::TemporaryLow,
+            registerController.setRegister(Registers::TemporaryHigh,
                                            busController.readByte(++registerController.getProgramCounter()));
             break;
             // Switch the temporary register with the program counter

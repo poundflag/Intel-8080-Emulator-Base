@@ -59,9 +59,61 @@ void basicInstructionRun() {
   cpu.run();
 }
 
+void interceptBDOSCall(Cpu &cpu, std::string &pOutput) {
+  // Stolen from
+  // https://github.com/GunshipPenguin/lib8080/blob/master/test/integration/cpmloader.c
+
+  std::setvbuf(stdout, NULL, _IONBF, 0);
+  if (cpu.getRegisterController().getRegister(Registers::C) == 2) {
+    if (cpu.getRegisterController().getRegister(Registers::E) != 0) {
+      std::cout
+          << (char)cpu.getRegisterController().getRegister(Registers::E);
+      pOutput +=
+          (char)cpu.getRegisterController().getRegister(Registers::E);
+    }
+  } else if (cpu.getRegisterController().getRegister(Registers::C) == 9) {
+    for (int addr =
+             cpu.getRegisterController().getRegisterPair(RegisterPair::D);
+         cpu.getBusController().readByte(addr) != '$'; addr++) {
+      if (cpu.getBusController().readByte(addr) != 0) {
+        std::cout << (char)cpu.getBusController().readByte(addr);
+        pOutput += (char)cpu.getBusController().readByte(addr);
+      }
+    }
+  }
+}
+
+void TST8080() {
+
+  Cpu cpu = Cpu();
+  cpu.getBusController().addChipRegion(0x0, 0x99, new Ram(0x100));
+  cpu.getBusController().addChipRegion(
+      0x100, 0x5FF + 0x100,
+      new RamDebug("/home/robin/Dokumente/GitHub/Intel-8080-Emulator-Base/src/roms/TST8080.COM"));
+
+  cpu.getBusController().addChipRegion(0x0400, 0xFFFF, new Ram(0xFA60));
+
+  std::string lOutput = "";
+
+  cpu.getBusController().writeByte(5, 0xC9);
+  cpu.setProgramCounter(0x100);
+
+  while (true) {
+    cpu.step(1);
+
+    if (cpu.getProgramCounter() == 0) {
+      break;
+    }
+
+    if (cpu.getProgramCounter() == 5) {
+      interceptBDOSCall(cpu, lOutput);
+    }
+  }
+}
+
 int main() {
   // runBasic4K();
-  basicInstructionRun();
+  TST8080();
   getch();
   endwin();
 }

@@ -22,7 +22,9 @@ void Cpu::run() {
 
 // Step the cpu in n steps
 void Cpu::step(int steps) {
-  // registerController->setRegister(Registers::InstructionRegister, busController.readByte(registerController->getProgramCounter()));
+  if (registerController->getMachineCycle() <= 0) {
+  registerController->setRegister(Registers::InstructionRegister, busController.readByte(registerController->getProgramCounter()));
+  }
   for (int i = 0; i < steps; i++) {
     bool haltState = cycle();
     if (haltState) {

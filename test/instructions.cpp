@@ -790,17 +790,18 @@ TEST_F(InstructionsTest, CALL) {
     instructions.CALL();
     registerController.incrementMachineCycle();
     GTEST_ASSERT_EQ(registerController.getProgramCounter(), 0x9876);
+    GTEST_ASSERT_EQ(registerController.getStack().popWord(), 0x0);
     GTEST_ASSERT_EQ(registerController.getMachineCycle(), 0);
 }
 
 TEST_F(InstructionsTest, RET) {
-    busController.writeWord(0xFF, 0x9234);
+    busController.writeWord(0xFF, 0x2C00);
     registerController.getStack().setStackPointer(0xFF);
     GTEST_ASSERT_EQ(registerController.getProgramCounter(), 0);
     GTEST_ASSERT_EQ(registerController.getMachineCycle(), 0);
 
     instructions.RET();
     registerController.incrementMachineCycle();
-    GTEST_ASSERT_EQ(registerController.getProgramCounter(), 0x9236);
+    GTEST_ASSERT_EQ(registerController.getProgramCounter(), 0x2C03);
     GTEST_ASSERT_EQ(registerController.getMachineCycle(), 0);
 }

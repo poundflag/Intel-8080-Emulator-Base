@@ -11,6 +11,9 @@ bool InstructionDecoder::instructionDecoder(uint8_t opcode) {
   /*std::cout << "PC: " << std::hex << (int)programCounter << " OP: " <<
      std::hex
             << (int)opcode << std::endl;*/
+            if (registerController.getProgramCounter() == 0x06B4) {
+              std::cout << "";
+            }
   bool skipIncrement = false;
   switch (opcode) {
     // NOP Opcodes
@@ -27,16 +30,16 @@ bool InstructionDecoder::instructionDecoder(uint8_t opcode) {
 
   // LXI Opcodes
   case 0x01:
-    instructions.LXI(RegisterPair::B, getNextWord());
+    instructions.LXI(RegisterPair::B);
     break;
   case 0x11:
-    instructions.LXI(RegisterPair::D, getNextWord());
+    instructions.LXI(RegisterPair::D);
     break;
   case 0x21:
-    instructions.LXI(RegisterPair::H, getNextWord());
+    instructions.LXI(RegisterPair::H);
     break;
   case 0x31:
-    instructions.LXI(RegisterPair::SP, getNextWord());
+    instructions.LXI(RegisterPair::SP);
     break;
 
   // STAX Opcodes
@@ -895,7 +898,7 @@ bool InstructionDecoder::instructionDecoder(uint8_t opcode) {
   // If the instructions does not need more than one cycle, just increment the
   // PC
   // if (!skipIncrement) {
-     registerController.getProgramCounter()++;
+     // registerController.getProgramCounter()++;
   // }
   registerController.incrementMachineCycle();
 

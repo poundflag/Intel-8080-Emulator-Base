@@ -14,8 +14,9 @@ void RegisterController::setRegister(Registers::Register registerIndex,
                                      uint8_t value) {
     if (registerIndex == Registers::MemoryReference) {
         busController.writeByte(getRegisterPair(RegisterPair::H), value);
+    } else {
+        registers[registerIndex] = value;
     }
-    registers[registerIndex] = value;
 }
 
 uint16_t RegisterController::getRegisterPair(RegisterPair registerPair) {
