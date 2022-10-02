@@ -44,7 +44,7 @@ uint8_t ALU::performAnd(uint8_t value1, uint8_t value2) {
   // If this is the case the and operation will result in a half-carry bit
   bool acResult = ((value1 | value2) & 0x08) != 0;
 
-  // registerController.get(Registers::A).setRegister(result);
+  // registerController.getRegister(Registers::A).setRegister(result);
   registerController.getFlagRegister().processFlags(FlagRegister::FlagRule::All,
                                                     result, 0, "+");
 

@@ -34,5 +34,3 @@ uint8_t SIO::getValue(uint8_t portAddress) {
   }
   return 0;
 }
-
-SIO::~SIO() {}

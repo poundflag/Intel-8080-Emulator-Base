@@ -1,12 +1,13 @@
-#include "../../../src/registers/model/stack.h"
 #include <gtest/gtest.h>
+#include "../../../src/registers/model/stack.h"
+#include "../../../src/bus/device/ram.h"
 
 class StackTest : public ::testing::Test {
 
 protected:
   BusController busController = BusController();
   Stack stack = Stack(busController);
-  void SetUp() { busController.addChipRegion(ChipRegion(0, 10, new Ram(10))); }
+  void SetUp() { busController.addChipRegion(0, 10, new Ram(10)); }
 };
 
 TEST_F(StackTest, pushAndPopByte) {

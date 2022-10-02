@@ -10,10 +10,12 @@ private:
   int endAddress;
 
 public:
+  ChipRegion();
   ChipRegion(int startAddress, int endAddress, BusDevice *chip);
-  BusDevice *getChip();
+  BusDevice &getChip();
   int getStartAddress();
   int getEndAddress();
+  ~ChipRegion();
 };
 
 #endif // __CHIPREGION_H__

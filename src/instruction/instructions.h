@@ -18,29 +18,31 @@ private:
   ALU &alu;
 
   bool conditionSuccessful(FlagRegister::Condition condition);
+  void memoryReadOneByte(uint8_t machineCycle);
+  void memoryReadTwoBytes();
 
 public:
   Instructions(BusController &busController,
                RegisterController &registerController,
                IOController &ioController, ALU &alu);
   void MOV(Registers::Register destination, Registers::Register source);
-  void MVI(Registers::Register destination, uint8_t immediate);
-  void LXI(RegisterPair registerPair, uint16_t immediate);
-  void LDA(uint16_t address);
-  void STA(uint16_t address);
-  void LHLD(uint16_t address);
-  void SHLD(uint16_t address);
+  void MVI(Registers::Register destination);
+  void LXI(RegisterPair registerPair);
+  void LDA();
+  void STA();
+  void LHLD();
+  void SHLD();
   void LDAX(RegisterPair indirectAddress);
   void STAX(RegisterPair indirectAddress);
   void XCHG();
   void ADD(Registers::Register source);
-  void ADI(uint8_t immediate);
+  void ADI();
   void ADC(Registers::Register source);
-  void ACI(uint8_t immediate);
+  void ACI();
   void SUB(Registers::Register source);
-  void SUI(uint8_t immediate);
+  void SUI();
   void SBB(Registers::Register source);
-  void SBI(uint8_t immediate);
+  void SBI();
   void INR(Registers::Register destination);
   void DCR(Registers::Register destination);
   void INX(RegisterPair destination);
@@ -48,13 +50,13 @@ public:
   void DAD(RegisterPair source);
   void DAA();
   void ANA(Registers::Register source);
-  void ANI(uint8_t immediate);
+  void ANI();
   void ORA(Registers::Register source);
-  void ORI(uint8_t immediate);
+  void ORI();
   void XRA(Registers::Register source);
-  void XRI(uint8_t immediate);
+  void XRI();
   void CMP(Registers::Register source);
-  void CPI(uint8_t immediate);
+  void CPI();
   void RLC();
   void RRC();
   void RAL();
@@ -62,15 +64,13 @@ public:
   void CMA();
   void CMC();
   void STC();
-  void JMP(uint16_t &source, uint16_t address);
-  bool JMPCondition(uint16_t &source, uint16_t address,
-                    FlagRegister::Condition condition);
-  void CALL(uint16_t &source, uint16_t address);
-  bool CALLCondition(uint16_t &source, uint16_t address,
-                     FlagRegister::Condition condition);
-  void RET(uint16_t &source);
-  bool RETCondition(uint16_t &source, FlagRegister::Condition condition);
-  void RST(uint16_t &source, uint8_t n);
+  void JMP();
+  bool JMPCondition(FlagRegister::Condition condition);
+  void CALL();
+  bool CALLCondition(FlagRegister::Condition condition);
+  void RET();
+  bool RETCondition(FlagRegister::Condition condition);
+  void RST(uint8_t n);
   void PCHL(uint16_t &source);
   void PUSH(RegisterPair registerPair);
   void POP(RegisterPair registerPair);

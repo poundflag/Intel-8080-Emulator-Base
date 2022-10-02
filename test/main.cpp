@@ -1,11 +1,11 @@
-#include "bus/device/ramtest.cpp"
+#include <gtest/gtest.h>
+/*#include "bus/device/ramtest.cpp"
 #include "bus/buscontrollertest.cpp"
 #include "registers/model/flagregistertest.cpp"
 #include "registers/model/stacktest.cpp"
 #include "registers/registercontroller.cpp"
 #include "instructions.cpp"
-#include "integration.cpp"
-#include <gtest/gtest.h>
+#include "integration.cpp"*/
 
 int main(int argc, char *argv[]) {
   ::testing::InitGoogleTest(&argc, argv);
