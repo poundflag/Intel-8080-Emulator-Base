@@ -675,7 +675,7 @@ void Instructions::CALL() {
             break;
         // Once the value has been loaded set the register pair
         case 2:
-            registerController.getStack().pushWord(registerController.getProgramCounter()-2);
+            registerController.getStack().pushWord(registerController.getProgramCounter()+1);
             registerController.getProgramCounter() = registerController.getRegisterPair(RegisterPair::Temporary) - 1;
         default:
             registerController.fetchNextInstruction();
@@ -698,7 +698,7 @@ bool Instructions::CALLCondition(FlagRegister::Condition condition) {
 
 // RET       11001001          -       Unconditional return from subroutine
 void Instructions::RET() {
-    registerController.getProgramCounter() = registerController.getStack().popWord() + 2;
+    registerController.getProgramCounter() = registerController.getStack().popWord()-1;
     registerController.fetchNextInstruction();
 }
 

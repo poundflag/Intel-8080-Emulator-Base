@@ -131,9 +131,8 @@ TEST_F(IntegrationsTest, CPUTEST) {
   ASSERT_TRUE(lOutput == foundMessage);
 }
 
-/*TEST_F(IntegrationsTest, 8080Excerciser) {
-
-  cpu.getBusController().addChipRegion(0x0, 0x99, new Ram(0x100));
+TEST_F(IntegrationsTest, 8080Excerciser) {
+  /*cpu.getBusController().addChipRegion(0x0, 0x99, new Ram(0x100));
   cpu.getBusController().addChipRegion(
       0x100, 0x11FF + 0x100,
       new RamDebug("/home/robin/Dokumente/GitHub/Intel-8080-Emulator-Base/src/roms/8080EXM.COM"));
@@ -190,5 +189,5 @@ TEST_F(IntegrationsTest, CPUTEST) {
       "is:e0d89235\n\rstax <b,d>....................  PASS! crc "
       "is:2b0471e9\n\rTests complete";
   
-  ASSERT_TRUE(lOutput == lExpected);
-}*/
+  ASSERT_TRUE(lOutput == lExpected);*/
+}
